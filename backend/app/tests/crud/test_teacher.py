@@ -1,12 +1,11 @@
 from typing import Any, List
 from uuid import UUID
 import uuid
-from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.crud.teacher import delete_teacher, get_teacher, update_teacher, teachers_list
-from app.schemas.teacher import TeacherCreate, TeacherResponse, TeacherUpdate
+from app.schemas.teacher import TeacherResponse, TeacherUpdate
 from app.tests.utils.teachers import create_random_teacher, create_random_teachers
 from app.tests.utils.utils import random_lower_string
 from app.models.teachers import Teacher
@@ -17,6 +16,9 @@ def test_read_teachers(db: Session) -> Any:
     assert isinstance(r["data"], List)
     assert len(r["data"]) == 1
     assert r["count"] == len(teachers)
+    
+    for teacher in teachers:
+        delete_teacher(db=db, teacher_id=teacher.id)
 
 def test_create_teachers(db: Session) -> Any:
     teacher = create_random_teacher(db)
@@ -29,11 +31,15 @@ def test_create_teachers(db: Session) -> Any:
     teacher_db = db.execute(statement).scalar_one_or_none()
     assert teacher_db is not None
     assert teacher_db.id_teacher == teacher.id_teacher
+    
+    delete_teacher(db=db, teacher_id=teacher.id)
 
 def test_delete_teacher(db: Session) -> Any:
     teacher = create_random_teacher(db)
     r = delete_teacher(db=db, teacher_id=teacher.id)
     assert r is True
+    
+    delete_teacher(db=db, teacher_id=teacher.id)
     
     statement = select(Teacher).where(Teacher.id == teacher.id)
     teacher_db = db.execute(statement).scalar_one_or_none()
@@ -50,15 +56,17 @@ def test_update_teacher(db: Session) -> Any:
     r = update_teacher(db=db, teacher_id=teacher.id, data=teacher_in)
     assert r
     assert isinstance(r, TeacherResponse)
-    assert teacher.nom == updated_name
+    assert r.nom == updated_name
     assert r.id_teacher == teacher.id_teacher
     
     statement = select(Teacher).where(Teacher.id == teacher.id)
     teacher_db = db.execute(statement).scalar_one_or_none()
     assert teacher_db is not None
     assert teacher_db.nom == updated_name
+    
+    delete_teacher(db=db, teacher_id=teacher.id)
 
-def test_update_teacher(db: Session) -> Any:
+def test_update_teacher_not_exists(db: Session) -> Any:
     updated_name = random_lower_string()
     teacher_in = TeacherUpdate(nom=updated_name)
     r = update_teacher(db=db, teacher_id=uuid.uuid4(), data=teacher_in)
@@ -68,6 +76,8 @@ def test_get_teacher(db: Session) -> Any:
     teacher = create_random_teacher(db)
     r = get_teacher(db=db, id=teacher.id)
     assert isinstance(r, TeacherResponse)
+    
+    delete_teacher(db=db, teacher_id=teacher.id)
 
 def test_get_teacher_not_exists(db: Session) -> Any:
     r = get_teacher(db=db, id=uuid.uuid4())

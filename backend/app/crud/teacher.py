@@ -34,7 +34,7 @@ def update_teacher(db: Session, teacher_id: UUID, data: TeacherUpdate) -> Teache
     teacher = db.query(Teacher).filter(Teacher.id==teacher_id).first()
     if teacher:
         validate_data = data.model_dump(exclude_unset=True)
-        for key, value in validate_data:
+        for key, value in validate_data.items():
             setattr(teacher, key, value)
         db.commit()
         db.refresh(teacher)

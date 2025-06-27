@@ -26,11 +26,9 @@ def test_liste_etudiants(client: TestClient, db: Session, superuser_token_header
     r = response.json()
     assert isinstance(r["data"], list)
 
-
 def test_routes_etudiant_sans_auth(client):
     response = client.get(f"{settings.API_V1_STR}/students")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
 
 # -------- CREATION --------
 def test_enregistrer_etudiant(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
@@ -49,7 +47,6 @@ def test_enregistrer_etudiant(client: TestClient, db: Session, superuser_token_h
     assert student["id"] is not None
     assert student["id_etudiant"] is not None
 
-
 def test_creation_etudiant_avec_email_deja_existant(client:TestClient, db: Session, superuser_token_headers) -> Any:
     student = create_random_student(db)
     data = random_user_data().model_dump()
@@ -65,7 +62,6 @@ def test_creation_etudiant_avec_email_deja_existant(client:TestClient, db: Sessi
     assert response.status_code == status.HTTP_409_CONFLICT
     assert response.json()["detail"] == "Il y a déjà un étudiant avec le même email"
 
-
 def test_creation_etudiant_sans_champ_obligatoire(client: TestClient, superuser_token_headers) -> Any:
     data = {
         "nom": "tresor"
@@ -77,7 +73,6 @@ def test_creation_etudiant_sans_champ_obligatoire(client: TestClient, superuser_
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-
 # -------- LECTURE --------
 def test_get_student(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
     student = create_random_student(db)
@@ -88,7 +83,6 @@ def test_get_student(client: TestClient, db: Session, superuser_token_headers: d
     assert response.status_code == 200 
     assert response.json()["id_etudiant"] == student.id_etudiant
 
-
 def test_get_student_inexistant(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
     response = client.get(
         f"{settings.API_V1_STR}/students/{uuid.uuid4()}",
@@ -96,7 +90,6 @@ def test_get_student_inexistant(client: TestClient, db: Session, superuser_token
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "L'étudiant recherché n'existe pas sur le systeme"
-
 
 # -------- MISE A JOUR --------
 def test_modifier_etudiant(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
@@ -116,7 +109,6 @@ def test_modifier_etudiant(client: TestClient, db: Session, superuser_token_head
     assert student
     assert student.nom == updated_data["nom"]
 
-
 def test_modifier_etudiant_inexistant(client: TestClient, db: Session, superuser_token_headers:  dict[str, str]) -> Any:
     student = create_random_student(db)
     updated_data = {"nom": "nouveau_nom"}
@@ -128,7 +120,6 @@ def test_modifier_etudiant_inexistant(client: TestClient, db: Session, superuser
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Cet étudiant n'existe pas sur le systeme"
 
-
 # -------- SUPPRESSION --------
 def test_effacer_etudiant(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
     student = create_random_student(db)
@@ -138,7 +129,6 @@ def test_effacer_etudiant(client: TestClient, db: Session, superuser_token_heade
     )
     assert response.status_code == 200
 
-
 def test_effacer_etudiant_inexistant(client: TestClient,superuser_token_headers) -> Any:
     response = client.delete(
         f"{settings.API_V1_STR}/students/{uuid.uuid4()}",
@@ -146,6 +136,7 @@ def test_effacer_etudiant_inexistant(client: TestClient,superuser_token_headers)
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
+# -------- DESACTIVATION --------
 def test_desactiver_etudiant(client: TestClient, superuser_token_headers: dict[str, str], db: Session):
     student = create_random_student(db)
     r = client.post(
