@@ -18,7 +18,7 @@ def test_delete_student(db) -> Any:
     response = students.delete_student(db=db, id=student.id)
     assert response is True
 
-def test_modify_student(db) -> Any:
+def test_update_student(db) -> Any:
     student = create_random_student(db)
     data = random_user_data()
     response = students.update_student(db=db,id=student.id, data=data)
