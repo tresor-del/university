@@ -1,0 +1,25 @@
+nav ul{
+    display: flex;
+    list-style-type: none;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    font-size: 1.2rem;
+}
+
+nav ul li {
+    background-color: #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+}
+
+nav ul li:hover {
+    cursor: pointer;
+    background-color: #888;
+}
+
+.link {
+    color: #333;
+    text-decoration: none;
+}
