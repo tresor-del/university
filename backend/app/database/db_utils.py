@@ -5,8 +5,6 @@ from database.config import get_settings
 
 settings = get_settings()
 
-print(settings.dict())
-
 params = {
     'host': settings.host,
     'user': settings.user,

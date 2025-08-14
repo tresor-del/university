@@ -24,7 +24,6 @@ function Liste() {
 
   return (
     <div className="etu-container">
-        <h1>Liste des étudiants</h1>
         <table>
           <thead>
             <th>Identifiant</th>

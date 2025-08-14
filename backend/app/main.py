@@ -7,22 +7,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 
 from models import EnrEtudiant
+from middlewares import setup_middleware
 
 
 app = FastAPI()
 
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+setup_middleware(app)
+
 
 def update_data(data):
+    """
+    Cette fonction prend un dictionnaire et le transforme en une requête sql
+    """
+    # prend tous les clés du dictionnaire et les joint avec des virgules
     columns = ','.join(data.keys())
+    # parcourir les valeurs et entourer les chaînes avec '' mais laisser les les nombres
     values = ','.join(f"'{v}'" if isinstance(v, str) else str(v) for v in data.values())
+    # construire la requête
     query = f"INSERT INTO AdzEtudiants ({columns}) VALUES ({values});"
     return query
 
@@ -38,11 +40,16 @@ def liste_etudiants():
 @app.post("/enregistrer_etudiant")
 def enr_etudiant(data: EnrEtudiant):
     print(data)
+    # transformer les données pydantic en un dictionnaire python
     updated_data = data.model_dump()
     print(updated_data)
+    # utiliser les données pour faire une requête sql
     request = update_data(updated_data)
+    # ouvir la base de donnée 
     db = Database()
-    result = db.fetch_data(request)
+    # faire la requête 
+    result = db.insert_data(request)
+    # fermer la base de donnée
     db.close()
     return {"message": "Etudiant enregistré", 'result': result}
 

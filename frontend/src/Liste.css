@@ -36,8 +36,8 @@ tr:nth-child(even) {
 
 .form-container {
   display: flex;
+  margin-top: 1rem;
   flex-direction: column;
-  justify-content: center;
   gap: 1rem;
   align-items: center;
   margin-bottom: 3rem;
