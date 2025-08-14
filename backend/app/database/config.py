@@ -9,7 +9,6 @@ class Settings(BaseSettings):
     user: str
     password: str
     database: str
-    origins: List[str]
 
     class Config:
         env_file = '.env'
