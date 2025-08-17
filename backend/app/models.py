@@ -1,14 +1,15 @@
-from pydantic import BaseModel
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import declarative_base
+from datetime import datetime
 
-class EnrEtudiant(BaseModel):
-    id_etudiant: int
-    nom: str
-    prenom: str
+Base = declarative_base()
 
-class ListeEtudiant(EnrEtudiant):
-    pass
+class Etudiant(Base):
+    __tablename__ = "etudiants"
 
-class ModifierEtudiant(BaseModel):
-    nom: str
-    prenom: str
-
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id_etudiant = Column(Integer, unique=True, index=True, nullable=False)
+    nom = Column(String, index=True, nullable=False)
+    prenom = Column(String, index=True, nullable=False)
+    sexe = Column(String, index=True, nullable=False)
+    date_creation = Column(DateTime, default=datetime.utcnow)  

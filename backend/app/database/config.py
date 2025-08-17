@@ -1,20 +1,19 @@
-from pydantic_settings import BaseSettings
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from .settings import get_settings
 
-from typing import List
-from functools import lru_cache
+settings = get_settings()
 
-# validation des variables récuperé depuis le fichier .env
-class Settings(BaseSettings):
-    host: str ="127.0.0.1"
-    user: str ="root"
-    password: str ="123tresor@"
-    database: str ="esat_2"
+DATABASE_URL = settings.databaseurl
 
-    class Config:
-        env_file = '.env'
+# créer une connexion a la base de donnée
+engine = create_engine(
+    DATABASE_URL
+)
 
+# usine de session pour créer des connexions temporaires a la base de donnée a la demande
+sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Mettre les parametres en cache pour eviter de lire le fichier a chaque requete
-@lru_cache()
-def get_settings():
-    return Settings()
+# la base commune que toutes tes classes de modèles SQLAlchemy vont utiliser pour créer des tables 
+Base = declarative_base()

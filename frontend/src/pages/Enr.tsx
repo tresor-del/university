@@ -62,6 +62,7 @@ export const Enr = () => {
   const [name, setname] = useState("");
   const [prenom, setprenom] = useState("");
   const [id, setid] = useState("");
+  const [sexe, setSexe] = useState("")
   const navigate = useNavigate();
 
   const url = "http://127.0.0.1:8000/enregistrer_etudiant/";
@@ -73,7 +74,7 @@ export const Enr = () => {
         "content-type": "application/json",
         Autorization: "Bearer",
       },
-      body: JSON.stringify({ nom: name, prenom: prenom, id_etudiant: id }),
+      body: JSON.stringify({id_etudiant: id, nom: name, prenom: prenom,  sexe: sexe }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -107,6 +108,11 @@ export const Enr = () => {
           onChange={(e) => setid(e.target.value)}
           type="number"
           placeholder="Identifiant de l'étudiant"
+        />
+        <StyledInput
+          onChange={(e) => setSexe(e.target.value)}
+          type="text"
+          placeholder="Sexe"
         />
         <SubmitButton type="button" onClick={enregistrer} value="Valider" />
       </StyledForm>

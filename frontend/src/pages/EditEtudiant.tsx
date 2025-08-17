@@ -63,6 +63,7 @@ const EditEtudiant = () => {
   const [etudiant, setEtudiant] = useState<any>(null);
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
+  const [sexe, setSexe] = useState("");
   const [idEtudiant, setIdEtudiant] = useState("");
   const [idOldEtudiant, setIdOldEtudiant] = useState("");
   const navigate = useNavigate();
@@ -73,17 +74,20 @@ const EditEtudiant = () => {
       .then((data) => {
         const found = data
           .map((item: any) => ({
-            id: item[0],
-            id_etudiant: item[1],
-            nom: item[2],
-            prenom: item[3],
-            date: item[4],
+            id: item.id_etudiant,
+            id_etudiant: item.id_etudiant,
+            nom: item.nom,
+            prenom: item.prenom,
+            sexe: item.sexe,
+            date: item.date_creation,
+            // photo: item[6], 
           }))
           .find((et: any) => String(et.id) === String(id));
         setEtudiant(found);
         if (found) {
           setNom(found.nom);
           setPrenom(found.prenom);
+          setSexe(found.sexe)
           setIdEtudiant(found.id_etudiant);
           setIdOldEtudiant(found.id_etudiant);
         }
@@ -100,6 +104,7 @@ const EditEtudiant = () => {
         nom: nom,
         prenom: prenom,
         id_etudiant: idEtudiant,
+        sexe: sexe
       }),
     })
       .then((res) => res.json())
@@ -141,6 +146,12 @@ const EditEtudiant = () => {
           onChange={(e) => setPrenom(e.target.value)}
           type="text"
           placeholder="Prénom"
+        />
+        <StyledInput
+          value={sexe}
+          onChange={(e) => setSexe(e.target.value)}
+          type="text"
+          placeholder="Sexe"
         />
         <SubmitButton type="submit" value="Enregistrer" />
       </StyledForm>

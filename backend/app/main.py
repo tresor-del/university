@@ -1,76 +1,58 @@
 import uvicorn
-from fastapi import FastAPI
+import schemas, crud
+
+from fastapi import FastAPI, Depends
 from typing import List
-from app.database.db_utils import Database
+from database.config import sessionLocal, engine, Base
 
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
 
-from app.models import EnrEtudiant, ModifierEtudiant, ListeEtudiant
-from app.middlewares import setup_middleware
+from middlewares import setup_middleware
 
+# Créer toutes les tables dans la base qui sont décrites par les classes héritant de Base
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 # cors middleware
 setup_middleware(app)
 
-table = 'etudiants'
+def get_db():
+    db = sessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-def save(data):
-    columns = ','.join(data.keys())
-    placeholders = ','.join(['%s'] * len(data))  
-    query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders});"
-    values = tuple(data.values())
+@app.get("/etudiants", response_model=List[schemas.EnrEtudiant])
+def liste_etudiants(db: Session = Depends(get_db)):
     
-    db = Database()
-    result = db.execute(query, values)
-    db.close()
-    return result
-
-
-
-@app.get("/etudiants")
-def liste_etudiants():
-    request =f"SELECT * FROM {table}"
-    print(request)
-    db = Database()
-    result =  db.get_data(request)
-    db.close()
-    return result 
+    liste = crud.liste_etudiants(db)
+    print(liste)
+    return liste
 
 @app.post("/enregistrer_etudiant")
-def enr_etudiant(data: EnrEtudiant):
+def enr_etudiant(data: schemas.EnrEtudiant, db: Session = Depends(get_db)):
 
-    # transformer les données pydantic en un dictionnaire python
-    updated_data = data.model_dump()
-    print(updated_data)
+    print(data)
+    etudiant = crud.enr_etudiant(db, data)
+    if etudiant:
+        return {"success": True}
+    return {"success": False}
 
-    # utiliser les données pour faire une requête sql
-    result = save(updated_data)
-    return result
 
 @app.put("/modifier_etudiant/{id}")
-def modifier_etudiant(id: int, data: ModifierEtudiant):
-    updated_data = data.model_dump()
-    
-    query = f"UPDATE {table} SET  nom=%s,prenom=%s WHERE id_etudiant=%s;"
-    values = (updated_data['nom'], updated_data['prenom'], id)
+def modifier_etudiant(id: int, data: schemas.ModifierEtudiant, db: Session = Depends(get_db)):
 
-    db = Database()
-    result = db.execute(query, values)
-    
-    return result
+    return crud.modifier_etudiant(db, id,data)
+
 
 @app.delete("/effacer_etudiant/{id}")
-def effacer_etudiant(id: int):
-    query = f"DELETE FROM {table} WHERE id_etudiant=%s;"
-    value = (id,)
+def effacer_etudiant(id: int, db: Session = Depends(get_db)):
 
-    db = Database()
-    result = db.execute(query, value)
+    return crud.supprimer_etudiant(db, id)
 
-    return result
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

@@ -110,12 +110,12 @@ function Liste() {
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item) => ({
-          id: item[0],
-          id_etudiant: item[1],
-          nom: item[2],
-          prenom: item[3],
-          date: item[4],
+          id: item.id_etudiant,
+          id_etudiant: item.id_etudiant,
+          nom: item.nom,
+          prenom: item.prenom
         }));
+        console.log(data)
         setListe(formatted);
       })
       .catch((err) => console.error("Erreur:", err));

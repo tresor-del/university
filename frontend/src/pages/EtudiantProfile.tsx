@@ -127,17 +127,18 @@ const EtudiantProfile = () => {
       .then((data) => {
         const found = data
           .map((item: any) => ({
-            id: item[0],
-            id_etudiant: item[1],
-            nom: item[2],
-            prenom: item[3],
-            date: item[4],
-            photo: item[5], // suppose que la photo est à l'index 5
+            id: item.id_etudiant,
+            id_etudiant: item.id_etudiant,
+            nom: item.nom,
+            prenom: item.prenom,
+            sexe: item.sexe,
+            date: item.date_creation,
+            photo: item[6], // suppose que la photo est à l'index 5
           }))
 
           .find((et: any) => String(et.id) === String(id));
         setEtudiant(found);
-        alert(etudiant.id_etudiant)
+        console.log(found)
       });
   }, [id]);
 
@@ -187,6 +188,9 @@ const EtudiantProfile = () => {
           </Info>
           <Info>
             <span>Prénom :</span> {etudiant.prenom}
+          </Info>
+          <Info>
+            <span>Sexe :</span> {etudiant.sexe}
           </Info>
           <Info>
             <span>Date d'inscription :</span> {etudiant.date}
