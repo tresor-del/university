@@ -23,7 +23,7 @@ const Content = styled.main<{ sidebarWidth: number }>`
 export const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
 
-  // On passe collapsed et setCollapsed au Sidebar pour synchroniser l'état
+  // On passe collapsed et setCollapsed au Sidebar pour synchroniser l'état du sidebar
   return (
     <Layout>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
