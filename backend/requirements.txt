@@ -2,3 +2,5 @@ fastapi
 uvicorn
 mysql-connector-python
 pydantic-settings
+pytest 
+httpx

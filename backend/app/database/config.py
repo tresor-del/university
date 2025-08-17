@@ -5,10 +5,10 @@ from functools import lru_cache
 
 # validation des variables récuperé depuis le fichier .env
 class Settings(BaseSettings):
-    host: str
-    user: str
-    password: str
-    database: str
+    host: str ="127.0.0.1"
+    user: str ="root"
+    password: str ="123tresor@"
+    database: str ="esat_2"
 
     class Config:
         env_file = '.env'
