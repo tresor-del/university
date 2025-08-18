@@ -89,7 +89,7 @@ const EditButton = styled.button`
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 12px 28px;
+  padding: 12px ;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
