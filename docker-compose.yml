@@ -26,7 +26,5 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    env_file:
-      - .env.docker
     # depends_on:
     #   - db

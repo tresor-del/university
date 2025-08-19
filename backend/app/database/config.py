@@ -1,11 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from .settings import get_settings
+# from .settings import get_settings
 
-settings = get_settings()
+# settings = get_settings()
 
-DATABASE_URL = settings.databaseurl
+DATABASE_URL = 'sqlite:///./sql_app.db'
 
 # créer une connexion a la base de donnée
 engine = create_engine(

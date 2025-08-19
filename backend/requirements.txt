@@ -5,5 +5,3 @@ pydantic-settings
 pytest 
 httpx
 sqlalchemy
-pymysql
-mysqlclient
