@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FaUserCircle } from "react-icons/fa";
@@ -26,15 +26,15 @@ const ProfileCard = styled.div`
   align-items: center;
 `;
 
-const ProfilePhoto = styled.img`
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 22px;
-  border: 4px solid #2d3e50;
-  background: #f5f7fa;
-`;
+// const ProfilePhoto = styled.img`
+//   width: 110px;
+//   height: 110px;
+//   border-radius: 50%;
+//   object-fit: cover;
+//   margin-bottom: 22px;
+//   border: 4px solid #2d3e50;
+//   background: #f5f7fa;
+// `;
 
 const IconPhoto = styled(FaUserCircle)`
   width: 110px;
@@ -116,9 +116,26 @@ const DeleteButton = styled.button`
   }
 `;
 
+
+interface Etudiant {
+  id: number;
+  id_etudiant: number;
+  nom: string;
+  prenom: string;
+  sexe: string;
+  date_creation: number;
+}
+
 const EtudiantProfile = () => {
   const { id } = useParams();
-  const [etudiant, setEtudiant] = useState<any>(null);
+    const [etudiant, setEtudiant] = useState<Etudiant>({
+      id: 0,
+      id_etudiant:0,
+      nom: "",
+      prenom: "",
+      sexe: "",
+      date_creation: 0,
+    });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -126,17 +143,16 @@ const EtudiantProfile = () => {
       .then((res) => res.json())
       .then((data) => {
         const found = data
-          .map((item: any) => ({
+          .map((item: Etudiant) => ({
             id: item.id_etudiant,
             id_etudiant: item.id_etudiant,
             nom: item.nom,
             prenom: item.prenom,
             sexe: item.sexe,
             date: item.date_creation,
-            photo: item[6], // suppose que la photo est à l'index 5
           }))
 
-          .find((et: any) => String(et.id) === String(id));
+          .find((et: Etudiant) => String(et.id) === String(id));
         setEtudiant(found);
         console.log(found)
       });
@@ -173,11 +189,7 @@ const EtudiantProfile = () => {
   return (
     <FullPageContainer>
       <ProfileCard>
-        {etudiant.photo ? (
-          <ProfilePhoto src={etudiant.photo} alt="Photo de profil" />
-        ) : (
           <IconPhoto />
-        )}
         <Title>Profil Étudiant</Title>
         <InfoList>
           <Info>
@@ -193,7 +205,7 @@ const EtudiantProfile = () => {
             <span>Sexe :</span> {etudiant.sexe}
           </Info>
           <Info>
-            <span>Date d'inscription :</span> {etudiant.date}
+            <span>Date d'inscription :</span> {etudiant.date_creation}
           </Info>
         </InfoList>
         <ButtonGroup>
