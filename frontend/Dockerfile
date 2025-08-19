@@ -1,6 +1,3 @@
-"""
-Multi-stage build  
-"""
 
 ### BUILDER
 
@@ -11,7 +8,7 @@ FROM node:22-alpine as builder
 WORKDIR /app
 
 # Copier les manifeste pour profiter du cache Docker 
-COPY package.json package-lock.json
+COPY package.json package-lock.json ./
 
 # Installer les dépendances à partir du lockfile
 RUN npm ci 
@@ -32,22 +29,10 @@ FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # copier le fichier nginx.conf dans l'image docker a l'endroit ou nginx lit sa conf par defaut pour mieux servir l'application 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
 # Commande de demarrage de nginx
 CMD ["nginx", "-g", "daemon off;"]
 
-
-"""
-Je pouvais utiliser le serveur Serve de Node
-
-FROM node:22-alpine
-WORKDIR /app
-RUN npm install -g serve
-COPY --from=builder /app/build ./build
-EXPOSE 3000
-CMD [""serve"", ""-s"", ""build"", ""-l"", ""3000""]
-
-"""

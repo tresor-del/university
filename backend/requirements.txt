@@ -4,5 +4,5 @@ mysql-connector-python
 pydantic-settings
 pytest 
 httpx
-sqlachemy
+sqlalchemy
 pymysql
