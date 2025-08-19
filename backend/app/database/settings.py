@@ -5,7 +5,7 @@ from functools import lru_cache
 
 # validation des variables récuperé depuis le fichier .env
 class Settings(BaseSettings):
-    databaseurl: str
+    databaseurl: str 
 
     class Config:
         env_file = '.env'

@@ -1,13 +1,14 @@
 import uvicorn
-import schemas, crud
+
+from . import schemas, crud
 
 from fastapi import FastAPI, Depends
 from typing import List
-from database.config import sessionLocal, engine, Base
+from .database.config import sessionLocal, engine, Base
 
 from sqlalchemy.orm import Session
 
-from middlewares import setup_middleware
+from .middlewares import setup_middleware
 
 # Créer toutes les tables dans la base qui sont décrites par les classes héritant de Base
 Base.metadata.create_all(bind=engine)
