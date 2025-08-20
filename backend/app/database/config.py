@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -5,7 +7,9 @@ from sqlalchemy.orm import sessionmaker
 
 # settings = get_settings()
 
-DATABASE_URL = 'sqlite:///./sql_app.db'
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # créer une connexion a la base de donnée
 engine = create_engine(

@@ -5,3 +5,5 @@ pydantic-settings
 pytest 
 httpx
 sqlalchemy
+pymysql
+cryptography

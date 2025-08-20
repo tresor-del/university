@@ -11,20 +11,13 @@ services:
     depends_on:
       - backend
 
-
-  # db:
-  #   image: mysql:8.0
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: 123tresor@
-  #     MYSQL_DATABASE: gestion_scolaire
-  #   ports:
-  #     - "3307:3306"
-
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    # depends_on:
-    #   - db
+    environment:
+      - DATABASE_URL=mysql+pymysql://docker_user:votre_mot_de_passe@host.docker.internal:3306/gestion_ecole
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
