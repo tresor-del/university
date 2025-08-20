@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-import models, schemas
+from . import models, schemas
 
 
 def liste_etudiants(db: Session):
@@ -29,7 +29,6 @@ def modifier_etudiant(db: Session, id: int, data: schemas.EnrEtudiant):
         etudiant.nom = data.nom
         etudiant.prenom = data.prenom
         etudiant.sexe = data.sexe
-        etudiant.date_creation = data.date_creation
         
         db.commit()
         db.refresh(etudiant)
