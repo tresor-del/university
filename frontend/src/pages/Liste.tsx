@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -93,6 +93,13 @@ const ActionButton = styled.button`
   }
 `;
 
+interface Etudiant {
+  id: number;
+  id_etudiant: number;
+  nom: string;
+  prenom: string;
+}
+
 function Liste() {
   const [liste, setListe] = useState([]);
   const [filters, setFilters] = useState({
@@ -109,7 +116,7 @@ function Liste() {
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
-        const formatted = data.map((item) => ({
+        const formatted = data.map((item: Etudiant) => ({
           id: item.id_etudiant,
           id_etudiant: item.id_etudiant,
           nom: item.nom,
@@ -149,7 +156,7 @@ function Liste() {
               .then((res) => {
                 if (res.ok) {
                   toast.warning("Vous avez supprimé un étudiant.");
-                  setListe((prev) => prev.filter((etudiant) => etudiant.id_etudiant !== id_etudiant))
+                  setListe((prev) => prev.filter((etudiant: Etudiant) => etudiant.id_etudiant !== id_etudiant))
                 } else {
                   toast.error("Erreur lors de la suppression.");
                 }
@@ -201,7 +208,7 @@ function Liste() {
           </FilterRow>
         </thead>
         <tbody>
-          {filteredListe.map((student) => (
+          {filteredListe.map((student: Etudiant) => (
             <Tr
               key={student.id}
               onMouseEnter={() => setHoveredRow(student.id)}

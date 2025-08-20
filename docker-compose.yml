@@ -1,0 +1,23 @@
+
+
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://docker_user:votre_mot_de_passe@host.docker.internal:3306/gestion_ecole
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

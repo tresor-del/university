@@ -1,10 +1,17 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+# from .settings import get_settings
 
-# lien a modifier
-DATABASE_URL = "mysql+pymysql://root:123tresor%40@localhost:3306/gestion_ecole"
+# settings = get_settings()
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 
 # créer une connexion a la base de donnée
 engine = create_engine(

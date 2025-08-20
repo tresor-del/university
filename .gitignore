@@ -2,3 +2,5 @@
 backend/app/.env
 *_pycache__/
 frontend/node_modules/
+backend/app/tests/__init__.py
+backend/app/tests/__pycache__/

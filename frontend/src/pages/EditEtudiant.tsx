@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -58,9 +58,25 @@ const Title = styled.h2`
   letter-spacing: 1px;
 `;
 
+interface Etudiant {
+  id: number;
+  id_etudiant: number;
+  nom: string;
+  prenom: string;
+  sexe: string;
+  date_creation: number;
+}
+
 const EditEtudiant = () => {
   const { id } = useParams();
-  const [etudiant, setEtudiant] = useState<any>(null);
+  const [etudiant, setEtudiant] = useState<Etudiant>({
+    id: 0,
+    id_etudiant:0,
+    nom: "",
+    prenom: "",
+    sexe: "",
+    date_creation: 0,
+  });
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [sexe, setSexe] = useState("");
@@ -73,7 +89,7 @@ const EditEtudiant = () => {
       .then((res) => res.json())
       .then((data) => {
         const found = data
-          .map((item: any) => ({
+          .map((item: Etudiant) => ({
             id: item.id_etudiant,
             id_etudiant: item.id_etudiant,
             nom: item.nom,
@@ -82,7 +98,7 @@ const EditEtudiant = () => {
             date: item.date_creation,
             // photo: item[6], 
           }))
-          .find((et: any) => String(et.id) === String(id));
+          .find((et: Etudiant) => String(et.id) === String(id));
         setEtudiant(found);
         if (found) {
           setNom(found.nom);

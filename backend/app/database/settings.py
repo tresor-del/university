@@ -7,7 +7,7 @@ from functools import lru_cache
 
 # validation des variables récuperé depuis le fichier .env
 class Settings(BaseSettings):
-    databaseurl: str = "mysql+pymysql://root:123tresor%40@localhost:3306/gestion_ecole"
+    databaseurl: str 
 
     class Config:
         env_file = '../.env'
