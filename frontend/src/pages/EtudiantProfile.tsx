@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import {  FaGithub } from "react-icons/fa";
+import {  FaUser } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const FullPageContainer = styled.div`
@@ -9,32 +9,23 @@ const FullPageContainer = styled.div`
   width: 100%;
   background: linear-gradient(120deg, #f5f7fa 0%, #e3eaf2 100%);
   display: flex;
-  align-items: center;
   justify-content: center;
 `;
 
 const ProfileCard = styled.div`
-  background: #fff;
   border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.13);
   padding: 48px 38px 38px 38px;
-  min-width: 340px;
-  max-width: 420px;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 2rem
 `;
 
-const IconPhoto = styled(FaGithub)`
-  width: 110px;
-  height: 110px;
+const IconPhoto = styled(FaUser)`
+  width: 200px;
+  height: 200px;
   color: #b0bec5;
-  margin-bottom: 22px;
-  border-radius: 50%;
-  background: #f5f7fa;
-  border: 4px solid #2d3e50;
-  padding: 10px;
+  // background: #f5f7fa;
 `;
 
 const Title = styled.h2`
@@ -47,8 +38,6 @@ const Title = styled.h2`
 `;
 
 const InfoList = styled.div`
-  width: 100%;
-  margin-bottom: 28px;
 `;
 
 const Info = styled.div`
@@ -56,7 +45,8 @@ const Info = styled.div`
   font-size: 18px;
   color: #223044;
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
+  gap: 1rem;
   align-items: center;
   span {
     font-weight: 700;
@@ -66,10 +56,17 @@ const Info = styled.div`
   }
 `;
 
+const FlexDiv = styled.div`
+  display: flex;
+  align-items: start;
+  justify-content: center;  
+  gap: 5rem;
+  width: 100%;
+`
+
 const ButtonGroup = styled.div`
   display: flex;
   gap: 18px;
-  margin-top: 10px;
   width: 100%;
   justify-content: center;
 `;
@@ -176,32 +173,34 @@ const EtudiantProfile = () => {
   return (
     <FullPageContainer>
       <ProfileCard>
-        <IconPhoto />
-        <Title>Profil Étudiant</Title>
-        <InfoList>
-          <Info>
-            <span>Identifiant :</span> {etudiant.id_etudiant}
-          </Info>
-          <Info>
-            <span>Nom :</span> {etudiant.nom}
-          </Info>
-          <Info>
-            <span>Prénom :</span> {etudiant.prenom}
-          </Info>
-          <Info>
-            <span>Sexe :</span> {etudiant.sexe}
-          </Info>
-          <Info>
-            <span>Date d'inscription :</span>{" "}
-            {etudiant.date_creation
-              ? new Date(etudiant.date_creation).toLocaleString("fr-FR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
-              : "Non renseignée"}
-          </Info>
-        </InfoList>
+      <Title>Profil Etudiant</Title>
+        <FlexDiv>
+          <IconPhoto />
+          <InfoList>
+            <Info>
+              <span>Identifiant :</span> {etudiant.id_etudiant}
+            </Info>
+            <Info>
+              <span>Nom :</span> {etudiant.nom}
+            </Info>
+            <Info>
+              <span>Prénom :</span> {etudiant.prenom}
+            </Info>
+            <Info>
+              <span>Sexe :</span> {etudiant.sexe}
+            </Info>
+            <Info>
+              <span>Date d'inscription :</span>{" "}
+              {etudiant.date_creation
+                ? new Date(etudiant.date_creation).toLocaleString("fr-FR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                : "Non renseignée"}
+            </Info>
+          </InfoList>
+        </FlexDiv>
         <ButtonGroup>
           <EditButton onClick={() => navigate(`/editer/${etudiant.id_etudiant}`)}>
             Modifier le profil
