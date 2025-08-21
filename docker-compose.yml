@@ -21,3 +21,5 @@ services:
       - DATABASE_URL=mysql+pymysql://docker_user:votre_mot_de_passe@host.docker.internal:3306/gestion_ecole
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - ./backend:/app
