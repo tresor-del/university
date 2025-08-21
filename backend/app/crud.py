@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
+from datetime import datetime
 
 
 def liste_etudiants(db: Session):
@@ -16,7 +17,7 @@ def enr_etudiant(db: Session, data: schemas.EnrEtudiant):
 
 
 def supprimer_etudiant(db: Session, id: int):
-    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id_etudiant == id).first()
+    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id == id).first()
     if etudiant:
         db.delete(etudiant)
         db.commit()
@@ -24,7 +25,7 @@ def supprimer_etudiant(db: Session, id: int):
     return False
 
 def modifier_etudiant(db: Session, id: int, data: schemas.EnrEtudiant):
-    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id_etudiant == id).first()
+    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id == id).first()
     if etudiant:
         etudiant.nom = data.nom
         etudiant.prenom = data.prenom

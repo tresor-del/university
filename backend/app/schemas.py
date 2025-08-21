@@ -5,7 +5,8 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class Etudiant(BaseModel):
-    id_etudiant: int
+    id: int
+    id_etudiant: str
     nom: str
     prenom: str
     sexe: Optional[str] = None
@@ -13,8 +14,10 @@ class Etudiant(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class EnrEtudiant(Etudiant):
-    pass
+class EnrEtudiant(BaseModel):
+    nom: str
+    prenom: str
+    sexe: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
