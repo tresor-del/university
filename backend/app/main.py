@@ -52,9 +52,13 @@ def modifier_etudiant(id: int, data: schemas.ModifierEtudiant, db: dependance_db
 
 
 @app.delete("/effacer_etudiant/{id}")
-def effacer_etudiant(id: int, db: Session = Depends(get_db)):
+def effacer_etudiant(id: int, db: dependance_db):
 
     return crud.supprimer_etudiant(db, id)
+
+@app.get("/etudiant/{id}")
+def recup_etudiant(id: int, db: dependance_db):
+    return crud.get_etudiant(db, id)
 
 
 

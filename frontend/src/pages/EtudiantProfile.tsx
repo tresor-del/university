@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { FaUserCircle } from "react-icons/fa";
+import {  FaGithub } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const FullPageContainer = styled.div`
@@ -26,17 +26,7 @@ const ProfileCard = styled.div`
   align-items: center;
 `;
 
-// const ProfilePhoto = styled.img`
-//   width: 110px;
-//   height: 110px;
-//   border-radius: 50%;
-//   object-fit: cover;
-//   margin-bottom: 22px;
-//   border: 4px solid #2d3e50;
-//   background: #f5f7fa;
-// `;
-
-const IconPhoto = styled(FaUserCircle)`
+const IconPhoto = styled(FaGithub)`
   width: 110px;
   height: 110px;
   color: #b0bec5;
@@ -89,7 +79,7 @@ const EditButton = styled.button`
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 12px ;
+  padding: 12px;
   font-size: 17px;
   font-weight: 600;
   cursor: pointer;
@@ -117,44 +107,41 @@ const DeleteButton = styled.button`
 `;
 
 
-interface Etudiant {
+
+const EtudiantProfile = () => {
+
+  interface Etudiant {
   id: number;
   id_etudiant: number;
   nom: string;
   prenom: string;
   sexe: string;
-  date_creation: number;
+  date_creation: string;
 }
 
-const EtudiantProfile = () => {
   const { id } = useParams();
-    const [etudiant, setEtudiant] = useState<Etudiant>({
-      id: 0,
-      id_etudiant:0,
-      nom: "",
-      prenom: "",
-      sexe: "",
-      date_creation: 0,
-    });
+  const [etudiant, setEtudiant] = useState<Etudiant | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/etudiants`)
-      .then((res) => res.json())
-      .then((data) => {
-        const found = data
-          .map((item: Etudiant) => ({
-            id: item.id_etudiant,
-            id_etudiant: item.id_etudiant,
-            nom: item.nom,
-            prenom: item.prenom,
-            sexe: item.sexe,
-            date: item.date_creation,
-          }))
-
-          .find((et: Etudiant) => String(et.id) === String(id));
-        setEtudiant(found);
-        console.log(found)
+    fetch(`http://127.0.0.1:8000/etudiant/${id}`)
+      .then((res) => {
+      if (!res.ok) throw new Error("Erreur réseau");
+      return res.json();
+      })
+      .then((data: Etudiant) => {
+        console.log(data)
+      setEtudiant({
+        id: data.id,
+        id_etudiant: data.id_etudiant,
+        nom: data.nom,
+        prenom: data.prenom,
+        sexe: data.sexe,
+        date_creation: data.date_creation,
+      });
+      })
+      .catch(() => {
+      toast.error("Erreur lors de la récupération des données.");
       });
   }, [id]);
 
@@ -164,12 +151,12 @@ const EtudiantProfile = () => {
         "Êtes-vous sûr de vouloir supprimer cet étudiant ? Cette action est irréversible."
       )
     ) {
-      fetch(`http://127.0.0.1:8000/effacer_etudiant/${etudiant.id_etudiant}`, {
+      fetch(`http://127.0.0.1:8000/effacer_etudiant/${id}`, {
         method: "DELETE",
       })
         .then((res) => {
           if (res.ok) {
-            toast.success("Étudiant supprimé.");
+            toast.warning("Étudiant supprimé.");
             navigate("/liste");
           } else {
             toast.error("Erreur lors de la suppression.");
@@ -189,7 +176,7 @@ const EtudiantProfile = () => {
   return (
     <FullPageContainer>
       <ProfileCard>
-          <IconPhoto />
+        <IconPhoto />
         <Title>Profil Étudiant</Title>
         <InfoList>
           <Info>
@@ -205,11 +192,18 @@ const EtudiantProfile = () => {
             <span>Sexe :</span> {etudiant.sexe}
           </Info>
           <Info>
-            <span>Date d'inscription :</span> {etudiant.date_creation}
+            <span>Date d'inscription :</span>{" "}
+            {etudiant.date_creation
+              ? new Date(etudiant.date_creation).toLocaleString("fr-FR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : "Non renseignée"}
           </Info>
         </InfoList>
         <ButtonGroup>
-          <EditButton onClick={() => navigate(`/editer/${etudiant.id}`)}>
+          <EditButton onClick={() => navigate(`/editer/${etudiant.id_etudiant}`)}>
             Modifier le profil
           </EditButton>
           <DeleteButton onClick={handleDelete}>Supprimer</DeleteButton>

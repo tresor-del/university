@@ -69,57 +69,49 @@ interface Etudiant {
 
 const EditEtudiant = () => {
   const { id } = useParams();
-  const [etudiant, setEtudiant] = useState<Etudiant>({
-    id: 0,
-    id_etudiant:0,
-    nom: "",
-    prenom: "",
-    sexe: "",
-    date_creation: 0,
-  });
+  const [etudiant, setEtudiant] = useState<Etudiant | null>(null);
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [sexe, setSexe] = useState("");
-  const [idEtudiant, setIdEtudiant] = useState("");
-  const [idOldEtudiant, setIdOldEtudiant] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/etudiants`)
-      .then((res) => res.json())
-      .then((data) => {
-        const found = data
-          .map((item: Etudiant) => ({
-            id: item.id_etudiant,
-            id_etudiant: item.id_etudiant,
-            nom: item.nom,
-            prenom: item.prenom,
-            sexe: item.sexe,
-            date: item.date_creation,
-            // photo: item[6], 
-          }))
-          .find((et: Etudiant) => String(et.id) === String(id));
-        setEtudiant(found);
-        if (found) {
-          setNom(found.nom);
-          setPrenom(found.prenom);
-          setSexe(found.sexe)
-          setIdEtudiant(found.id_etudiant);
-          setIdOldEtudiant(found.id_etudiant);
-        }
-      });
-  }, [id]);
+    useEffect(() => {
+      fetch(`http://127.0.0.1:8000/etudiant/${id}`)
+        .then((res) => {
+        if (!res.ok) throw new Error("Erreur réseau");
+        return res.json();
+        })
+        .then((data) => {
+
+          if (data) {
+
+            setEtudiant({
+              id: data.id,
+              id_etudiant: data.id_etudiant,
+              nom: data.nom,
+              prenom: data.prenom,
+              sexe: data.sexe,
+              date_creation: data.date_creation,
+            });
+
+          } else {
+            toast.error("Etudiant non trouvé");
+          }
+        })
+        .catch(() => {
+        toast.error("Erreur lors de la récupération des données.");
+        });
+    }, [id]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // À adapter selon votre API (ici, PATCH ou PUT recommandé)
-    fetch(`http://127.0.0.1:8000/modifier_etudiant/${idOldEtudiant}`, {
+
+    fetch(`http://127.0.0.1:8000/modifier_etudiant/${id}`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         nom: nom,
         prenom: prenom,
-        id_etudiant: idEtudiant,
         sexe: sexe
       }),
     })
@@ -145,26 +137,23 @@ const EditEtudiant = () => {
       <Title>Modifier l'Étudiant</Title>
       <StyledForm onSubmit={handleSubmit}>
         <StyledInput
-          value={idEtudiant}
-          onChange={(e) => setIdEtudiant(e.target.value)}
-          type="text"
-          placeholder="Identifiant"
+          value={etudiant.id_etudiant}
           disabled
         />
         <StyledInput
-          value={nom}
+          value={etudiant.nom}
           onChange={(e) => setNom(e.target.value)}
           type="text"
           placeholder="Nom"
         />
         <StyledInput
-          value={prenom}
+          value={etudiant.prenom}
           onChange={(e) => setPrenom(e.target.value)}
           type="text"
           placeholder="Prénom"
         />
         <StyledInput
-          value={sexe}
+          value={etudiant.sexe}
           onChange={(e) => setSexe(e.target.value)}
           type="text"
           placeholder="Sexe"
