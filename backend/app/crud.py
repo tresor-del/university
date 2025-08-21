@@ -34,4 +34,9 @@ def modifier_etudiant(db: Session, id: int, data: schemas.EnrEtudiant):
         db.refresh(etudiant)
         return etudiant
     return None
-        
+
+def get_etudiant(db: Session, id: int):
+    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id_etudiant==id).first()
+    if etudiant:
+        return etudiant
+    return False

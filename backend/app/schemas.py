@@ -11,8 +11,12 @@ class Etudiant(BaseModel):
     sexe: Optional[str] = None
     date_creation: Optional[datetime] =  None
 
+    model_config = ConfigDict(from_attributes=True)
+
 class EnrEtudiant(Etudiant):
     pass
+
+    model_config = ConfigDict(from_attributes=True)
 
 class ModifierEtudiant(BaseModel):
     nom: str
