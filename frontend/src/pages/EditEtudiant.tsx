@@ -68,11 +68,13 @@ interface Etudiant {
 }
 
 const EditEtudiant = () => {
+
   const { id } = useParams();
   const [etudiant, setEtudiant] = useState<Etudiant | null>(null);
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [sexe, setSexe] = useState("");
+  const [pk, setpk] = useState("")
   const navigate = useNavigate();
 
     useEffect(() => {
@@ -93,20 +95,27 @@ const EditEtudiant = () => {
               sexe: data.sexe,
               date_creation: data.date_creation,
             });
+            setpk(data.id)
+            console.log(data.id)
+            setNom(data.nom);
+            setPrenom(data.prenom);
+            setSexe(data.sexe);
 
           } else {
             toast.error("Etudiant non trouvé");
           }
         })
+
         .catch(() => {
         toast.error("Erreur lors de la récupération des données.");
         });
+
     }, [id]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    fetch(`http://127.0.0.1:8000/modifier_etudiant/${id}`, {
+    fetch(`http://127.0.0.1:8000/modifier_etudiant/${pk}`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -117,7 +126,7 @@ const EditEtudiant = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) {
+        if (data) {
             toast.success(`Etudiant ${id} enrégistré avec succes`);
             setTimeout(() => {
                 navigate(`/etudiant/${id}`);
@@ -141,19 +150,19 @@ const EditEtudiant = () => {
           disabled
         />
         <StyledInput
-          value={etudiant.nom}
+          value={nom}
           onChange={(e) => setNom(e.target.value)}
           type="text"
           placeholder="Nom"
         />
         <StyledInput
-          value={etudiant.prenom}
+          value={prenom}
           onChange={(e) => setPrenom(e.target.value)}
           type="text"
           placeholder="Prénom"
         />
         <StyledInput
-          value={etudiant.sexe}
+          value={sexe}
           onChange={(e) => setSexe(e.target.value)}
           type="text"
           placeholder="Sexe"

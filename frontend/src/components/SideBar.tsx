@@ -14,7 +14,7 @@ type SidebarProps = {
 };
 
 const SidebarContainer = styled.div<{ collapsed: boolean }>`
-  width: ${(props) => (props.collapsed ? "70px" : "250px")};
+  width: ${(props) => (props.collapsed ? "100px" : "250px")};
   height: 100vh;
   background-color: #2d3e50;
   color: #fff;
@@ -48,7 +48,7 @@ const ToggleButton = styled.button<{ collapsed: boolean }>`
 const NavList = styled.ul<{ collapsed: boolean }>`
   list-style: none;
   padding: 0;
-  margin-top: 10px;
+  margin: 10px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -63,7 +63,7 @@ const StyledLink = styled(Link)<{ collapsed: boolean }>`
   display: flex;
   align-items: center;
   gap: ${(props) => (props.collapsed ? "0" : "16px")};
-  padding: 14px 0;
+  padding: 14px ;
   font-size: 18px;
   color: #fff;
   text-decoration: none;

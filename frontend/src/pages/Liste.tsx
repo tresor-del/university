@@ -93,9 +93,18 @@ const ActionButton = styled.button`
   }
 `;
 
+const Title = styled.h2`
+  color: #2d3e50;
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-size: 2rem;
+`;
+
 interface Etudiant {
   id: number;
-  id_etudiant: number;
+  id_etudiant: string;
   nom: string;
   prenom: string;
 }
@@ -117,7 +126,7 @@ function Liste() {
       .then((res) => res.json())
       .then((data) => {
         const formatted = data.map((item: Etudiant) => ({
-          id: item.id_etudiant,
+          id: item.id,
           id_etudiant: item.id_etudiant,
           nom: item.nom,
           prenom: item.prenom
@@ -142,15 +151,14 @@ function Liste() {
 
   const handleEdit = (e: React.MouseEvent, id: number) => {
     e.stopPropagation();
-    // Naviguer vers la page d'édition (à adapter selon votre routing)
     navigate(`/editer/${id}`);
   };
 
-  const handleDelete = (e: React.MouseEvent, id_etudiant: number) => {
+  const handleDelete = (e: React.MouseEvent,id_etudiant: string, id: number) => {
     e.stopPropagation();
     if (window.confirm("Voulez-vous supprimer cet étudiant ?")) {
      
-            fetch(`http://127.0.0.1:8000/effacer_etudiant/${id_etudiant}`, {
+            fetch(`http://127.0.0.1:8000/effacer_etudiant/${id}`, {
               method: "DELETE",
             })
               .then((res) => {
@@ -173,6 +181,7 @@ function Liste() {
 
   return (
     <TableContainer>
+      <Title>Liste des Etudiants</Title>
       <StyledTable>
         <thead>
           <Tr>
@@ -229,7 +238,7 @@ function Liste() {
                     </ActionButton>
                     <ActionButton
                       title="Supprimer"
-                      onClick={(e) => handleDelete(e, student.id_etudiant)}
+                      onClick={(e) => handleDelete(e, student.id_etudiant, student.id)}
                     >
                       <FaTrash />
                     </ActionButton>

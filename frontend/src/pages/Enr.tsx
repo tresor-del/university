@@ -61,7 +61,6 @@ const Title = styled.h2`
 export const Enr = () => {
   const [name, setname] = useState("");
   const [prenom, setprenom] = useState("");
-  const [id, setid] = useState("");
   const [sexe, setSexe] = useState("")
   const navigate = useNavigate();
 
@@ -74,14 +73,14 @@ export const Enr = () => {
         "content-type": "application/json",
         Autorization: "Bearer",
       },
-      body: JSON.stringify({id_etudiant: id, nom: name, prenom: prenom,  sexe: sexe }),
+      body: JSON.stringify({nom: name, prenom: prenom,  sexe: sexe }),
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
           toast.success("Etudiant Enrégistré avec succes");
           setTimeout(() => {
-            navigate(`/etudiant/${id}`);
+            navigate(`/etudiant/${data.id}`);
           }, 1200);
         } else {
           toast.error("Une erreur s'est produite. Veuillez réessayer")
@@ -97,23 +96,18 @@ export const Enr = () => {
         <StyledInput
           onChange={(e) => setname(e.target.value)}
           type="text"
-          placeholder="Nom de l'étudiant"
+          placeholder="Nom"
         />
         <StyledInput
           onChange={(e) => setprenom(e.target.value)}
           type="text"
-          placeholder="Prénom de l'étudiant"
+          placeholder="Prénom"
         />
-        <StyledInput
-          onChange={(e) => setid(e.target.value)}
-          type="number"
-          placeholder="Identifiant de l'étudiant"
-        />
-        <StyledInput
-          onChange={(e) => setSexe(e.target.value)}
-          type="text"
-          placeholder="Sexe"
-        />
+          <StyledInput
+            onChange={(e) => setSexe(e.target.value)}
+            type="text"
+            placeholder="Sexe"
+          />
         <SubmitButton type="button" onClick={enregistrer} value="Valider" />
       </StyledForm>
     </FormContainer>
