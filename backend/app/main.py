@@ -41,7 +41,8 @@ def enr_etudiant(data: schemas.EnrEtudiant, db: dependance_db):
     print(data)
     etudiant = crud.enr_etudiant(db, data)
     if etudiant:
-        return {"success": True}
+        return {"success": True, "id": etudiant.id_etudiant}
+    
     return {"success": False}
 
 
@@ -56,8 +57,8 @@ def effacer_etudiant(id: int, db: dependance_db):
 
     return crud.supprimer_etudiant(db, id)
 
-@app.get("/etudiant/{id}")
-def recup_etudiant(id: int, db: dependance_db):
+@app.get("/etudiant/{id}", response_model=schemas.Etudiant)
+def recup_etudiant(id: str, db: dependance_db):
     return crud.get_etudiant(db, id)
 
 
