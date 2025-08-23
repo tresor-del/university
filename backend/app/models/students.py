@@ -22,3 +22,4 @@ class Etudiant(Base):
 def generer_id_etudiant(mapper, connection, target):
     if not target.id_etudiant:
         target.id_etudiant = f"STD{datetime.now().year}-{int(datetime.now().timestamp())}"
+    pass

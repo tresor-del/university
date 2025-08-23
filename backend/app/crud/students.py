@@ -1,13 +1,14 @@
 from sqlalchemy.orm import Session
-from app import models, schemas
-from datetime import datetime
+from app.models import students
+
+from app.schemas import schemas
 
 
 def liste_etudiants(db: Session):
-    return db.query(models.Etudiant).all()
+    return db.query(students.Etudiant).all()
 
 def enr_etudiant(db: Session, data: schemas.EnrEtudiant):
-    db_etudiant = models.Etudiant(
+    db_etudiant = students.Etudiant(
         **data.model_dump()             
     )
     db.add(db_etudiant)
@@ -17,7 +18,7 @@ def enr_etudiant(db: Session, data: schemas.EnrEtudiant):
 
 
 def supprimer_etudiant(db: Session, id: int):
-    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id == id).first()
+    etudiant = db.query(students.Etudiant).filter(students.Etudiant.id == id).first()
     if etudiant:
         db.delete(etudiant)
         db.commit()
@@ -25,7 +26,7 @@ def supprimer_etudiant(db: Session, id: int):
     return False
 
 def modifier_etudiant(db: Session, id: int, data: schemas.EnrEtudiant):
-    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id == id).first()
+    etudiant = db.query(students.Etudiant).filter(students.Etudiant.id == id).first()
     if etudiant:
         etudiant.nom = data.nom
         etudiant.prenom = data.prenom
@@ -37,7 +38,7 @@ def modifier_etudiant(db: Session, id: int, data: schemas.EnrEtudiant):
     return None
 
 def get_etudiant(db: Session, id: int):
-    etudiant = db.query(models.Etudiant).filter(models.Etudiant.id_etudiant==id).first()
+    etudiant = db.query(students.Etudiant).filter(students.Etudiant.id_etudiant==id).first()
     if etudiant:
         return etudiant
     return False
