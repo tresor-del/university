@@ -1,12 +1,9 @@
+from typing import Annotated
+from sqlalchemy.orm import Session
+from fastapi import Depends
 from app.database.config import sessionLocal, engine, Base
 
 
-
-"""
-Créer toutes les tables dans la base qui sont décrites 
-par les classes héritant de Base
-
-""" 
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -14,4 +11,6 @@ def get_db():
     try:
         yield db
     finally:
-        db.close()
+        db.close()     
+
+SessionDeps = Annotated [Session, Depends(get_db)]
