@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 
-from backend.app.exc import NotFoundError, DatabaseError, DuplicateError
+from app.exc import NotFoundError, DatabaseError, DuplicateError
 
 def handle_app_error(e: Exception):
     """

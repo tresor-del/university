@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from backend.app.exc import DatabaseError, DuplicateError, NotFoundError
+from app.exc import DatabaseError, DuplicateError, NotFoundError
 from app.models import students
 from app.schemas import schemas
 
@@ -26,7 +26,9 @@ def enr_etudiant(db: Session, data: schemas.EnrEtudiant):
         raise DuplicateError("Un étudiant avec ces informations existe déjà")
     except Exception:
         db.rollback()
-        raise DatabaseError("Erreur de la base de donnée lors de l'énrégistrement d'un étudiant")
+        raise DatabaseError(
+            "Erreur de la base de donnée lors de l'énrégistrement d'un étudiant"
+        )
         
 def supprimer_etudiant(db: Session, id: int):
     etudiant = db.query(students.Etudiant).filter(students.Etudiant.id == id).first()
