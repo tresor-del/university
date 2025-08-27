@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.schemas import schemas
 from app.crud import students
-from backend.app.depends import SessionDeps
-from backend.app.routers.utils import handle_app_error
+from app.depends import SessionDeps
+from app.routers.utils import handle_app_error
 
 
 router =  APIRouter(prefix="/etudiants",tags=["Étudiants"])
