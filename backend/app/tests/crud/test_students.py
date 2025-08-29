@@ -1,6 +1,10 @@
 from app.models.students import Student
 from app.crud import students
-from app.tests.utils.students import create_random_student, random_user_data, create_random_students
+from app.tests.utils.students import (
+    create_random_student, 
+    random_user_data, 
+    create_random_students
+)
     
 def test_create_student(db):
     student = create_random_student(db)
@@ -21,7 +25,7 @@ def test_modify_student(db):
 
 def test_get_student(db):
     student = create_random_student(db)
-    response = students.get_student(db, student.id_etudiant)
+    response = students.get_student(db, student.id)
     assert isinstance(response, Student)
 
 def test_list_student(db):

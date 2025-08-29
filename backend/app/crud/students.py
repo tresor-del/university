@@ -6,7 +6,7 @@ from app.models.students import Student
 from app.schemas.students import UpdateStudent, EnrollStudent
 
 
-def students_list(db: Session):
+def students_list(db: Session) -> Student:
     etudiants = db.query(Student).all()
     if etudiants:
         return etudiants
@@ -60,7 +60,7 @@ def update_student(db: Session, id: int, data: UpdateStudent):
     raise NotFoundError(f"Etudiant {id} non trouvé")
 
 def get_student(db: Session, id: int):
-    student = db.query(Student).filter(Student.id_etudiant==id).first()
+    student = db.query(Student).filter(Student.id==id).first()
     if student:
         try:
             return student
