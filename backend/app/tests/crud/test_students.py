@@ -1,6 +1,3 @@
-from sqlalchemy.orm import Session
-
-from app.schemas.schemas import EnrollStudent
 from app.models.students import Student
 from app.crud import students
 from app.tests.utils.students import create_random_student, random_user_data, create_random_students

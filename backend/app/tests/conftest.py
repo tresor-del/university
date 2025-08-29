@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.models import students
+from app.models.students import Student
 from app.models.students import Base
 
 
