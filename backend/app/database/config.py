@@ -21,5 +21,3 @@ engine = create_engine(
 # usine de session pour créer des connexions temporaires a la base de donnée a la demande
 sessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# la base commune que toutes tes classes de modèles SQLAlchemy vont utiliser pour créer des tables 
-Base = declarative_base()

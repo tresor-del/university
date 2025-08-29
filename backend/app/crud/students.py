@@ -46,12 +46,12 @@ def modifier_etudiant(db: Session, id: int, data: schemas.EnrEtudiant):
     etudiant = db.query(students.Etudiant).filter(students.Etudiant.id == id).first()
     if etudiant:
         try:
-            etudiant.nom = data.nom
-            etudiant.prenom = data.prenom
-            etudiant.sexe = data.sexe
+            etudiant.nom = data["nom"]
+            etudiant.prenom = data["prenom"]
+            etudiant.sexe = data["sexe"]
             db.commit()
             db.refresh(etudiant)
-            return {"sucess": True,"message": f"Etudiant {id} modifié avec succes", "etudiant": etudiant}
+            return {"success": True,"message": f"Etudiant {id} modifié avec succes", "etudiant": etudiant}
         except Exception:
             raise DatabaseError("Erreur inatendu lors de la modification de l'étudiant")
     raise NotFoundError(f"Etudiant {id} non trouvé")

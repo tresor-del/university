@@ -47,7 +47,10 @@ async def modifier_un_étudiant(id: int, data: schemas.ModifierEtudiant, db: Ses
 
 @router.delete("/effacer/{id}")
 async def supprimer_un_étudiant(id: int, db: SessionDeps):
-    return students.supprimer_etudiant(db, id)
+    try: 
+        return students.supprimer_etudiant(db, id)
+    except Exception as e:
+        handle_app_error(e)
 
 @router.get("/etudiant/{id}", response_model=schemas.Etudiant)
 async def recupérer_un_étudiant(id: str, db: SessionDeps):
