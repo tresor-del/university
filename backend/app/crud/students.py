@@ -8,9 +8,10 @@ from app.schemas.students import UpdateStudent, EnrollStudent
 
 def students_list(db: Session) -> Student:
     etudiants = db.query(Student).all()
-    if etudiants:
+    try:
         return etudiants
-    raise DatabaseError("Erreur lors de la recupération de la liste des étudiants")
+    except Exception:
+        raise DatabaseError("Erreur lors de la recupération de la liste des étudiants")
 
 def enroll_student(db: Session, data: EnrollStudent):
     try:
