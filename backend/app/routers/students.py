@@ -11,7 +11,6 @@ from app.crud.students import (
 )
 from app.routers.utils import handle_app_error
 from app.schemas.students import (
-    StudentBase, 
     StudentModel,
     EnrollStudent, 
     UpdateStudent, 
@@ -20,12 +19,16 @@ from app.schemas.students import (
 
 router = APIRouter(prefix="/etudiants", tags=["Étudiants"])
 
+
 @router.get("/", response_model=List[StudentModel])
 def get_students_list_route(db: SessionDeps):
     try:
         return crud_students_list(db)
     except Exception as e:
-        handle_app_error(e)
+        import traceback
+        print("Erreur dans get_students_list_route:", e)
+        traceback.print_exc()
+        raise
 
 @router.post("/enregistrer")
 def enroll_student_route(data: EnrollStudent, db: SessionDeps):

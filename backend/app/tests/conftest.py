@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models.students import Student
 from app.models.students import Base
+from app.depends import  get_db
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -27,8 +28,16 @@ def db():
         Base.metadata.drop_all(bind=engine) 
 
 
-@pytest.fixture(scope="module")
-def client():
+@pytest.fixture(scope="function")
+def client(db):
+    def override_get_db():
+        try:
+            yield db
+        finally:
+            pass
+    app.dependency_overrides[get_db] = override_get_db
+    
+    
     with TestClient(app) as c:
         yield c
 
