@@ -1,7 +1,7 @@
 import uvicorn
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 
 from app.schemas import schemas
 from app.crud import students
@@ -12,7 +12,7 @@ from app.routers.utils import handle_app_error
 router =  APIRouter(prefix="/etudiants",tags=["Étudiants"])
 
 
-@router.get("/", response_model=List[schemas.Etudiant])
+@router.get("/", response_model=List[schemas.Student])
 async def get_students_list(db: SessionDeps):
     """
     Liste de tous les étudiants
@@ -24,7 +24,7 @@ async def get_students_list(db: SessionDeps):
 
 
 @router.post("/enregistrer",)
-async def enroll_student(data: schemas.EnrEtudiant, db: SessionDeps):
+async def enroll_student(data: schemas.EnrollStudent, db: SessionDeps):
     """
     Enrégistrer un étudiant
     """
@@ -35,7 +35,7 @@ async def enroll_student(data: schemas.EnrEtudiant, db: SessionDeps):
 
 
 @router.put("/modifier/{id}")
-async def update_student(id: int, data: schemas.ModifierEtudiant, db: SessionDeps):
+async def update_student(id: int, data: schemas.UpdateStudent, db: SessionDeps):
     """
     Modifier un etudiant
     """
@@ -52,7 +52,7 @@ async def delete_student(id: int, db: SessionDeps):
     except Exception as e:
         handle_app_error(e)
 
-@router.get("/etudiant/{id}", response_model=schemas.Etudiant)
+@router.get("/etudiant/{id}", response_model=schemas.Student)
 async def get_student(id: str, db: SessionDeps):
     try: 
         return students.get_student(db, id)

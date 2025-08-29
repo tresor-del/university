@@ -14,9 +14,8 @@ def students_list(db: Session):
 
 def enroll_student(db: Session, data: schemas.EnrEtudiant):
     try:
-        student = students.Etudiant(
-        **data.model_dump()             
-        )
+        valid_data = data.model_dump()
+        student = students.Etudiant(**valid_data)
         db.add(student)
         db.commit()
         db.refresh(student)

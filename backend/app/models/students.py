@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime, Date
 from sqlalchemy.orm import declarative_base
@@ -11,7 +11,7 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
-class Etudiant(Base):
+class Student(Base):
     __tablename__ = "etudiants"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -45,7 +45,7 @@ class Etudiant(Base):
 
 
 
-@event.listens_for(Etudiant, "before_insert")
+@event.listens_for(Student, "before_insert")
 def generer_id_etudiant(mapper, connection, target):
     if not target.id_etudiant:
         target.id_etudiant = f"STD{datetime.now().year}-{uuid.uuid4().hex[:8]}"
