@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
-class Etudiant(BaseModel):
+class Student(BaseModel):
     id: int
     id_etudiant: str
     nom: str
@@ -14,14 +14,23 @@ class Etudiant(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-class EnrEtudiant(BaseModel):
+class PublicStudent(BaseModel):
+    nom: str
+    prenom: str
+    sexe: Optional[str] = None
+    date_creation: Optional[datetime] =  None
+
+    model_config = ConfigDict(from_attributes=True)
+    
+    
+class EnrollStudent(BaseModel):
     nom: str
     prenom: str
     sexe: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
-class ModifierEtudiant(BaseModel):
+class UpdateStudent(BaseModel):
     nom: str
     prenom: str
     sexe: str
