@@ -1,64 +1,56 @@
-import uvicorn
-from typing import List
-
 from fastapi import APIRouter
-
-from app.schemas import schemas
-from app.crud import students
+from typing import List
 from app.depends import SessionDeps
+from app.models.students import Student
+from app.crud.students import (
+    students_list as crud_students_list,
+    enroll_student as crud_enroll_student,
+    update_student as crud_update_student,
+    delete_student as crud_delete_student,
+    get_student as crud_get_student
+)
 from app.routers.utils import handle_app_error
+from app.schemas.students import (
+    StudentBase, 
+    StudentModel,
+    EnrollStudent, 
+    UpdateStudent, 
+    PublicStudent
+)
 
+router = APIRouter(prefix="/etudiants", tags=["Étudiants"])
 
-router =  APIRouter(prefix="/etudiants",tags=["Étudiants"])
-
-
-@router.get("/", response_model=List[schemas.Student])
-async def get_students_list(db: SessionDeps):
-    """
-    Liste de tous les étudiants
-    """
+@router.get("/", response_model=List[StudentModel])
+def get_students_list_route(db: SessionDeps):
     try:
-        return students.students_list(db)
+        return crud_students_list(db)
     except Exception as e:
         handle_app_error(e)
 
-
-@router.post("/enregistrer",)
-async def enroll_student(data: schemas.EnrollStudent, db: SessionDeps):
-    """
-    Enrégistrer un étudiant
-    """
+@router.post("/enregistrer")
+def enroll_student_route(data: EnrollStudent, db: SessionDeps):
     try:
-        return students.enroll_student(db, data)
+        return crud_enroll_student(db, data)
     except Exception as e:
         handle_app_error(e)
 
-
-@router.put("/modifier/{id}")
-async def update_student(id: int, data: schemas.UpdateStudent, db: SessionDeps):
-    """
-    Modifier un etudiant
-    """
+@router.get("/etudiant/{id}", response_model=PublicStudent)
+def get_student_route(id: int, db: SessionDeps):
     try:
-        return students.update_student(db, id, data)
+        return crud_get_student(db, id)
     except Exception as e:
         handle_app_error(e)
 
+@router.patch("/modifier/{id}")
+def update_student_route(id: int, data: UpdateStudent, db: SessionDeps):
+    try:
+        return crud_update_student(db, id, data)
+    except Exception as e:
+        handle_app_error(e)
 
 @router.delete("/effacer/{id}")
-async def delete_student(id: int, db: SessionDeps):
-    try: 
-        return students.delete_student(db, id)
+def delete_student_route(id: int, db: SessionDeps):
+    try:
+        return crud_delete_student(db, id)
     except Exception as e:
         handle_app_error(e)
-
-@router.get("/etudiant/{id}", response_model=schemas.Student)
-async def get_student(id: str, db: SessionDeps):
-    try: 
-        return students.get_student(db, id)
-    except Exception as e:
-        handle_app_error(e) 
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
