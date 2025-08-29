@@ -1,26 +1,31 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from app.main import app
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from app.models import students
+from app.models.students import Base
 
-from app.main import app
-from app.database.config import Base
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+TestingSessionLocal = sessionmaker(bind=engine)
 
-
-@pytest.fixture(scope="module")
-def db_etudiant():
+@pytest.fixture(scope="function")
+def db():
     Base.metadata.create_all(bind=engine)
-    session = TestingSessionLocal()
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = TestingSessionLocal(bind=connection)
     try:
         yield session
     finally:
         session.close()
-        Base.metadata.drop_all(bind=engine)
+        transaction.rollback() 
+        connection.close()
+        Base.metadata.drop_all(bind=engine) 
+
 
 @pytest.fixture(scope="module")
 def client():

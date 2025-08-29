@@ -1,7 +1,8 @@
 from typing import Annotated
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from app.database.config import sessionLocal, engine, Base
+from app.database.config import sessionLocal, engine
+from app.models.students import Base
 
 
 Base.metadata.create_all(bind=engine)

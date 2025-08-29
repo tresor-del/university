@@ -4,3 +4,5 @@
 frontend/node_modules/
 backend/app/tests/__init__.py
 backend/app/tests/__pycache__/
+test.db
+backend/.test.db
