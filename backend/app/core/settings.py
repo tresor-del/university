@@ -1,19 +1,45 @@
 """
 Fichier non utilisé
 """
-from pydantic_settings import BaseSettings
+import secrets
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 from functools import lru_cache
+from pydantic import (
+    computed_field,
+    MySQLDsn
+)
+from pydantic_core import MultiHostUrl
+
 
 # validation des variables récuperé depuis le fichier .env
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file = '../.env',
+        env_ignore_empty=True,
+        extra="ignore",
+    )
+    API_V1_STR: str = "api/v1"
+    SECRET_KEY: str = secrets.token_urlsafe(32)
+
+    PROJECT_NAME: str
+    MYSQL_SERVER: str
+    MYSQL_PORT: int = 3306
+    MYSQL_USER: str
+    MYSQL_PASSWORD: str = ""
+    MYSQL_DB: str = ""
+    
+    @computed_field
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> MySQLDsn:
+        return MultiHostUrl.build(
+            scheme="mysql+pymysql",
+            username=self.MYSQL_USER,
+            password=self.MYSQL_PASSWORD,
+            host=self.MYSQL_SERVER,
+            port=self.MYSQL_PORT,
+            path=self.MYSQL_DB
+        )
     databaseurl: str 
 
-    class Config:
-        env_file = '../.env'
-
-
-# Mettre les parametres en cache pour eviter de lire le fichier a chaque requete
-@lru_cache()
-def get_settings():
-    return Settings()
+settings = Settings()
