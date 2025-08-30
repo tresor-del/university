@@ -21,14 +21,12 @@ class Settings(BaseSettings):
     )
     API_V1_STR: str = "api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-
     PROJECT_NAME: str
     MYSQL_SERVER: str
     MYSQL_PORT: int = 3306
     MYSQL_USER: str
     MYSQL_PASSWORD: str = ""
     MYSQL_DB: str = ""
-    
     @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> MySQLDsn:
@@ -40,6 +38,8 @@ class Settings(BaseSettings):
             port=self.MYSQL_PORT,
             path=self.MYSQL_DB
         )
-    databaseurl: str 
+    FIRST_SUPERUSER: str
+    FIRST_SUPERUSER_PASSWORD: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
 settings = Settings()

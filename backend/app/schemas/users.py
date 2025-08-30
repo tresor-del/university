@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class UserBase(BaseModel):
-    id: Optional[int] = None
+    id: int
     username: str
     full_name: str
     is_active: bool
@@ -16,6 +16,9 @@ class UserInDB(UserBase):
     password: str = Field(min_length=8, max_length=40)
 
 class UserRead(UserBase):
+    pass
+
+class UserCreate(UserInDB):
     pass
 
 class UpdateUser(BaseModel):
