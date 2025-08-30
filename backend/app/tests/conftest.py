@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models.students import Student
 from app.models.students import Base
-from app.depends import  get_db
+from app.deps import  get_db
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

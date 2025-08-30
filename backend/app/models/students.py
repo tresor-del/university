@@ -9,7 +9,8 @@ from sqlalchemy import event
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from app.core.config import Base
+
 
 class Student(Base):
     __tablename__ = "etudiants"
@@ -40,6 +41,7 @@ class Student(Base):
 
     date_creation = Column(DateTime(timezone=True), server_default=func.now())
 
+    user = relationship("User", back_populates="student")
     
     # classe = relationship("Classe", back_populates="etudiants")
 

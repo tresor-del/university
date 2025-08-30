@@ -1,15 +1,8 @@
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
 from datetime import datetime, date
 
-
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from datetime import date, datetime
 
 
 class StudentBase(BaseModel):
