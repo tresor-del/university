@@ -17,3 +17,10 @@ class UserInDB(UserBase):
 
 class UserRead(UserBase):
     pass
+
+class UpdateUser(BaseModel):
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    is_active: Optional[str] = None
+    is_superuser: Optional[str] = None
+    password: Optional[str] = None
