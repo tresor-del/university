@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from typing import List
-from app.depends import SessionDeps
+from app.deps import SessionDeps
 from app.models.students import Student
 from app.crud.students import (
     students_list as crud_students_list,
