@@ -23,3 +23,4 @@ class User(Base):
     student_id = Column(Integer,ForeignKey("student.id_etudiant") ,nullable=True)
     
     student = relationship("Student", back_populates="user", uselist=False)
+    tokens = relationship("Token", back_populates="user", cascade="all, delete-orphan")
