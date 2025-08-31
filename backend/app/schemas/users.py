@@ -27,3 +27,6 @@ class UpdateUser(BaseModel):
     is_active: Optional[str] = None
     is_superuser: Optional[str] = None
     password: Optional[str] = None
+
+class UserPublic(UserBase):
+    pass
