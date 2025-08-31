@@ -9,7 +9,6 @@ from app.crud import users
 from app.core.settings import settings
 from app.core import security
 
-
 router = APIRouter(tags=["login"])
 
 @router.post("/login/acess-token")

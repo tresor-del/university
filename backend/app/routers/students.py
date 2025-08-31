@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from typing import List
-from app.deps import SessionDeps
-from app.models.students import Student
+from app.deps import SessionDeps, get_current_active_admin
+from app.routers.utils import handle_app_error
 from app.crud.students import (
     students_list as crud_students_list,
     enroll_student as crud_enroll_student,
@@ -9,7 +9,6 @@ from app.crud.students import (
     delete_student as crud_delete_student,
     get_student as crud_get_student
 )
-from app.routers.utils import handle_app_error
 from app.schemas.students import (
     StudentModel,
     EnrollStudent, 
@@ -21,7 +20,10 @@ router = APIRouter(prefix="/etudiants", tags=["Étudiants"])
 
 
 @router.get("/", response_model=List[StudentModel])
-def get_students_list_route(db: SessionDeps):
+def get_students_list_route(
+    db: SessionDeps,
+    current_user=Depends(get_current_active_admin)
+):
     try:
         return crud_students_list(db)
     except Exception as e:
@@ -31,28 +33,45 @@ def get_students_list_route(db: SessionDeps):
         raise
 
 @router.post("/enregistrer")
-def enroll_student_route(data: EnrollStudent, db: SessionDeps):
+def enroll_student_route(
+    data: EnrollStudent, 
+    db: SessionDeps,
+    current_user=Depends(get_current_active_admin)
+):
     try:
         return crud_enroll_student(db, data)
     except Exception as e:
         handle_app_error(e)
 
 @router.get("/etudiant/{id}", response_model=PublicStudent)
-def get_student_route(id: int, db: SessionDeps):
+def get_student_route(
+    id: int, 
+    db: SessionDeps,
+    current_user=Depends(get_current_active_admin)
+):
     try:
         return crud_get_student(db, id)
     except Exception as e:
         handle_app_error(e)
 
 @router.patch("/modifier/{id}")
-def update_student_route(id: int, data: UpdateStudent, db: SessionDeps):
+def update_student_route(
+    id: int, 
+    data: UpdateStudent, 
+    db: SessionDeps,
+    current_user=Depends(get_current_active_admin)
+):
     try:
         return crud_update_student(db, id, data)
     except Exception as e:
         handle_app_error(e)
 
 @router.delete("/effacer/{id}")
-def delete_student_route(id: int, db: SessionDeps):
+def delete_student_route(
+    id: int, 
+    db: SessionDeps,
+    current_user=Depends(get_current_active_admin)
+):
     try:
         return crud_delete_student(db, id)
     except Exception as e:
