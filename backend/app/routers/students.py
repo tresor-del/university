@@ -29,7 +29,7 @@ def get_students_list_route(
     """
     try:
         return crud_students_list(db)
-    # pour le test
+    # pour le test (à remplacer)
     except Exception as e:
         import traceback
         print("Erreur dans get_students_list_route:", e)

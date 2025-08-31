@@ -13,7 +13,7 @@ class UserBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class UserInDB(UserBase):
-    password: str = Field(min_length=8, max_length=40)
+    hashed_password: str = Field(min_length=8, max_length=40)
 
 class UserRead(UserBase):
     pass
@@ -30,3 +30,10 @@ class UpdateUser(BaseModel):
 
 class UserPublic(UserBase):
     pass
+
+class Message(BaseModel):
+    message: str
+    
+class UpdatePassword(BaseModel):
+    current_password: str
+    new_password: str

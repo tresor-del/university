@@ -20,7 +20,7 @@ def update_user(*, db: Session, id: int, data: UpdateUser) -> UserRead | None:
     db.refresh(user)
     return user
 
-def get_user(*, db: Session, username: str) -> UserRead | None:
+def get_user_by_username(*, db: Session, username: str) -> UserRead | None:
     statement = select(User).where(User.username==username)
     user = db.execute(statement=statement).first()
     return user
