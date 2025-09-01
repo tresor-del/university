@@ -17,16 +17,15 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file = '../.env',
         env_ignore_empty=True,
-        extra="ignore",
     )
-    API_V1_STR: str = "api/v1"
+    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    PROJECT_NAME: str
-    MYSQL_SERVER: str
+    PROJECT_NAME: str = "Gestion Scolaire"
+    MYSQL_SERVER: str = "localhost"
     MYSQL_PORT: int = 3306
-    MYSQL_USER: str
-    MYSQL_PASSWORD: str = ""
-    MYSQL_DB: str = ""
+    MYSQL_USER: str = "docker_user"
+    MYSQL_PASSWORD: str = "votre_mot_de_passe"
+    MYSQL_DB: str = "gestion_ecole"
     @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> MySQLDsn:
@@ -38,8 +37,8 @@ class Settings(BaseSettings):
             port=self.MYSQL_PORT,
             path=self.MYSQL_DB
         )
-    FIRST_SUPERUSER: str
-    FIRST_SUPERUSER_PASSWORD: str
+    FIRST_SUPERUSER: str = "tresor"
+    FIRST_SUPERUSER_PASSWORD: str = "tresoradmainpasse"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
 settings = Settings()

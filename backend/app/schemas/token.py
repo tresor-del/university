@@ -3,20 +3,13 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
-class TokenBase(BaseModel):
-    token: str
-    is_active: bool = True
-    created_at: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
-    user_id: int
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
 
 
-class TokenCreate(BaseModel):
-    user_id: input
-
-
-class TokenRead(TokenBase):
-    id: int
+class TokenRead(BaseModel):
+    sub: str | None = None
 
   
     model_config = ConfigDict(from_attributes=True) 

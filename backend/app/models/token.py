@@ -9,7 +9,7 @@ class Token(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    token = Column(String, nullable=False, unique=True, index=True)
+    token = Column(String(128), nullable=False, unique=True, index=True)
     is_active = Column(Boolean, default=True)  
     created_at = Column(DateTime, default=func.now)
     expires_at = Column(DateTime, default=lambda: func.now() + timedelta(days=7))

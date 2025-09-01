@@ -22,7 +22,7 @@ Ce projet permet de gérer l’enregistrement des étudiants dans une base de do
 1. Clonez ce dépôt :
 
 ```bash
-    git clone git@github.com/tresor-del/enre_etudiant
+    git clone git@github.com:tresor-del/enre_etudiant.git
 ```
 2. Configurez la connexion à la base selon vos paramètres.
 
@@ -33,12 +33,12 @@ Ce projet permet de gérer l’enregistrement des étudiants dans une base de do
 
     ```bash
         cd backend
-        # Créer un environement virtuelle avec uv (optionnel) et l'activer 
-        uv .venv && source .venv/bin/activate
+        # Créer un environnement virtuel avec uv (optionnel) et l'activer 
+        uv venv .venv && source .venv/bin/activate
         # Installer les dépendances
         uv pip install -r requirements.txt
         # Lancer l'application
-        uvicorn  run app.main:app --reload
+        uvicorn app.main:app --reload
     ```
 
 2. Frontend: 

@@ -4,36 +4,48 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class UserBase(BaseModel):
-    id: int
-    username: str
-    full_name: str
-    is_active: bool
-    is_superuser: bool
+    username: str = Field(unique=True, index=True, max_length=255)
+    full_name: str  | None = Field(default=None, max_length=255)
+    is_active: bool = True
+    is_superuser: bool = False
     
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True) 
 
-class UserInDB(UserBase):
-    hashed_password: str = Field(min_length=8, max_length=40)
+class UserCreate(UserBase):
+    password: str = Field(min_length=8, max_length=40)
+    
+class UserRegister(UserBase):
+    username: str = Field(max_length=255)
+    password: str = Field(min_length=8, max_length=40)
+    full_name: str | None = Field(default=None, max_length=255)
 
-class UserRead(UserBase):
-    pass
+class UserUpdate(UserBase):
+    username: str | None = Field(default=None, max_length=255) 
+    password: str | None = Field(default=None, min_length=8, max_length=40)
 
-class UserCreate(UserInDB):
-    pass
+class UserUpdateMe(BaseModel):
+    full_name: str | None = Field(default=None, max_length=255)
+    username: str | None = Field(default=None, max_length=255)
 
-class UpdateUser(BaseModel):
-    username: Optional[str] = None
-    full_name: Optional[str] = None
-    is_active: Optional[str] = None
-    is_superuser: Optional[str] = None
-    password: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True) 
 
 class UserPublic(UserBase):
-    pass
+    id: int
+
+class UsersPublic(UserBase):
+    data: list[UserPublic]
+    count: int
 
 class Message(BaseModel):
     message: str
     
 class UpdatePassword(BaseModel):
-    current_password: str
-    new_password: str
+    current_password: str = Field(min_length=8, max_length=40)
+    new_password: str = Field(min_length=8, max_length=40)
+
+class NewPassword(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=40)
+    
+    
+    model_config = ConfigDict(from_attributes=True) 

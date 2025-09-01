@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import func, select
 
 from fastapi import Depends
-from fastapi.routing import APIRoute
+from fastapi.routing import APIRouter
 from fastapi.exceptions import HTTPException
 
 from app.models.users import User
@@ -16,20 +16,21 @@ from app.deps import (
 )
 from app.schemas.users import (
     UserPublic,
+    UsersPublic,
     UserCreate,
-    UpdateUser,
+    UserUpdate,
     Message,
     UpdatePassword
 )
 
 
-router = APIRoute(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get(
     "/",
-    dependancies=[Depends(get_current_active_admin)],
-    response_model=UserPublic
+    dependencies=[Depends(get_current_active_admin)],
+    response_model=UsersPublic
 )
 def read_users(db: SessionDeps, skip: int = 0, limit: int = 100):
     """
@@ -41,8 +42,8 @@ def read_users(db: SessionDeps, skip: int = 0, limit: int = 100):
     statement = select(User).offset(skip).limit(limit)
     users = db.execute(statement).all()
     
-    return UserPublic(data=users, count=count)
-
+    return UsersPublic(data=users, count=count)
+    
 @router.post(
     "/",
     dependencies=[Depends(get_current_active_admin)],
@@ -61,12 +62,11 @@ def create_user(*, db: SessionDeps, user_in: UserCreate) -> Any:
     user = users.create_user(db=db, user_data=user_in)
     return user
 
-
 @router.patch("/me", response_model=UserPublic)
 def update_user_me(
     *,
     db:SessionDeps,
-    user_in: UpdateUser,
+    user_in: UserUpdate,
     current_user:CurrentUser,
 ) -> Any:
     """
@@ -80,7 +80,7 @@ def update_user_me(
                 detail="Un utilisateur avec ce nom existe déjà"
             )
     user_data = user_in.model_dump(exclude_unset=True)
-    for key, value in user_data:
+    for key, value in user_data.items():
         setattr(current_user, key, value)
     db.commit()
     db.refresh(current_user)
@@ -100,12 +100,11 @@ def update_password_me(
         raise HTTPException(status_code=400, detail="Mot de passe Incorrect")
     if body.current_password == body.new_password:
         raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit être différent de l'ancien")
-    hashed_password = get_password_hash((body.new_password))
-    current_user.hashed_password = hashed_password
+    hashed_password = get_password_hash(body.new_password)
+    current_user.password = hashed_password
     db.add(current_user)
     db.commit()
     return Message(message="Mot de passe mis à jour avec succes")
-
 
 @router.get("/me", response_model=UserPublic)
 def read_user_me(current_user: CurrentUser) -> Any:
@@ -171,7 +170,7 @@ def update_user(
     *,
     db: SessionDeps, 
     user_id: int, 
-    user_in: UpdateUser
+    user_in: UserUpdate
 ) -> Any:
     """
     Mettre à jour un utilisateur

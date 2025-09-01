@@ -14,7 +14,8 @@ from app.core.config import Base
 from app.core.settings import settings
 from app.core import security
 from app.models.users import User
-from app.schemas.users import UserRead
+from app.models.students import Student
+from app.schemas.users import UserPublic
 from app.models.token import Token
 
 
@@ -35,7 +36,7 @@ SessionDeps = Annotated [Session, Depends(get_db)]
 TokenDeps = Annotated [str, Depends(reusable_oauth2)]
 
 
-def get_current_user(db: SessionDeps, token: TokenDeps) -> UserRead:
+def get_current_user(db: SessionDeps, token: TokenDeps) -> UserPublic:
     
     try:
         payload = jwt.decode(

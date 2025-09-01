@@ -7,3 +7,4 @@ httpx
 sqlalchemy
 pymysql
 cryptography
+alembic
