@@ -18,9 +18,9 @@ class User(Base):
     full_name = Column(String(255), index=True, nullable=True)
     is_active = Column(Boolean, index=True)
     is_superuser = Column(Boolean, index=True)
-    password = Column(String(min=8, max=40), index=True, nullable=False)
+    hashed_password = Column(String(128), index=True, nullable=False)
 
-    student_id = Column(Integer,ForeignKey("student.id_etudiant") ,nullable=True)
+    student_id = Column(Integer,ForeignKey("etudiants.id") ,nullable=True)
     
     student = relationship("Student", back_populates="user", uselist=False)
     tokens = relationship("Token", back_populates="user", cascade="all, delete-orphan")
