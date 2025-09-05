@@ -40,5 +40,6 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str = "tresor"
     FIRST_SUPERUSER_PASSWORD: str = "tresoradmainpasse"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    USERNAME_TEST_USER: str = "tresortest"
 
 settings = Settings()

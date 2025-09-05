@@ -37,12 +37,12 @@ def read_users(db: SessionDeps, skip: int = 0, limit: int = 100):
     Récupérer tous les utilisateurs
     """
     count_statement = select(func.count()).select_from(User)
-    count = db.execute(count_statement).one()
+    count = db.execute(count_statement).scalar()
 
     statement = select(User).offset(skip).limit(limit)
-    users = db.execute(statement).all()
+    users = db.execute(statement).scalars().all()
     
-    return UsersPublic(data=users, count=count)
+    return UsersPublic.model_validate({"data":users, "count":count})
     
 @router.post(
     "/",
@@ -96,7 +96,7 @@ def update_password_me(
     """
     Mise à jour de son propre mot de passe
     """
-    if not verify_password(body.current_password, current_user.password):
+    if not verify_password(body.current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Mot de passe Incorrect")
     if body.current_password == body.new_password:
         raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit être différent de l'ancien")

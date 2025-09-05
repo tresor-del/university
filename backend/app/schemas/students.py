@@ -95,5 +95,3 @@ class UpdateStudent(BaseModel):
     classe_actuelle_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
-
-

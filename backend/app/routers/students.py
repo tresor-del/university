@@ -35,7 +35,7 @@ def get_students_list_route(
         print("Erreur dans get_students_list_route:", e)
         traceback.print_exc()
         raise
-
+        
 @router.post("/enregistrer")
 def enroll_student_route(
     data: EnrollStudent, 

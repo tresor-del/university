@@ -1,3 +1,7 @@
+"""
+Fichier de création du superuser juste après la mise en place de l'application
+"""
+
 import logging
 
 from sqlalchemy.orm import Session
