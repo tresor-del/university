@@ -2,11 +2,12 @@ import pytest
 
 from fastapi.testclient import TestClient
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, Session
 
 from app.main import app
 from app.models.students import Student
+from app.crud.users import get_user_by_username
 from app.models import users
 from app.core.config import Base
 from app.core.settings import settings
@@ -71,8 +72,17 @@ def superuser_token_headers(client: TestClient) -> dict[str, str]:
 
 @pytest.fixture(scope="function")
 def normal_user_token_headers(client: TestClient, db: Session):
-    return authenticate_user_from_username(
+    headers = authenticate_user_from_username(
         client=client,
         username=settings.USERNAME_TEST_USER,
         db=db
     )
+    
+    yield headers 
+    
+    # Supprimer l'utilisateur test pour eviter les conflits lors des prochains tests
+    statement = select(users.User).where(users.User.username==settings.USERNAME_TEST_USER)
+    user = db.execute(statement=statement).scalar_one_or_none()
+    if user:
+        db.delete(user)
+        db.commit()
