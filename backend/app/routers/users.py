@@ -72,11 +72,12 @@ def update_user_me(
     """
     Mise à jour de son propre compte
     """
+    print("reçu ", user_in)
     if user_in.username:
         existing_user =  users.get_user_by_username(db=db, username=user_in.username)
         if existing_user and existing_user.id != current_user.id:
             raise HTTPException (
-                status_code=400,
+                status_code=409,
                 detail="Un utilisateur avec ce nom existe déjà"
             )
     user_data = user_in.model_dump(exclude_unset=True)
@@ -101,10 +102,10 @@ def update_password_me(
     if body.current_password == body.new_password:
         raise HTTPException(status_code=400, detail="Le nouveau mot de passe doit être différent de l'ancien")
     hashed_password = get_password_hash(body.new_password)
-    current_user.password = hashed_password
+    current_user.hashed_password = hashed_password
     db.add(current_user)
     db.commit()
-    return Message(message="Mot de passe mis à jour avec succes")
+    return Message(message="Mot de passe mis à jour avec succès")
 
 @router.get("/me", response_model=UserPublic)
 def read_user_me(current_user: CurrentUser) -> Any:
