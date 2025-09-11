@@ -139,8 +139,8 @@ def register_user(db: SessionDeps, user_in: UserCreate) -> Any:
             status_code=400, 
             detail="Un utilisateur avec ce username existe déjà"
         )
-    user_create = UserCreate.model_validate(user_in)
-    user = users.create_user(db=db, create_user=user_create)
+    user_in = UserCreate.model_validate(user_in)
+    user = users.create_user(db=db, user_data=user_in)
     return user
 
 @router.get("/{user_id}", response_model=UserPublic)
@@ -162,17 +162,8 @@ def read_user_by_id(
         )
     return user
 
-@router.patch(
-    "/{user_id}",
-    dependencies=[Depends(get_current_active_admin)],
-    response_model=UserPublic,
-)
-def update_user(
-    *,
-    db: SessionDeps, 
-    user_id: int, 
-    user_in: UserUpdate
-) -> Any:
+@router.patch("/{user_id}", dependencies=[Depends(get_current_active_admin)], response_model=UserPublic,)
+def update_user(*, db: SessionDeps, user_id: int, user_in: UserUpdate) -> Any:
     """
     Mettre à jour un utilisateur
     """
@@ -180,16 +171,16 @@ def update_user(
     if not db_user:
         raise HTTPException(
             status_code=404, 
-            detail="Cet utilisateur n'existe pas"
+            detail="Cet utilisateur n'est pas enrégistré sur le systeme"
         )
     if user_in.username:
         existing_user =  users.get_user_by_username(db=db, username=user_in.username)
         if existing_user and existing_user.id != user_id:
             raise HTTPException (
-                status_code=400,
+                status_code=409,
                 detail="Un utilisateur avec ce nom existe déjà"
             )
-    db_user = users.update_user(db=db, data=user_in)
+    db_user = users.update_user(db=db, id=user_id, data=user_in)
     return db_user
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_admin)])
@@ -201,7 +192,7 @@ def delete_user(
     """
     user = db.get(User, user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
     if user == current_user:
         raise HTTPException(
             status_code=403, detail="Les admins n'ont pas le droit de se supprimer"
