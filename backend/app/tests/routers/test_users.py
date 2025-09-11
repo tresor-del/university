@@ -131,6 +131,63 @@ def test_get_existing_user_permissions_error(client, db, normal_user_token_heade
     assert r.status_code == 403 
     print(r.json())
 
+def test_update_user(client, superuser_token_headers, db):
+    username = random_lower_string()
+    password = random_lower_string()
+    user_in = UserCreate(username=username, password=password)    
+    user = users.create_user(db=db, user_data=user_in)
+    
+    print(user)
+    data = {"full_name": "updated_full_name"}
+    r = client.patch(
+        f"{settings.API_V1_STR}/users/{user.id}",
+        json=data,
+        headers=superuser_token_headers
+    )
+
+    assert r.status_code == 200
+    updated_user = r.json()
+    assert updated_user["full_name"] == "updated_full_name"
+    
+    user_query = select(User).where(User.username==username)
+    user_db = db.execute(user_query).scalar_one()
+    db.refresh(user_db)
+    assert user_db
+    assert user_db.full_name ==  "updated_full_name"
+
+def test_update_user_not_exists(client, superuser_token_headers):
+    data = {
+        "full_name": "updated_full_name"
+    }
+    id = "24"
+    r = client.patch(
+        f"{settings.API_V1_STR}/users/{id}",
+        headers=superuser_token_headers,
+        json=data
+    )
+    assert r.status_code == 404
+    assert r.json()["detail"] == "Cet utilisateur n'est pas enrégistré sur le systeme"
+    
+def test_update_user_username_exists(client, superuser_token_headers, db):
+    username = random_lower_string()
+    password = random_lower_string()
+    user_in = UserCreate(username=username, password=password)
+    user = users.create_user(db=db, user_data=user_in)
+
+    username2 = random_lower_string()
+    password2 = random_lower_string()
+    user_in2 = UserCreate(username=username2, password=password2)
+    user2 = users.create_user(db=db, user_data=user_in2)
+    
+    data = {"username": user.username}
+    r = client.patch(
+        f"{settings.API_V1_STR}/users/{user2.id}",
+        headers=superuser_token_headers,
+        json=data
+    )
+    assert r.status_code == 409
+    assert r.json()["detail"] == "Un utilisateur avec ce nom existe déjà"
+
 def test_update_user_me(client, db, normal_user_token_headers):
     """
     Test la mise à jour de l'utilisateur courant
@@ -145,7 +202,6 @@ def test_update_user_me(client, db, normal_user_token_headers):
         json=user,
     )
     assert response.status_code == 200
-
 
 def test_update_password_me(client, db, superuser_token_headers):
     """
@@ -223,7 +279,7 @@ def test_update_user_me_username_exits(client, normal_user_token_headers, db):
     assert r.status_code == 409 
     assert r.json()["detail"] == "Un utilisateur avec ce nom existe déjà"
     
-def test_update_password_me_same_password(client, db, superuser_token_headers):
+def test_update_password_me_same_password_error(client, db, superuser_token_headers):
     data = {
         "current_password": settings.FIRST_SUPERUSER_PASSWORD,
         "new_password": settings.FIRST_SUPERUSER_PASSWORD,
@@ -238,5 +294,114 @@ def test_update_password_me_same_password(client, db, superuser_token_headers):
     assert (
         updated_user["detail"] == "Le nouveau mot de passe doit être différent de l'ancien"
     )
+    
+def test_register_user(client, db):
+    username = random_lower_string()
+    password = random_lower_string()
+    full_name = random_lower_string()
+    data = {"username": username, "password": password, "full_name": full_name}
+    r = client.post(
+        f"{settings.API_V1_STR}/users/signup",
+        json=data
+    )
+    assert r.status_code == 200
+    created_user = r.json()
+    assert created_user["username"] == username
+    assert created_user["full_name"] == full_name
+    
+    user_query = select(User).where(User.username==username)
+    user_db = db.execute(user_query).scalar_one()
+    assert user_db
+    assert user_db.username == username
+    assert user_db.full_name == full_name
+    assert verify_password(password, user_db.hashed_password)
+    
+def test_register_user_already_exist_error(client):
+    password = random_lower_string()
+    full_name = random_lower_string()
+    data = {
+        "username": settings.FIRST_SUPERUSER,
+        "password": password,
+        "full_name": full_name
+    }
+    r = client.post(
+        f"{settings.API_V1_STR}/users/signup",
+        json=data
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"] == "Un utilisateur avec ce username existe déjà"
+    
+def test_delete_user_me(client, db):
+    username = random_lower_string()
+    password = random_lower_string()
+    user_in = UserCreate(username=username, password=password)
+    user = users.create_user(db=db, user_data=user_in)
+    
+    login_data = {
+        "username": username,
+        "password": password
+    }
+    r = client.post(
+        f"{settings.API_V1_STR}/login/access-token",
+        data=login_data
+    )
+    token_data = r.json()
+    access_token = token_data["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+    print(headers)
+    r = client.delete(
+        f"{settings.API_V1_STR}/users/me",
+        headers=headers
+    )
+    assert r.status_code == 200
+    assert r.json()["message"] == "Utilisateur supprimé avec succes"
+    
+    user_query = select(User).where(User.id == user.id)
+    user_db = db.execute(user_query).first()
+    assert user_db is None
+    
+def test_delete_user_as_me_superuser(client, db, superuser_token_headers):
+    r = client.delete(
+        f"{settings.API_V1_STR}/users/me",
+        headers=superuser_token_headers
+    )
+    assert r.status_code == 400
+    assert r.json()["detail"] == "Les admins n'ont pas l'autorisation de se supprimer"
+
+def delete_user_super_user(client, db, superuser_token_headers):
+    username = random_lower_string()
+    password = random_lower_string()
+    user_in = UserCreate(username=username, password=password)
+    user = users.create_user(db=db, user_data=user_in)
+
+    r = client.delete(
+        f"{settings.API_V1_STR}/users/{user.id}",
+        headers=superuser_token_headers
+    )
+    assert r.status_code == 200
+    assert r.json()["message"] == "Utilisateur supprimer avec succès"
+    userdb = db.execute(select(User).where(User.id==user.id)).first()
+    assert userdb is None
+
+def test_delete_user_not_found(client, db, superuser_token_headers):
+    r = client.delete(
+        f"{settings.API_V1_STR}/users/456",
+        headers=superuser_token_headers
+    )
+    assert r.status_code == 404
+    assert r.json()["detail"] == "Utilisateur non trouvé"
+    
+def test_delete_user_without_privileges(client, db, normal_user_token_headers):
+    username = random_lower_string()
+    password = random_lower_string()
+    user_in = UserCreate(username=username, password=password)
+    user = users.create_user(db=db, user_data=user_in)
+
+    r = client.delete(
+        f"{settings.API_V1_STR}/users/{user.id}",
+        headers=normal_user_token_headers
+    )
+    assert r.status_code == 403
+    assert r.json()["detail"] == "User have not enougth privileges"
     
     
