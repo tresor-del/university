@@ -1,7 +1,3 @@
-import uuid
-
-from fastapi import status
-
 from sqlalchemy import select
 
 from app.crud import users
@@ -403,5 +399,4 @@ def test_delete_user_without_privileges(client, db, normal_user_token_headers):
     )
     assert r.status_code == 403
     assert r.json()["detail"] == "User have not enougth privileges"
-    
     
