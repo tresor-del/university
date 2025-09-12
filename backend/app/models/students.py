@@ -22,28 +22,27 @@ class Student(Base):
     date_naissance = Column(Date, index=True, nullable=False)
     lieu_naissance = Column(String(100), index=True, nullable=False)
     sexe = Column(String(10), index=True, nullable=False)
-
     nationalite = Column(String(50), nullable=True)
     adresse = Column(String(255), nullable=True)
     email = Column(String(120), unique=True, index=True, nullable=True)
     telephone = Column(String(20), nullable=True)
-
     nom_parent_tuteur = Column(String(100), nullable=True)
     telephone_parent_tuteur = Column(String(20), nullable=True)
     adresse_parent_tuteur = Column(String(255), nullable=True)
-
     photo = Column(String(255), nullable=True)  
     date_inscription = Column(Date, server_default=func.current_date())
-
-    classe_actuelle_id = Column(Integer, nullable=True)
-
     statut = Column(String(50), default="actif") 
-
     date_creation = Column(DateTime(timezone=True), server_default=func.now())
 
+    id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id_departement = Column(Integer, ForeignKey("departements.id") ,nullable=True)
+    id_parcours = Column(Integer, ForeignKey("parcours.id") ,nullable=True)
+
+
     user = relationship("User", back_populates="student")
-    
-    # classe = relationship("Classe", back_populates="etudiants")
+    departement = relationship("Departement", back_populates="students")
+    parcours = relationship("Program", back_populates="students")
+    enrollments = relationship("Enrollment", back_populates="student")
 
 
 

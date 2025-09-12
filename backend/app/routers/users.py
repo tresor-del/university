@@ -27,11 +27,7 @@ from app.schemas.users import (
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get(
-    "/",
-    dependencies=[Depends(get_current_active_admin)],
-    response_model=UsersPublic
-)
+@router.get("/", dependencies=[Depends(get_current_active_admin)], response_model=UsersPublic)
 def read_users(db: SessionDeps, skip: int = 0, limit: int = 100):
     """
     Récupérer tous les utilisateurs
@@ -44,11 +40,7 @@ def read_users(db: SessionDeps, skip: int = 0, limit: int = 100):
     
     return UsersPublic.model_validate({"data":users, "count":count})
     
-@router.post(
-    "/",
-    dependencies=[Depends(get_current_active_admin)],
-    response_model=UserPublic
-)
+@router.post( "/", dependencies=[Depends(get_current_active_admin)], response_model=UserPublic )
 def create_user(*, db: SessionDeps, user_in: UserCreate) -> Any:
     """
     Créer un utilisateur 
@@ -144,11 +136,7 @@ def register_user(db: SessionDeps, user_in: UserCreate) -> Any:
     return user
 
 @router.get("/{user_id}", response_model=UserPublic)
-def read_user_by_id(
-    user_id: int,
-    db: SessionDeps,
-    current_user: CurrentUser
-) -> Any:
+def read_user_by_id( user_id: int, db: SessionDeps, current_user: CurrentUser ) -> Any:
     """
     Recevoire un utilisateur by id
     """
@@ -184,9 +172,7 @@ def update_user(*, db: SessionDeps, user_id: int, user_in: UserUpdate) -> Any:
     return db_user
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_admin)])
-def delete_user(
-    db: SessionDeps, current_user: CurrentUser, user_id: int
-) -> Message:
+def delete_user(db: SessionDeps, current_user: CurrentUser, user_id: int) -> Message:
     """
     Supprimer un utilisateur
     """
