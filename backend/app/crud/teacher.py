@@ -29,15 +29,15 @@ def delete_teacher(*,db: Session, teacher_id: int) -> TeacherResponse | None:
         return True
     return None
 
-def update_teacher(db: Session, data: TeacherUpdate) -> TeacherResponse | None:
-    teacher = db.query(Teacher).filter(Teacher.id==id).first()
+def update_teacher(db: Session, teacher_id: int, data: TeacherUpdate) -> TeacherResponse | None:
+    teacher = db.query(Teacher).filter(Teacher.id==teacher_id).first()
     if teacher:
         validate_data = data.model_dump(exclude_unset=True)
         for key, value in validate_data:
             setattr(teacher, key, value)
         db.commit()
         db.refresh(teacher)
-        return teacher
+        return TeacherResponse.model_validate(teacher)
     return None
 
 def get_teacher(db: Session, id: int) -> TeacherResponse | None:
