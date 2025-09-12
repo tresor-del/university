@@ -66,11 +66,6 @@ class UsersPublic(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-class Message(BaseModel):
-    """
-    Schemas d'envoie de message
-    """
-    message: str
     
 class UpdatePassword(BaseModel):
     """

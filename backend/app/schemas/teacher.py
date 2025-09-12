@@ -4,7 +4,6 @@ from typing import Optional
 
 # Teacher
 
-
 class TeacherBase(BaseModel):
     nom: str
     prenom: str
@@ -38,6 +37,9 @@ class TeacherUpdate(BaseModel):
 class TeacherResponse(TeacherBase):
     id: int
 
+class TeachersResponse(BaseModel):
+    data: list[TeacherResponse]
+    count: int
 
 
 

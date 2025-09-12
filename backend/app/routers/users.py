@@ -9,17 +9,13 @@ from fastapi.exceptions import HTTPException
 from app.models.users import User
 from app.core.security import verify_password, get_password_hash
 from app.crud import users
-from app.deps import (
-    SessionDeps,
-    CurrentUser,
-    get_current_active_admin
-)
+from app.schemas.message import Message
+from app.deps import (SessionDeps, CurrentUser, get_current_active_admin)
 from app.schemas.users import (
     UserPublic,
     UsersPublic,
     UserCreate,
     UserUpdate,
-    Message,
     UpdatePassword
 )
 
