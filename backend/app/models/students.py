@@ -11,6 +11,7 @@ from sqlalchemy.orm import relationship
 
 from app.core.config import Base
 from app.models.enrollments import Enrollment
+from app.models.media import Media
 
 
 class Student(Base):
@@ -30,10 +31,11 @@ class Student(Base):
     nom_parent_tuteur = Column(String(100), nullable=True)
     telephone_parent_tuteur = Column(String(20), nullable=True)
     adresse_parent_tuteur = Column(String(255), nullable=True)
-    photo = Column(String(255), nullable=True)
+    # photo = Column(String(255), nullable=True)
     date_inscription = Column(Date, server_default=func.current_date())
     statut = Column(String(50), default="actif")
     date_creation = Column(DateTime(timezone=True), server_default=func.now())
+    # qr_path = Column(String(200))
 
     # id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
     id_departement = Column(Integer, ForeignKey("departements.id"), nullable=True)
@@ -43,7 +45,7 @@ class Student(Base):
     departement = relationship("Department", back_populates="students")
     parcours = relationship("Program", back_populates="students")
     enrollments = relationship("Enrollment", back_populates="student")
-
+    medias = relationship("Media", back_populates="student")
 
 @event.listens_for(Student, "before_insert")
 def generer_id_etudiant(mapper, connection, target):

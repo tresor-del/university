@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.core.config import Base
+from app.models.media import Media
 
 class Teacher(Base):
     __tablename__ = "teachers"
@@ -19,6 +20,7 @@ class Teacher(Base):
     departement = relationship("Department", back_populates="teachers")
     user = relationship("User", back_populates="teacher")
     courses_assoc = relationship("TeachCourse", back_populates="teacher")
+    medias = relationship("Media", back_populates="teacher")
 
 class TeachCourse(Base):
     __tablename__ = "teach"

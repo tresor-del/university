@@ -45,7 +45,10 @@ class EnrollStudent(BaseModel):
     nom_parent_tuteur: Optional[str] = None
     telephone_parent_tuteur: Optional[str] = None
     adresse_parent_tuteur: Optional[str] = None
+    id_departement: Optional[str] = None
+    id_parcours: Optional[str] = None
     photo: Optional[str] = None
+    qr: Optional[str] = None
     statut: Optional[str] = "actif"
 
     model_config = ConfigDict(from_attributes=True)
@@ -91,6 +94,7 @@ class UpdateStudent(BaseModel):
     telephone_parent_tuteur: Optional[str] = None
     adresse_parent_tuteur: Optional[str] = None
     photo: Optional[str] = None
+    qr: Optional[str] = None
     statut: Optional[str] = None
     classe_actuelle_id: Optional[int] = None
 
