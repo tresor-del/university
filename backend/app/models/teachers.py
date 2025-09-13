@@ -14,10 +14,10 @@ class Teacher(Base):
     grade = Column(String(50), index=True, nullable=False)
     
     id_departement = Column(Integer, ForeignKey("departements.id"), nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    # user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     
-    departement = relationship("Department", back_populates="teacher")
-    user = relationship("User", back_populates="enseignant")
+    departement = relationship("Department", back_populates="teachers")
+    user = relationship("User", back_populates="teacher")
     courses_assoc = relationship("TeachCourse", back_populates="teacher")
 
 class TeachCourse(Base):

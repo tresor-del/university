@@ -23,6 +23,11 @@ class FacultyUpdate(BaseModel):
 class FacultyResponse(FacultyBase):
     id: int
 
+class FacultiesResponse(BaseModel):
+    data: List[FacultyResponse] = None
+    count: int
+    
+    model_config = ConfigDict(from_attributes=True)
 
 # Department
 
@@ -47,6 +52,11 @@ class DepartmentResponse(DepartmentBase):
     id: int
     faculte: Optional[FacultyResponse] = None  # relation
 
+class DepartementsResponse(BaseModel):
+    data: List[FacultyResponse] = None
+    count: int
+    
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Program
@@ -76,6 +86,11 @@ class ProgramResponse(ProgramBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+class ProgramsResponse(BaseModel):
+    data: List[ProgramResponse] = None
+    count: int
+    
+    model_config = ConfigDict(from_attributes=True)
 
 # Course
 
@@ -104,4 +119,10 @@ class CourseResponse(CourseBase):
     id: int
     parcours: Optional[ProgramResponse] = None 
 
+    model_config = ConfigDict(from_attributes=True)
+
+class CoursesResponse(BaseModel):
+    data: List[CourseResponse] = None
+    count: int
+    
     model_config = ConfigDict(from_attributes=True)

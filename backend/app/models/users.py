@@ -24,5 +24,5 @@ class User(Base):
     teacher_id = Column(Integer,ForeignKey("teachers.id") ,nullable=True)
     
     student = relationship("Student", back_populates="user", uselist=False)
-    teacher = relationship("Teacher", back_populates="teacher", uselist=False)
+    teacher = relationship("Teacher", back_populates="user", uselist=False)
     tokens = relationship("Token", back_populates="user", cascade="all, delete-orphan")

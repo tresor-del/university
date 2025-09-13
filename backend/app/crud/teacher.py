@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.models.teachers import Teacher
 from app.schemas.teacher import TeachersResponse, TeacherResponse, TeacherCreate, TeacherUpdate
 
-def teachers_list(*, db: Session, skip: int, limit: int) -> TeacherResponse | None:
+def teachers_list(*, db: Session, skip: int, limit: int) -> TeachersResponse | None:
     count_statement = select(func.count()).select_from(Teacher)
     count = db.execute(count_statement).scalar()
     
@@ -41,5 +41,6 @@ def update_teacher(db: Session, teacher_id: int, data: TeacherUpdate) -> Teacher
     return None
 
 def get_teacher(db: Session, id: int) -> TeacherResponse | None:
-    teacher = db.query(Teacher).filter(Teacher.id==id).first()
+    statement = select(Teacher).where(Teacher.id==id)
+    teacher = db.execute(statement).scalar_one_or_none()
     return teacher if teacher else None
