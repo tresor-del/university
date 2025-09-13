@@ -10,13 +10,14 @@ from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 
 from app.core.config import Base
+from app.models.enrollments import Enrollment
 
 
 class Student(Base):
     __tablename__ = "etudiants"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    id_etudiant = Column(String(50), unique=True, index=True, nullable=False)  
+    id_etudiant = Column(String(50), unique=True, index=True, nullable=False)
     nom = Column(String(100), index=True, nullable=False)
     prenom = Column(String(100), index=True, nullable=False)
     date_naissance = Column(Date, index=True, nullable=False)
@@ -29,21 +30,19 @@ class Student(Base):
     nom_parent_tuteur = Column(String(100), nullable=True)
     telephone_parent_tuteur = Column(String(20), nullable=True)
     adresse_parent_tuteur = Column(String(255), nullable=True)
-    photo = Column(String(255), nullable=True)  
+    photo = Column(String(255), nullable=True)
     date_inscription = Column(Date, server_default=func.current_date())
-    statut = Column(String(50), default="actif") 
+    statut = Column(String(50), default="actif")
     date_creation = Column(DateTime(timezone=True), server_default=func.now())
 
-    id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
-    id_departement = Column(Integer, ForeignKey("departements.id") ,nullable=True)
-    id_parcours = Column(Integer, ForeignKey("parcours.id") ,nullable=True)
-
+    # id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
+    id_departement = Column(Integer, ForeignKey("departements.id"), nullable=True)
+    id_parcours = Column(Integer, ForeignKey("parcours.id"), nullable=True)
 
     user = relationship("User", back_populates="student")
-    departement = relationship("Departement", back_populates="students")
+    departement = relationship("Department", back_populates="students")
     parcours = relationship("Program", back_populates="students")
     enrollments = relationship("Enrollment", back_populates="student")
-
 
 
 @event.listens_for(Student, "before_insert")
@@ -51,3 +50,5 @@ def generer_id_etudiant(mapper, connection, target):
     if not target.id_etudiant:
         target.id_etudiant = f"STD{datetime.now().year}-{uuid.uuid4().hex[:8]}"
     pass
+
+
