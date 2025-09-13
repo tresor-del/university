@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends
 from typing import List
+
+from fastapi import APIRouter, Depends
+
 from app.deps import SessionDeps, get_current_active_admin
 from app.routers.utils import handle_app_error
 from app.crud.students import (
@@ -18,12 +20,10 @@ from app.schemas.students import (
 
 router = APIRouter(prefix="/etudiants", tags=["Étudiants"])
 
+UPLOAD_DIR = "app/upload/students"
 
 @router.get("/", response_model=List[StudentModel])
-def get_students_list_route(
-    db: SessionDeps,
-    current_user=Depends(get_current_active_admin)
-):
+def get_students_list_route(db: SessionDeps, current_user=Depends(get_current_active_admin)):
     """
     Retourne une liste de tous les étudiants
     """
@@ -37,11 +37,7 @@ def get_students_list_route(
         raise
         
 @router.post("/enregistrer")
-def enroll_student_route(
-    data: EnrollStudent, 
-    db: SessionDeps,
-    current_user=Depends(get_current_active_admin)
-):
+def enroll_student_route(data: EnrollStudent, db: SessionDeps, current_user=Depends(get_current_active_admin)):
     """
     Enrégistre un étudiant
     """
@@ -51,11 +47,7 @@ def enroll_student_route(
         handle_app_error(e)
 
 @router.get("/etudiant/{id}", response_model=PublicStudent)
-def get_student_route(
-    id: int, 
-    db: SessionDeps,
-    current_user=Depends(get_current_active_admin)
-):
+def get_student_route(id: int, db: SessionDeps, current_user=Depends(get_current_active_admin)):
     """
     Retourne un étudiant dans la base de donnée
     """
@@ -65,12 +57,7 @@ def get_student_route(
         handle_app_error(e)
 
 @router.patch("/modifier/{id}")
-def update_student_route(
-    id: int, 
-    data: UpdateStudent, 
-    db: SessionDeps,
-    current_user=Depends(get_current_active_admin)
-):
+def update_student_route(id: int, data: UpdateStudent, db: SessionDeps, current_user=Depends(get_current_active_admin)):
     """
     Modifie un étudiant
     """
@@ -80,13 +67,9 @@ def update_student_route(
         handle_app_error(e)
 
 @router.delete("/effacer/{id}")
-def delete_student_route(
-    id: int, 
-    db: SessionDeps,
-    current_user=Depends(get_current_active_admin)
-):
+def delete_student_route(id: int, db: SessionDeps,current_user=Depends(get_current_active_admin)):
     """
-    Modifie un étudiant
+    Supprime un étudiant du système
     """
     try:
         return crud_delete_student(db, id)
