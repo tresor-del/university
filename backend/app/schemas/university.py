@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 
+from uuid import UUID
 
 # Faculty
 
@@ -21,7 +22,7 @@ class FacultyUpdate(BaseModel):
     
 
 class FacultyResponse(FacultyBase):
-    id: int
+    id: UUID
 
 class FacultiesResponse(BaseModel):
     data: List[FacultyResponse] = None
@@ -34,7 +35,7 @@ class FacultiesResponse(BaseModel):
 class DepartmentBase(BaseModel):
     nom: str
     description: Optional[str] = None
-    id_faculte: int
+    id_faculte: UUID
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -44,12 +45,12 @@ class DepartmentCreate(DepartmentBase):
 class DepartmentUpdate(BaseModel):
     nom: Optional[str] = None
     description: Optional[str] = None
-    id_faculte: Optional[int] = None
+    id_faculte: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)
 
 class DepartmentResponse(DepartmentBase):
-    id: int
+    id: UUID
     faculte: Optional[FacultyResponse] = None  # relation
 
 class DepartementsResponse(BaseModel):
@@ -65,7 +66,7 @@ class ProgramBase(BaseModel):
     nom: str
     niveau: str
     duree: int
-    id_departement: int
+    id_departement: UUID
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -76,12 +77,12 @@ class ProgramUpdate(BaseModel):
     nom: Optional[str] = None
     niveau: Optional[str] = None
     duree: Optional[int] = None
-    id_departement: Optional[int] = None
+    id_departement: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)
 
 class ProgramResponse(ProgramBase):
-    id: int
+    id: UUID
     departement: Optional[DepartmentResponse] = None  # relation
 
     model_config = ConfigDict(from_attributes=True)
@@ -99,7 +100,7 @@ class CourseBase(BaseModel):
     titre: str
     description: Optional[str] = None
     credits: int
-    id_parcours: int
+    id_parcours: UUID
 
     model_config = ConfigDict(from_attributes=True)
     
@@ -111,12 +112,12 @@ class CourseUpdate(BaseModel):
     titre: Optional[str] = None
     description: Optional[str] = None
     credits: Optional[int] = None
-    id_parcours: Optional[int] = None
+    id_parcours: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)
 
 class CourseResponse(CourseBase):
-    id: int
+    id: UUID
     parcours: Optional[ProgramResponse] = None 
 
     model_config = ConfigDict(from_attributes=True)

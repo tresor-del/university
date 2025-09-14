@@ -1,8 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 
+from uuid import UUID
+
 class MediaBase(BaseModel):
-    id: int
+    id: UUID
     file_path: str 
     file_type: str
     mime_type: Optional[str] = None

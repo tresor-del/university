@@ -1,9 +1,13 @@
-from typing import List
+from typing import Any, List
 
-from fastapi import APIRouter, Depends
+from sqlalchemy import select
+
+from fastapi import APIRouter, Depends, status
+from fastapi.exceptions import HTTPException
 
 from app.deps import SessionDeps, get_current_active_admin
-from app.routers.utils import handle_app_error
+from app.models.students import Student
+from app.schemas.message import Message
 from app.crud.students import (
     students_list as crud_students_list,
     enroll_student as crud_enroll_student,
@@ -11,67 +15,99 @@ from app.crud.students import (
     delete_student as crud_delete_student,
     get_student as crud_get_student
 )
-from app.schemas.students import (
-    StudentModel,
-    EnrollStudent, 
-    UpdateStudent, 
-    PublicStudent
-)
+from app.schemas.students import StudentResponse, StudentUpdate, StudentCreate, StudentsResponse
 
-router = APIRouter(prefix="/etudiants", tags=["Étudiants"])
+router = APIRouter(prefix="/students", tags=["Students"])
 
-UPLOAD_DIR = "app/upload/students"
 
-@router.get("/", response_model=List[StudentModel])
-def get_students_list_route(db: SessionDeps, current_user=Depends(get_current_active_admin)):
+@router.get("/",dependencies=[Depends(get_current_active_admin)])
+def get_students_list_route(db: SessionDeps, skip: int = 1, limit: int = 100) -> StudentsResponse | Any:
     """
     Retourne une liste de tous les étudiants
     """
-    try:
-        return crud_students_list(db)
-    # pour le test (à remplacer)
-    except Exception as e:
-        import traceback
-        print("Erreur dans get_students_list_route:", e)
-        traceback.print_exc()
-        raise
+    return crud_students_list(db=db, skip=skip, limit=limit)
         
-@router.post("/enregistrer")
-def enroll_student_route(data: EnrollStudent, db: SessionDeps, current_user=Depends(get_current_active_admin)):
+@router.post("/", dependencies=[Depends(get_current_active_admin)])
+def enroll_student_route(data: StudentCreate, db: SessionDeps) -> StudentResponse | Any:
     """
     Enrégistre un étudiant
     """
-    try:
-        return crud_enroll_student(db, data)
-    except Exception as e:
-        handle_app_error(e)
+    statement = select(Student).where(Student.email==data.email)
+    existing_student = db.execute(statement).first()
+    if existing_student:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Il y a déjà un étudiant avec le même email"
+        )
+    return crud_enroll_student(db=db, data=data)
 
-@router.get("/etudiant/{id}", response_model=PublicStudent)
-def get_student_route(id: int, db: SessionDeps, current_user=Depends(get_current_active_admin)):
+@router.get("/{student_id}", dependencies=[Depends(get_current_active_admin)])
+def get_student_route(student_id: int, db: SessionDeps) -> StudentResponse | Any:
     """
     Retourne un étudiant dans la base de donnée
     """
-    try:
-        return crud_get_student(db, id)
-    except Exception as e:
-        handle_app_error(e)
+    student = db.get(Student, student_id)
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="L'étudiant recherché n'existe pas sur le systeme"
+        )
+    return crud_get_student(db=db, id=student_id)
 
-@router.patch("/modifier/{id}")
-def update_student_route(id: int, data: UpdateStudent, db: SessionDeps, current_user=Depends(get_current_active_admin)):
+@router.patch("/{student_id}", dependencies=[Depends(get_current_active_admin)])
+def update_student_route(student_id: int, data: StudentUpdate, db: SessionDeps) -> StudentResponse | Any:
     """
     Modifie un étudiant
     """
-    try:
-        return crud_update_student(db, id, data)
-    except Exception as e:
-        handle_app_error(e)
+    student = db.get(Student, student_id)
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Cet étudiant n'existe pas sur le systeme"
+        )
+    return crud_update_student(db=db, id=student_id, data=data)
 
-@router.delete("/effacer/{id}")
-def delete_student_route(id: int, db: SessionDeps,current_user=Depends(get_current_active_admin)):
+@router.delete("/{student_id}", dependencies=[Depends(get_current_active_admin)])
+def delete_student_route(student_id: int, db: SessionDeps) -> Message:
     """
     Supprime un étudiant du système
     """
-    try:
-        return crud_delete_student(db, id)
-    except Exception as e:
-        handle_app_error(e)
+    result = crud_delete_student(db=db, id=student_id)
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Cet étudiant n'existe pas sur le systeme"
+        )
+    return Message(message="Etudiant supprimé avec succès")
+
+@router.post("/{student_id}/deactivate", dependencies=[Depends(get_current_active_admin)])
+def deactivate_student(student_id: int, db: SessionDeps) -> Message:
+    """
+    Désactive un étudiant
+    """
+    student_db = db.query(Student).filter(Student.id==student_id).first()
+    if not student_db:
+        raise HTTPException(
+            status_code=404,
+            detail="Etudiant non trouvé sur le système"
+        )
+    student_db.statut = "désactivé"
+    db.commit()
+    db.refresh(student_db)
+    return Message(message="Etudiant désactivé avec succès")
+
+@router.post("/{student_id}/activate", dependencies=[Depends(get_current_active_admin)])
+def activate_student(student_id: int, db: SessionDeps) -> Message:
+    """
+    Active un étudiant
+    """
+    student_db = db.query(Student).filter(Student.id==student_id).first()
+    if not student_db:
+        raise HTTPException(
+            status_code=404,
+            detail="Etudiant non trouvé sur le système"
+        )
+    student_db.statut = "actif"
+    db.commit()
+    db.refresh(student_db)
+    return Message(message="Etudiant activé avec succès")

@@ -1,6 +1,8 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from typing import Optional
 
+from uuid import UUID
+
 
 # Teacher
 
@@ -10,9 +12,6 @@ class TeacherBase(BaseModel):
     email: Optional[EmailStr] = None
     telephone: Optional[str] = None
     grade: str
-    id_departement: Optional[int] = None
-    user_id: Optional[int] = None
-
 
     model_config = ConfigDict(from_attributes=True)
     
@@ -21,21 +20,18 @@ class TeacherCreate(TeacherBase):
     pass
 
 
-
 class TeacherUpdate(BaseModel):
     nom: Optional[str] = None
     prenom: Optional[str] = None
     email: Optional[EmailStr] = None
     telephone: Optional[str] = None
     grade: Optional[str] = None
-    id_departement: Optional[int] = None
-    user_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class TeacherResponse(TeacherBase):
-    id: int
+    id: UUID
 
 class TeachersResponse(BaseModel):
     data: list[TeacherResponse]
