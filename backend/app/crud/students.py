@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -22,7 +23,7 @@ def enroll_student(*, db: Session, data: StudentCreate) -> StudentResponse | Any
     db.refresh(student)
     return StudentResponse.model_validate(student)   
         
-def delete_student(*, db: Session, id: int) -> bool:
+def delete_student(*, db: Session, id: UUID) -> bool:
     student = db.query(Student).filter(Student.id == id).first()
     if student:
         db.delete(student)
@@ -30,7 +31,7 @@ def delete_student(*, db: Session, id: int) -> bool:
         return True
     return False
 
-def update_student(*, db: Session, id: int, data: StudentUpdate) -> StudentResponse | Any:
+def update_student(*, db: Session, id: UUID, data: StudentUpdate) -> StudentResponse | Any:
     student = db.query(Student).filter(Student.id == id).first()
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -39,6 +40,6 @@ def update_student(*, db: Session, id: int, data: StudentUpdate) -> StudentRespo
     db.refresh(student)
     return StudentResponse.model_validate(student) 
 
-def get_student(*, db: Session, id: int) -> StudentResponse | Any:
+def get_student(*, db: Session, id: UUID) -> StudentResponse | Any:
     student = db.query(Student).filter(Student.id==id).first()
     return StudentResponse.model_validate(student) 

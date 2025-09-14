@@ -8,7 +8,7 @@ from app.core.config import Base
 class Token(Base):
     __tablename__ = "tokens"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     token = Column(String(128), nullable=False, unique=True, index=True)
     is_active = Column(Boolean, default=True)  

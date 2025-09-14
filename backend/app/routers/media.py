@@ -1,4 +1,5 @@
 import io
+from uuid import UUID
 import qrcode
 
 from fastapi.routing import APIRouter
@@ -16,7 +17,7 @@ from app.crud import media
 router = APIRouter(prefix="/media", tags=["media"])
 
 @router.post("/", response_model=MediaResponse)
-def upload_media(db: SessionDeps, file_type: str, student_id: int = None, teacher_id: int = None, file: UploadFile = File(...)):
+def upload_media(db: SessionDeps, file_type: str, student_id: UUID = None, teacher_id: UUID = None, file: UploadFile = File(...)):
     file_location = save_encrypted_file(file, file.filename)
     media_data = MediaCreate(
         file_path=file_location,
@@ -28,7 +29,7 @@ def upload_media(db: SessionDeps, file_type: str, student_id: int = None, teache
     return media.create_media(db=db, media=media_data)
 
 @router.get("/download/{media_id}")
-def download_media(media_id: int, db: SessionDeps):
+def download_media(media_id: UUID, db: SessionDeps):
     media = db.query(Media).filter(Media.id == media_id).first()
     if not media:
         raise HTTPException(status_code=404, detail="Fichier introuvable")
@@ -37,7 +38,7 @@ def download_media(media_id: int, db: SessionDeps):
     return StreamingResponse(io.BytesIO(content), media_type=media.mime_type)
 
 @router.post("/qr_code", dependencies=[Depends(get_current_active_admin)])
-def create_qr_code(db: SessionDeps, media_in: MediaCreate, data: str, student_id: int = None, teacher_id: int = None):
+def create_qr_code(db: SessionDeps, media_in: MediaCreate, data: str, student_id: UUID = None, teacher_id: UUID = None):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_H,
@@ -64,7 +65,7 @@ def create_qr_code(db: SessionDeps, media_in: MediaCreate, data: str, student_id
     return media.create_media(db=db, media=media_data)
 
 @router.get("/qr_code/{qr_id}", dependencies=[Depends(get_current_active_admin)])
-def get_qr_code(db: SessionDeps, qr_id: int ):
+def get_qr_code(db: SessionDeps, qr_id: UUID ):
     media = db.query(Media).filter(Media.id == qr_id).first()
     if not media:
         raise HTTPException(status_code=404, detail="Qr_code introuvable")

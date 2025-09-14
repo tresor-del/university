@@ -17,7 +17,7 @@ from app.models.media import Media
 class Student(Base):
     __tablename__ = "etudiants"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     id_etudiant = Column(String(50), unique=True, index=True, nullable=False)
     nom = Column(String(100), index=True, nullable=False)
     prenom = Column(String(100), index=True, nullable=False)

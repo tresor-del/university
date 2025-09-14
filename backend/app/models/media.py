@@ -7,7 +7,7 @@ from app.models.teachers import Teacher
 class Media(Base):
     __tablename__ = "media"
     
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     file_path = Column(String(255), nullable=False)   # chemin vers le fichier
     file_type = Column(String(50), nullable=False)    # ex: "photo", "qr", "document"
     mime_type = Column(String(50), nullable=True)     # ex: "image/png", "image/jpeg"

@@ -1,4 +1,5 @@
 from typing import Any
+import uuid
 from fastapi import status
 
 from fastapi.testclient import TestClient
@@ -90,7 +91,7 @@ def test_get_student(client: TestClient, db: Session, superuser_token_headers: d
 
 def test_get_student_inexistant(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
     response = client.get(
-        f"{settings.API_V1_STR}/students/9999",
+        f"{settings.API_V1_STR}/students/{uuid.uuid4()}",
         headers=superuser_token_headers
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -120,7 +121,7 @@ def test_modifier_etudiant_inexistant(client: TestClient, db: Session, superuser
     student = create_random_student(db)
     updated_data = {"nom": "nouveau_nom"}
     response = client.patch(
-        f"{settings.API_V1_STR}/students/9999",
+        f"{settings.API_V1_STR}/students/{uuid.uuid4()}",
         json=updated_data,
         headers=superuser_token_headers
     )
@@ -140,7 +141,7 @@ def test_effacer_etudiant(client: TestClient, db: Session, superuser_token_heade
 
 def test_effacer_etudiant_inexistant(client: TestClient,superuser_token_headers) -> Any:
     response = client.delete(
-        f"{settings.API_V1_STR}/students/9999",
+        f"{settings.API_V1_STR}/students/{uuid.uuid4()}",
         headers=superuser_token_headers
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND

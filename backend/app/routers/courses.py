@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import dependencies, Depends
 from fastapi.routing import APIRouter
 from fastapi.exceptions import HTTPException
@@ -35,7 +36,7 @@ def create_course_route(db: SessionDeps, data: CourseCreate) -> CourseResponse:
     return course
 
 @router.patch("/{course_id}", dependencies=[Depends(get_current_active_admin)], response_model=CourseResponse)
-def update_course_route(db: SessionDeps, course_id: int, data: CourseUpdate) -> CourseResponse:
+def update_course_route(db: SessionDeps, course_id: UUID, data: CourseUpdate) -> CourseResponse:
     """
     Mets à jour un cours
     """
@@ -49,7 +50,7 @@ def update_course_route(db: SessionDeps, course_id: int, data: CourseUpdate) -> 
     return course_updated
 
 @router.delete("/{course_id}", dependencies=[Depends(get_current_active_admin)], response_model=Message)
-def delete_course_route(db: SessionDeps, course_id: int) -> Message:
+def delete_course_route(db: SessionDeps, course_id: UUID) -> Message:
     """
     Supprime un cours
     """
@@ -62,7 +63,7 @@ def delete_course_route(db: SessionDeps, course_id: int) -> Message:
         )
 
 @router.get("/{course_id}", dependencies=[Depends(get_current_active_admin)], response_model=CourseResponse)
-def get_course_route(db: SessionDeps, course_id: int) -> CourseResponse:
+def get_course_route(db: SessionDeps, course_id: UUID) -> CourseResponse:
     """
     Récupérer un cours
     """

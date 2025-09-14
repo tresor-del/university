@@ -14,7 +14,7 @@ class UserRole(enum.Enum):
 class User(Base):
     __tablename__ = "users"
     
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     username = Column(String(50), index=True, nullable=False)
     full_name = Column(String(255), index=True, nullable=True)
     is_active = Column(Boolean, index=True)

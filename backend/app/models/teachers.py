@@ -7,7 +7,7 @@ from app.core.config import Base
 class Teacher(Base):
     __tablename__ = "teachers"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     nom = Column(String(100), index=True, nullable=False)
     prenom = Column(String(100), index=True, nullable=False)
     email = Column(String(30), index=True, nullable=True)
@@ -25,7 +25,7 @@ class Teacher(Base):
 class TeachCourse(Base):
     __tablename__ = "teach"
     
-    id = Column(Integer, index=True, primary_key=True, autoincrement=True)
+    id = Column(Integer, index=True, primary_key=True)
     
     course_id = Column(Integer, ForeignKey("cours.id"), nullable=False)
     teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=False)

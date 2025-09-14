@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import Depends, dependencies
 from fastapi.routing import APIRouter
 from fastapi.exceptions import HTTPException
@@ -35,7 +36,7 @@ def create_faculty_route(db: SessionDeps, data: FacultyCreate) -> FacultyRespons
     return faculty
 
 @router.patch("/{faculty_id}", dependencies=[Depends(get_current_active_admin)], response_model=FacultyResponse)
-def update_faculty_route(db: SessionDeps, faculty_id: int, data: FacultyUpdate) -> FacultyResponse:
+def update_faculty_route(db: SessionDeps, faculty_id: UUID, data: FacultyUpdate) -> FacultyResponse:
     """
     Mets à jour une faculté
     """
@@ -49,7 +50,7 @@ def update_faculty_route(db: SessionDeps, faculty_id: int, data: FacultyUpdate) 
     return faculty_updated
 
 @router.delete("/{faculty_id}", dependencies=[Depends(get_current_active_admin)], response_model=Message)
-def delete_faculty_route(db: SessionDeps, faculty_id: int) -> Message:
+def delete_faculty_route(db: SessionDeps, faculty_id: UUID) -> Message:
     """
     Supprime une faculté
     """
@@ -62,7 +63,7 @@ def delete_faculty_route(db: SessionDeps, faculty_id: int) -> Message:
         )
 
 @router.get("/{faculty_id}", dependencies=[Depends(get_current_active_admin)], response_model=FacultyResponse)
-def get_faculty_route(db: SessionDeps, faculty_id: int) -> FacultyResponse:
+def get_faculty_route(db: SessionDeps, faculty_id: UUID) -> FacultyResponse:
     """
     Récupérer une faculté
     """

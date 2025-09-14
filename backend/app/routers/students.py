@@ -1,4 +1,5 @@
 from typing import Any, List
+from uuid import UUID
 
 from sqlalchemy import select
 
@@ -42,7 +43,7 @@ def enroll_student_route(data: StudentCreate, db: SessionDeps) -> StudentRespons
     return crud_enroll_student(db=db, data=data)
 
 @router.get("/{student_id}", dependencies=[Depends(get_current_active_admin)])
-def get_student_route(student_id: int, db: SessionDeps) -> StudentResponse | Any:
+def get_student_route(student_id: UUID, db: SessionDeps) -> StudentResponse | Any:
     """
     Retourne un étudiant dans la base de donnée
     """
@@ -55,7 +56,7 @@ def get_student_route(student_id: int, db: SessionDeps) -> StudentResponse | Any
     return crud_get_student(db=db, id=student_id)
 
 @router.patch("/{student_id}", dependencies=[Depends(get_current_active_admin)])
-def update_student_route(student_id: int, data: StudentUpdate, db: SessionDeps) -> StudentResponse | Any:
+def update_student_route(student_id: UUID, data: StudentUpdate, db: SessionDeps) -> StudentResponse | Any:
     """
     Modifie un étudiant
     """
@@ -68,7 +69,7 @@ def update_student_route(student_id: int, data: StudentUpdate, db: SessionDeps) 
     return crud_update_student(db=db, id=student_id, data=data)
 
 @router.delete("/{student_id}", dependencies=[Depends(get_current_active_admin)])
-def delete_student_route(student_id: int, db: SessionDeps) -> Message:
+def delete_student_route(student_id: UUID, db: SessionDeps) -> Message:
     """
     Supprime un étudiant du système
     """
@@ -81,7 +82,7 @@ def delete_student_route(student_id: int, db: SessionDeps) -> Message:
     return Message(message="Etudiant supprimé avec succès")
 
 @router.post("/{student_id}/deactivate", dependencies=[Depends(get_current_active_admin)])
-def deactivate_student(student_id: int, db: SessionDeps) -> Message:
+def deactivate_student(student_id: UUID, db: SessionDeps) -> Message:
     """
     Désactive un étudiant
     """
@@ -97,7 +98,7 @@ def deactivate_student(student_id: int, db: SessionDeps) -> Message:
     return Message(message="Etudiant désactivé avec succès")
 
 @router.post("/{student_id}/activate", dependencies=[Depends(get_current_active_admin)])
-def activate_student(student_id: int, db: SessionDeps) -> Message:
+def activate_student(student_id: UUID, db: SessionDeps) -> Message:
     """
     Active un étudiant
     """
