@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -55,7 +56,7 @@ class UserPublic(UserBase):
     """
     Schemas publique des utilisateurs
     """
-    id: int
+    id: UUID
 
 class UsersPublic(BaseModel):
     """

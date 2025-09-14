@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
+from sqlalchemy import UUID
 from sqlalchemy import Column, Integer, String, DateTime, Date
-from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql import func
 
 from sqlalchemy import event
@@ -17,20 +17,27 @@ from app.models.media import Media
 class Student(Base):
     __tablename__ = "etudiants"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
     id_etudiant = Column(String(50), unique=True, index=True, nullable=False)
     nom = Column(String(100), index=True, nullable=False)
     prenom = Column(String(100), index=True, nullable=False)
     date_naissance = Column(Date, index=True, nullable=False)
     lieu_naissance = Column(String(100), index=True, nullable=False)
     sexe = Column(String(10), index=True, nullable=False)
-    nationalite = Column(String(50), nullable=True)
+    nationalite = Column(String(50), nullable=False)
     adresse = Column(String(255), nullable=True)
-    email = Column(String(120), unique=True, index=True, nullable=True)
-    telephone = Column(String(20), nullable=True)
-    nom_parent_tuteur = Column(String(100), nullable=True)
-    telephone_parent_tuteur = Column(String(20), nullable=True)
-    adresse_parent_tuteur = Column(String(255), nullable=True)
+    email = Column(String(120), unique=True, index=True, nullable=False)
+    telephone = Column(String(20), nullable=False)
+    
+    nom_du_pere = Column(String(100), nullable=False)
+    nom_de_la_mere = Column(String(100), nullable=False)
+    addresse_du_pere = Column(String(100), nullable=False)
+    addresse_de_la_mere = Column(String(100), nullable=False)
+    
+    nom_parent_tuteur = Column(String(100), nullable=False)
+    telephone_parent_tuteur = Column(String(20), nullable=False)
+    adresse_parent_tuteur = Column(String(255), nullable=False)
+    
     # photo = Column(String(255), nullable=True)
     date_inscription = Column(Date, server_default=func.current_date())
     statut = Column(String(50), default="actif")
@@ -52,5 +59,6 @@ def generer_id_etudiant(mapper, connection, target):
     if not target.id_etudiant:
         target.id_etudiant = f"STD{datetime.now().year}-{uuid.uuid4().hex[:8]}"
     pass
+
 
 

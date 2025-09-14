@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from sqlalchemy.orm import Session
-from app.schemas.students import EnrollStudent
+from app.schemas.students import StudentCreate
 from app.models.students import Student
 from app.crud.students import enroll_student
 from app.tests.utils.utils import random_lower_string, random_sexe, random_email, random_date, random_phone
@@ -10,7 +10,7 @@ def create_random_student(db: Session) -> Student:
     """
     Créer un étudiant aléatoire et le retourner
     """
-    student_in = EnrollStudent(
+    student_in = StudentCreate(
         nom=random_lower_string(),
         prenom=random_lower_string(),
         sexe=random_sexe(),
@@ -23,10 +23,13 @@ def create_random_student(db: Session) -> Student:
         nom_parent_tuteur=random_lower_string(),
         telephone_parent_tuteur=random_phone(),
         adresse_parent_tuteur=random_lower_string(),
-        photo=None,
         statut="actif",
+        nom_du_pere = random_lower_string(),
+        nom_de_la_mere = random_lower_string(),
+        addresse_du_pere = random_lower_string(),
+        addresse_de_la_mere = random_lower_string()
     )
-    return enroll_student(db, student_in)
+    return enroll_student(db=db, data=student_in)
 
 
 def create_random_students(db: Session, count: int = 2) -> list[Student]:
@@ -40,11 +43,11 @@ def create_random_students(db: Session, count: int = 2) -> list[Student]:
     return result
 
 
-def random_user_data() -> EnrollStudent:
+def random_user_data() -> StudentCreate:
     """
     Retourne un schéma Pydantic complet avec données aléatoires
     """
-    return EnrollStudent(
+    return StudentCreate(
         nom=random_lower_string(),
         prenom=random_lower_string(),
         sexe=random_sexe(),
@@ -57,8 +60,11 @@ def random_user_data() -> EnrollStudent:
         nom_parent_tuteur=random_lower_string(),
         telephone_parent_tuteur=random_phone(),
         adresse_parent_tuteur=random_lower_string(),
-        photo=None,
         statut="actif",
+        nom_du_pere = random_lower_string(),
+        nom_de_la_mere = random_lower_string(),
+        addresse_du_pere = random_lower_string(),
+        addresse_de_la_mere = random_lower_string()
     )
 
     

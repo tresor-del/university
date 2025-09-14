@@ -1,6 +1,8 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
+from uuid import UUID
+
 
 # Semester
 
@@ -18,16 +20,16 @@ class SemesterUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class SemesterResponse(SemesterBase):
-    id: int
+    id: UUID
 
 
 
 # Enrollment
 
 class EnrollmentBase(BaseModel):
-    student_id: int
-    course_id: int
-    semester_id: Optional[int] = None
+    student_id: UUID
+    course_id: UUID
+    semester_id: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -35,12 +37,12 @@ class EnrollmentCreate(EnrollmentBase):
     pass
 
 class EnrollmentUpdate(BaseModel):
-    student_id: Optional[int] = None
-    course_id: Optional[int] = None
-    semester_id: Optional[int] = None
+    student_id: Optional[UUID] = None
+    course_id: Optional[UUID] = None
+    semester_id: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)
 
 class EnrollmentResponse(EnrollmentBase):
-    id: int
+    id: UUID
     

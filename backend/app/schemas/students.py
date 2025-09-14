@@ -1,7 +1,9 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime, date
+
+from uuid import UUID
 
 
 
@@ -9,7 +11,7 @@ class StudentBase(BaseModel):
     """
     Base commun a tous les shémas
     """
-    id: int
+    id: UUID
     id_etudiant: str
     nom: str
     prenom: str
@@ -20,16 +22,18 @@ class StudentBase(BaseModel):
     adresse: Optional[str] = None
     email: Optional[str] = None
     telephone: Optional[str] = None
+    nom_du_pere: Optional[str] = None
+    nom_de_la_mere: Optional[str] = None
+    addresse_du_pere: Optional[str] = None
+    addresse_de_la_mere: Optional[str] = None
     nom_parent_tuteur: Optional[str] = None
     telephone_parent_tuteur: Optional[str] = None
     adresse_parent_tuteur: Optional[str] = None
-    photo: Optional[str] = None
-    statut: Optional[str] = "actif"
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class EnrollStudent(BaseModel):
+class StudentCreate(BaseModel):
     """
     Shéma pour inscrire un étudiant
     """
@@ -42,42 +46,29 @@ class EnrollStudent(BaseModel):
     adresse: Optional[str] = None
     email: Optional[str] = None
     telephone: Optional[str] = None
+    nom_du_pere: Optional[str] = None
+    nom_de_la_mere: Optional[str] = None
+    addresse_du_pere: Optional[str] = None
+    addresse_de_la_mere: Optional[str] = None
     nom_parent_tuteur: Optional[str] = None
     telephone_parent_tuteur: Optional[str] = None
     adresse_parent_tuteur: Optional[str] = None
-    id_departement: Optional[str] = None
-    id_parcours: Optional[str] = None
-    photo: Optional[str] = None
-    qr: Optional[str] = None
     statut: Optional[str] = "actif"
 
     model_config = ConfigDict(from_attributes=True)
 
-class PublicStudent(BaseModel):
-    """
-    Shema pour lecture publique
-    """
-    nom: str
-    prenom: str
-    sexe: Optional[str] = None
-    classe_actuelle_id: Optional[int] = None
-    date_creation: Optional[datetime] = None
+class StudentResponse(StudentBase):
+    pass
 
+class StudentsResponse(BaseModel):
+    data: List[StudentResponse]
+    count: int
+    
     model_config = ConfigDict(from_attributes=True)
 
 
-class StudentModel(StudentBase):
-    """
-    Shema pour lecture complète
-    """
-    date_inscription: Optional[date] = None
-    classe_actuelle_id: Optional[int] = None
-    date_creation: Optional[datetime] = None
 
-    model_config = ConfigDict(from_attributes=True)
-
-
-class UpdateStudent(BaseModel):
+class StudentUpdate(BaseModel):
     """
     Shema pour mise a jour
     """
@@ -90,12 +81,13 @@ class UpdateStudent(BaseModel):
     adresse: Optional[str] = None
     email: Optional[str] = None
     telephone: Optional[str] = None
+    nom_du_pere: Optional[str] = None
+    nom_de_la_mere: Optional[str] = None
+    addresse_du_pere: Optional[str] = None
+    addresse_de_la_mere: Optional[str] = None
     nom_parent_tuteur: Optional[str] = None
     telephone_parent_tuteur: Optional[str] = None
     adresse_parent_tuteur: Optional[str] = None
-    photo: Optional[str] = None
-    qr: Optional[str] = None
     statut: Optional[str] = None
-    classe_actuelle_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)

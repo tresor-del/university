@@ -1,13 +1,13 @@
-from sqlalchemy import Column, String, Integer, Text, ForeignKey
+import uuid
+from sqlalchemy import UUID, Column, String, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.core.config import Base
-from app.models.media import Media
 
 class Teacher(Base):
     __tablename__ = "teachers"
 
-    id = Column(Integer, index=True, primary_key=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
     nom = Column(String(100), index=True, nullable=False)
     prenom = Column(String(100), index=True, nullable=False)
     email = Column(String(30), index=True, nullable=True)
