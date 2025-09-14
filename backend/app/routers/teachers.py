@@ -1,4 +1,5 @@
 from typing import Any, List
+from uuid import UUID
 
 from sqlalchemy import func
 
@@ -33,7 +34,7 @@ def create_teacher_route(db: SessionDeps,data: TeacherCreate, current_user=[Depe
     return teacher.create_teacher(db=db, data=data)
 
 @router.delete("/{teacher_id}", dependencies=[Depends(get_current_active_admin)])
-def delete_teacher(db: SessionDeps, teacher_id: int) -> Message:
+def delete_teacher(db: SessionDeps, teacher_id: UUID) -> Message:
     result = teacher.delete_teacher(db=db, teacher_id=teacher_id)
     if result:
         return Message("Enseignant supprimé avec succès")
@@ -42,7 +43,7 @@ def delete_teacher(db: SessionDeps, teacher_id: int) -> Message:
         detail="Enseignant non trouvé"
     )
 @router.patch("/{teacher_id}", dependencies=[Depends(get_current_active_admin)])
-def update_teacher(db: SessionDeps, teacher_id: int, data: TeacherUpdate):
+def update_teacher(db: SessionDeps, teacher_id: UUID, data: TeacherUpdate):
     db_teacher = db.get(Teacher, teacher_id)
     if not db_teacher:
         raise HTTPException(
@@ -53,6 +54,6 @@ def update_teacher(db: SessionDeps, teacher_id: int, data: TeacherUpdate):
     return db_teacher
 
 @router.get("/{teacher_id}", response_model=TeacherResponse)
-def get_teacher_route(db: SessionDeps, teacher_id: int):
+def get_teacher_route(db: SessionDeps, teacher_id: UUID):
     teacher_db = teacher.get_teacher(teacher_id)
     return teacher_db

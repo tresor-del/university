@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
@@ -27,7 +28,7 @@ def create_course(*, db: Session, data: CourseCreate) -> CourseResponse | None:
     db.refresh(course)
     return CourseResponse.model_validate(course)
 
-def update_course(*, db: Session, course_id: int, data: CourseUpdate) -> CourseResponse | None:
+def update_course(*, db: Session, course_id: UUID, data: CourseUpdate) -> CourseResponse | None:
     course = db.query(course).where(course.id==course_id).first()
     if course:
         validate_data = data.model_validate()
@@ -38,7 +39,7 @@ def update_course(*, db: Session, course_id: int, data: CourseUpdate) -> CourseR
         return CourseResponse.model_validate(course)
     return None
 
-def delete_course(*, db: Session, course_id: int) -> CourseResponse | None:
+def delete_course(*, db: Session, course_id: UUID) -> CourseResponse | None:
     course = db.query(course).where(course.id==course_id).first()
     if course:
         db.delete(course)
@@ -47,7 +48,7 @@ def delete_course(*, db: Session, course_id: int) -> CourseResponse | None:
     return False
 
 
-def get_course(*, db: Session, course_id: int) -> CourseResponse | None:
+def get_course(*, db: Session, course_id: UUID) -> CourseResponse | None:
     statement = select(Course).where(Course.id==course_id)
     course = db.execute(statement).scalar_one()
     return course if course else None

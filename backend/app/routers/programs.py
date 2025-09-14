@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import dependencies, Depends
 from fastapi.routing import APIRouter
 from fastapi.exceptions import HTTPException
@@ -35,7 +36,7 @@ def create_program_route(db: SessionDeps, data: ProgramCreate) -> ProgramRespons
     return program
 
 @router.patch("/{program_id}", dependencies=[Depends(get_current_active_admin)], response_model=ProgramResponse)
-def update_program_route(db: SessionDeps, program_id: int, data: ProgramUpdate) -> ProgramResponse:
+def update_program_route(db: SessionDeps, program_id: UUID, data: ProgramUpdate) -> ProgramResponse:
     """
     Mets à jour un program
     """
@@ -49,7 +50,7 @@ def update_program_route(db: SessionDeps, program_id: int, data: ProgramUpdate) 
     return program_updated
 
 @router.delete("/{program_id}", dependencies=[Depends(get_current_active_admin)], response_model=Message)
-def delete_program_route(db: SessionDeps, program_id: int) -> Message:
+def delete_program_route(db: SessionDeps, program_id: UUID) -> Message:
     """
     Supprime un program
     """
@@ -62,7 +63,7 @@ def delete_program_route(db: SessionDeps, program_id: int) -> Message:
         )
 
 @router.get("/{program_id}", dependencies=[Depends(get_current_active_admin)], response_model=ProgramResponse)
-def get_program_route(db: SessionDeps, program_id: int) -> ProgramResponse:
+def get_program_route(db: SessionDeps, program_id: UUID) -> ProgramResponse:
     """
     Récupérer un program
     """

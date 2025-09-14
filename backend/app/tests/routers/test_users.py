@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy import select
 
 from app.crud import users
@@ -155,9 +156,8 @@ def test_update_user_not_exists(client, superuser_token_headers):
     data = {
         "full_name": "updated_full_name"
     }
-    id = "24"
     r = client.patch(
-        f"{settings.API_V1_STR}/users/{id}",
+        f"{settings.API_V1_STR}/users/{uuid.uuid4()}",
         headers=superuser_token_headers,
         json=data
     )
@@ -381,7 +381,7 @@ def delete_user_super_user(client, db, superuser_token_headers):
 
 def test_delete_user_not_found(client, db, superuser_token_headers):
     r = client.delete(
-        f"{settings.API_V1_STR}/users/456",
+        f"{settings.API_V1_STR}/users/{uuid.uuid4()}",
         headers=superuser_token_headers
     )
     assert r.status_code == 404

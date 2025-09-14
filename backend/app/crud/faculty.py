@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
@@ -28,7 +29,7 @@ def create_faculty(*, db: Session, faculty_data: FacultyCreate) -> FacultyRespon
     db.refresh(faculty)
     return FacultyResponse.model_validate(faculty)
 
-def update_faculty(*, db: Session, faculty_id: int, data: FacultyUpdate) -> FacultyResponse | None:
+def update_faculty(*, db: Session, faculty_id: UUID, data: FacultyUpdate) -> FacultyResponse | None:
     faculty = db.query(Faculty).where(Faculty.id==faculty_id).first()
     if faculty:
         validate_data = data.model_validate()
@@ -39,7 +40,7 @@ def update_faculty(*, db: Session, faculty_id: int, data: FacultyUpdate) -> Facu
         return FacultyResponse.model_validate(faculty)
     return None
 
-def delete_faculty(*, db: Session, faculty_id: int) -> FacultyResponse | None:
+def delete_faculty(*, db: Session, faculty_id: UUID) -> FacultyResponse | None:
     faculty = db.query(Faculty).where(Faculty.id==faculty_id).first()
     if faculty:
         db.delete(faculty)
@@ -47,7 +48,7 @@ def delete_faculty(*, db: Session, faculty_id: int) -> FacultyResponse | None:
         return True
     return False
 
-def get_faculty(*, db: Session, faculty_id: int) -> FacultyResponse | None:
+def get_faculty(*, db: Session, faculty_id: UUID) -> FacultyResponse | None:
     statement = select(Faculty).where(Faculty.id==faculty_id)
     faculty = db.execute(statement).scalar_one()
     return faculty if faculty else None

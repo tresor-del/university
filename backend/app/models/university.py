@@ -9,7 +9,7 @@ from app.core.config import Base
 class Course(Base):
     __tablename__ = "cours"
     
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     code = Column(String(155), index=True, nullable=False)
     titre = Column(String(155), index=True, nullable=False)
     description = Column(Text, nullable=True)
@@ -25,7 +25,7 @@ class Course(Base):
 class Program(Base):
     __tablename__ = "parcours"
     
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     nom = Column(String(255), index=True, nullable=False)
     niveau = Column(String(255), index=True, nullable=False)
     duree = Column(Integer, index=True, nullable=False)
@@ -39,7 +39,7 @@ class Program(Base):
 class Department(Base):
     __tablename__ = "departements"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     nom = Column(String(155), index=True, nullable=False)
     description = Column(Text, nullable=True)
     
@@ -53,7 +53,7 @@ class Department(Base):
 class Faculty(Base):
     __tablename__ = "facultés"
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     nom = Column(String(155), index=True, nullable=False)
     description = Column(Text, nullable=True)
 

@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import UUID
 
 from sqlalchemy import func, select
 
@@ -132,7 +133,7 @@ def register_user(db: SessionDeps, user_in: UserCreate) -> Any:
     return user
 
 @router.get("/{user_id}", response_model=UserPublic)
-def read_user_by_id( user_id: int, db: SessionDeps, current_user: CurrentUser ) -> Any:
+def read_user_by_id( user_id: UUID, db: SessionDeps, current_user: CurrentUser ) -> Any:
     """
     Recevoire un utilisateur by id
     """
@@ -147,7 +148,7 @@ def read_user_by_id( user_id: int, db: SessionDeps, current_user: CurrentUser ) 
     return user
 
 @router.patch("/{user_id}", dependencies=[Depends(get_current_active_admin)], response_model=UserPublic,)
-def update_user(*, db: SessionDeps, user_id: int, user_in: UserUpdate) -> Any:
+def update_user(*, db: SessionDeps, user_id: UUID, user_in: UserUpdate) -> Any:
     """
     Mettre à jour un utilisateur
     """
@@ -168,7 +169,7 @@ def update_user(*, db: SessionDeps, user_id: int, user_in: UserUpdate) -> Any:
     return db_user
 
 @router.delete("/{user_id}", dependencies=[Depends(get_current_active_admin)])
-def delete_user(db: SessionDeps, current_user: CurrentUser, user_id: int) -> Message:
+def delete_user(db: SessionDeps, current_user: CurrentUser, user_id: UUID) -> Message:
     """
     Supprimer un utilisateur
     """

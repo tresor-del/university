@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
@@ -21,15 +22,15 @@ def create_teacher(db: Session, data: TeacherCreate)-> TeacherResponse | None:
     db.refresh(teacher)
     return 
 
-def delete_teacher(*,db: Session, teacher_id: int) -> TeacherResponse | None:
-    teacher = db.query(Teacher).filter(Teacher.id==id).first()
+def delete_teacher(*,db: Session, teacher_id: UUID) -> TeacherResponse | None:
+    teacher = db.query(Teacher).filter(Teacher.id==teacher_id).first()
     if teacher:
         db.delete(teacher)
         db.commit()
         return True
     return None
 
-def update_teacher(db: Session, teacher_id: int, data: TeacherUpdate) -> TeacherResponse | None:
+def update_teacher(db: Session, teacher_id: UUID, data: TeacherUpdate) -> TeacherResponse | None:
     teacher = db.query(Teacher).filter(Teacher.id==teacher_id).first()
     if teacher:
         validate_data = data.model_dump(exclude_unset=True)
@@ -40,7 +41,7 @@ def update_teacher(db: Session, teacher_id: int, data: TeacherUpdate) -> Teacher
         return TeacherResponse.model_validate(teacher)
     return None
 
-def get_teacher(db: Session, id: int) -> TeacherResponse | None:
+def get_teacher(db: Session, id: UUID) -> TeacherResponse | None:
     statement = select(Teacher).where(Teacher.id==id)
     teacher = db.execute(statement).scalar_one_or_none()
     return teacher if teacher else None

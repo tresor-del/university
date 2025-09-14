@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
@@ -26,7 +27,7 @@ def create_program(*, db: Session, data: ProgramCreate) -> ProgramResponse:
     db.refresh(program)
     return ProgramResponse.model_validate(program)
 
-def update_program(*, db: Session, program_id: int, data: ProgramUpdate) -> ProgramResponse | None:
+def update_program(*, db: Session, program_id: UUID, data: ProgramUpdate) -> ProgramResponse | None:
     program = db.query(Program).where(Program.id==program_id).first()
     if program:
         validate_data = data.model_validate()
@@ -37,7 +38,7 @@ def update_program(*, db: Session, program_id: int, data: ProgramUpdate) -> Prog
         return ProgramResponse.model_validate(program)
     return None
 
-def delete_program(*, db: Session, program_id: int) -> ProgramResponse | None:
+def delete_program(*, db: Session, program_id: UUID) -> ProgramResponse | None:
     program = db.query(Program).where(Program.id==program_id).first()
     if program:
         db.delete(program)
@@ -45,7 +46,7 @@ def delete_program(*, db: Session, program_id: int) -> ProgramResponse | None:
         return True
     return False
 
-def get_program(*, db: Session, program_id: int) -> ProgramResponse | None:
+def get_program(*, db: Session, program_id: UUID) -> ProgramResponse | None:
     statement = select(Program).where(Program.id==program_id)
     program = db.execute(statement).scalar_one()
     return program if program else None

@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
@@ -27,7 +28,7 @@ def create_departement(*, db: Session, departement_data: DepartmentCreate) -> De
     db.refresh(departement)
     return DepartmentResponse.model_validate(departement)
 
-def update_departement(*, db: Session, dep_id: int, data: DepartmentUpdate) -> DepartmentResponse | None:
+def update_departement(*, db: Session, dep_id: UUID, data: DepartmentUpdate) -> DepartmentResponse | None:
     departement = db.query(Department).where(Department.id==dep_id).first()
     if departement:
         validate_data = data.model_validate()
@@ -38,7 +39,7 @@ def update_departement(*, db: Session, dep_id: int, data: DepartmentUpdate) -> D
         return DepartmentResponse.model_validate(departement)
     return None
 
-def delete_department(*, db: Session, department_id: int) -> DepartmentResponse | None:
+def delete_department(*, db: Session, department_id: UUID) -> DepartmentResponse | None:
     department = db.query(Department).where(department.id==department_id).first()
     if department:
         db.delete(department)
@@ -46,7 +47,7 @@ def delete_department(*, db: Session, department_id: int) -> DepartmentResponse 
         return True
     return False
 
-def get_departement(*, db: Session, department_id: int) -> DepartmentResponse | None:
+def get_departement(*, db: Session, department_id: UUID) -> DepartmentResponse | None:
     statement = select(Department).where(Department.id==department_id)
     department = db.execute(statement).scalar_one()
     return department if department else None

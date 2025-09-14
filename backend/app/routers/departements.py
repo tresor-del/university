@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import Depends, dependencies
 from fastapi.routing import APIRouter
 from fastapi.exceptions import HTTPException
@@ -35,7 +36,7 @@ def create_departemnt_route(db: SessionDeps, data: DepartmentCreate) -> Departme
     return departement
 
 @router.patch("/{department_id}", dependencies=[Depends(get_current_active_admin)], response_model=DepartmentResponse)
-def update_department_route(db: SessionDeps, department_id: int, data: DepartmentUpdate) -> DepartmentResponse:
+def update_department_route(db: SessionDeps, department_id: UUID, data: DepartmentUpdate) -> DepartmentResponse:
     """
     Met à jour un departement
     """
@@ -49,7 +50,7 @@ def update_department_route(db: SessionDeps, department_id: int, data: Departmen
     return department_updated
 
 @router.delete("/{department_id}", dependencies=[Depends(get_current_active_admin)], response_model=Message)
-def delete_department_route(db: SessionDeps, department_id: int) -> Message:
+def delete_department_route(db: SessionDeps, department_id: UUID) -> Message:
     """
     Supprime un Departement
     """
@@ -62,7 +63,7 @@ def delete_department_route(db: SessionDeps, department_id: int) -> Message:
         )
 
 @router.get("/{department_id}", dependencies=[Depends(get_current_active_admin)], response_model=DepartmentResponse)
-def get_department_route(db: SessionDeps, department_id: int) -> DepartmentResponse:
+def get_department_route(db: SessionDeps, department_id: UUID) -> DepartmentResponse:
     """
     Récupérer un Departement
     """

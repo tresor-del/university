@@ -7,7 +7,7 @@ from app.models.university import Course
 
 class Semester(Base):
     __tablename__ = "semesters"
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
     name = Column(String(50), nullable=False)  # ex: "Semestre 1"
 
     enrollments = relationship("Enrollment", back_populates="semester")
@@ -17,7 +17,7 @@ class Semester(Base):
 class Enrollment(Base):
     __tablename__ = "enrollment"
     
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True, autoincrement=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
 
     student_id = Column(Integer, ForeignKey("etudiants.id"), nullable=False)
     course_id = Column(Integer, ForeignKey("cours.id"), nullable=False) 
