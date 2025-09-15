@@ -57,7 +57,7 @@ class Student(Base):
 @event.listens_for(Student, "before_insert")
 def generer_id_etudiant(mapper, connection, target):
     if not target.id_etudiant:
-        target.id_etudiant = f"STD{datetime.now().year}-{uuid.uuid4().hex[:8]}"
+        target.id_etudiant = f"STD{datetime.now().year}-{uuid.uuid4().hex[:5]}"
     pass
 
 
