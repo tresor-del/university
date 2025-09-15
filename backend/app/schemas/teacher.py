@@ -7,6 +7,7 @@ from uuid import UUID
 # Teacher
 
 class TeacherBase(BaseModel):
+    id_teacher: str
     nom: str
     prenom: str
     email: Optional[EmailStr] = None
@@ -42,8 +43,8 @@ class TeachersResponse(BaseModel):
 # TeachCourse
 
 class TeachCourseBase(BaseModel):
-    course_id: int
-    teacher_id: int
+    course_id: UUID
+    teacher_id: UUID
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -52,11 +53,11 @@ class TeachCourseCreate(TeachCourseBase):
 
 
 class TeachCourseUpdate(BaseModel):
-    course_id: Optional[int] = None
-    teacher_id: Optional[int] = None
+    course_id: Optional[UUID] = None
+    teacher_id: Optional[UUID] = None
     
     model_config = ConfigDict(from_attributes=True)
 
 
 class TeachCourseResponse(TeachCourseBase):
-    id: int
+    id: UUID
