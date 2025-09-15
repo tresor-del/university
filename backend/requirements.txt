@@ -8,3 +8,10 @@ sqlalchemy
 pymysql
 cryptography
 alembic
+jwt
+passlib
+pyjwt
+python-multipart
+pydantic[email]
+qrcode
+bcrypt
