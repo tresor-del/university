@@ -10,7 +10,7 @@ class Teacher(Base):
     __tablename__ = "teachers"
 
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
-    id_teacher = Column(String(100), unique=True, index=True)
+    id_teacher = Column(String(100), unique=True, index=True, nullable=False)
     nom = Column(String(100), index=True, nullable=False)
     prenom = Column(String(100), index=True, nullable=False)
     email = Column(String(30), index=True, nullable=True)
@@ -27,7 +27,7 @@ class Teacher(Base):
     
 @event.listens_for(Teacher, "before_insert")
 def generer_id_etudiant(mapper, connection, target):
-    if not target.id_etudiant:
+    if not target.id_teacher:
         target.id_teacher = f"TCH{datetime.now().year}-{uuid.uuid4().hex[:5]}"
     pass
 

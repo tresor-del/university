@@ -7,7 +7,6 @@ from uuid import UUID
 # Teacher
 
 class TeacherBase(BaseModel):
-    id_teacher: str
     nom: str
     prenom: str
     email: Optional[EmailStr] = None
@@ -33,6 +32,7 @@ class TeacherUpdate(BaseModel):
 
 class TeacherResponse(TeacherBase):
     id: UUID
+    id_teacher: str
 
 class TeachersResponse(BaseModel):
     data: list[TeacherResponse]

@@ -20,7 +20,7 @@ def create_teacher(db: Session, data: TeacherCreate)-> TeacherResponse | None:
     db.add(teacher)
     db.commit()
     db.refresh(teacher)
-    return 
+    return TeacherResponse.model_validate(teacher)
 
 def delete_teacher(*,db: Session, teacher_id: UUID) -> TeacherResponse | None:
     teacher = db.query(Teacher).filter(Teacher.id==teacher_id).first()
@@ -28,7 +28,7 @@ def delete_teacher(*,db: Session, teacher_id: UUID) -> TeacherResponse | None:
         db.delete(teacher)
         db.commit()
         return True
-    return None
+    return False
 
 def update_teacher(db: Session, teacher_id: UUID, data: TeacherUpdate) -> TeacherResponse | None:
     teacher = db.query(Teacher).filter(Teacher.id==teacher_id).first()
@@ -44,4 +44,4 @@ def update_teacher(db: Session, teacher_id: UUID, data: TeacherUpdate) -> Teache
 def get_teacher(db: Session, id: UUID) -> TeacherResponse | None:
     statement = select(Teacher).where(Teacher.id==id)
     teacher = db.execute(statement).scalar_one_or_none()
-    return teacher if teacher else None
+    return TeacherResponse.model_validate(teacher) if teacher else None
