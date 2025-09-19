@@ -13,20 +13,18 @@ from app.core.security import save_encrypted_file, read_encrypted_file
 from app.deps import SessionDeps, get_current_active_admin
 from app.crud import media
 
-
 router = APIRouter(prefix="/media", tags=["media"])
 
 @router.post("/", response_model=MediaResponse)
 def upload_media(db: SessionDeps, file_type: str, student_id: UUID = None, teacher_id: UUID = None, file: UploadFile = File(...)):
-    file_location = save_encrypted_file(file, file.filename)
-    media_data = MediaCreate(
-        file_path=file_location,
+    
+    return media.create_media(
+        db=db, 
         file_type=file_type, 
-        mime_type=file.content_type,
-        student_id=student_id,
-        teacher_id=teacher_id
+        student_id=student_id, 
+        teacher_id=teacher_id, 
+        file=file
     )
-    return media.create_media(db=db, media=media_data)
 
 @router.get("/download/{media_id}")
 def download_media(media_id: UUID, db: SessionDeps):

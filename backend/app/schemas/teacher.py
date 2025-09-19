@@ -1,8 +1,9 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional
+from typing import List, Optional
 
 from uuid import UUID
 
+from app.schemas.media import MediaResponse
 
 # Teacher
 
@@ -12,7 +13,8 @@ class TeacherBase(BaseModel):
     email: Optional[EmailStr] = None
     telephone: Optional[str] = None
     grade: str
-
+    medias: Optional[list] = []
+    
     model_config = ConfigDict(from_attributes=True)
     
 

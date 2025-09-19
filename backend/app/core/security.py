@@ -34,6 +34,7 @@ def get_password_hash(password: str) -> str:
 
 def save_encrypted_file(file, filename):
     file_location = os.path.join(UPLOAD_DIR, filename)
+    os.makedirs(os.path.dirname(file_location), exist_ok=True)
     # lecture du contenu
     content = file.file.read()
     # chiffrement

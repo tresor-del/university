@@ -29,6 +29,7 @@ class StudentBase(BaseModel):
     nom_parent_tuteur: Optional[str] = None
     telephone_parent_tuteur: Optional[str] = None
     adresse_parent_tuteur: Optional[str] = None
+    medias: Optional[list] = []
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -58,7 +59,7 @@ class StudentCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class StudentResponse(StudentBase):
-    pass
+    medias: Optional[list] = []
 
 class StudentsResponse(BaseModel):
     data: List[StudentResponse]
