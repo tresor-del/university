@@ -1,14 +1,15 @@
+from typing import Any
 import uuid
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.media import add_media, read_media
+from app.crud.media import add_media, add_principal_photo, read_media, update_principal_photo
 from app.tests.utils.teachers import create_random_teacher
 from app.tests.utils.students import create_random_student
 from app.models.media import Media
 from app.tests.utils.students import create_random_student
-from app.tests.utils.media import create_fake_media
+from app.tests.utils.media import check_read_media, create_fake_media, check_principal_photo, check_add_media
 from app.models.teachers import Teacher
 from app.models.students import Student
 
@@ -18,63 +19,20 @@ def test_add_media_teacher(db: Session) -> None:
     """
     file = create_fake_media()
     teacher = create_random_teacher(db)
+    teacher_db = db.query(Teacher).where(Teacher.id==teacher.id).first()
+    
     media = add_media(db=db, file_type="photo", teacher_id=teacher.id, file=file)
     
-    # vérifier que l'enseignant de la base de donnée est relié au media
-    teacher_query = select(Teacher).where(Teacher.id == teacher.id)
-    teacher = db.execute(teacher_query).scalar_one_or_none()
-    print(teacher.medias)
-    assert len(teacher.medias) >= 1
-
-    # vérifier que le média rélié a l'enseignant
-    assert hasattr(teacher, "medias")
-    assert isinstance(media, Media)
-    assert media.teacher_id == teacher.id
-    assert media.student_id is None
-    assert media.file_type == "photo"
-    
-    # Vérifider la relation côté enseignant
-    assert isinstance(teacher.medias, list)
-    assert len(teacher.medias) >= 1
-    assert media in teacher.medias
-    
-    # Vérifier que le média existe en base de données
-    media_query = select(Media).where(Media.id == media.id)
-    media_db = db.execute(media_query).scalar_one_or_none()
-    assert media_db is not None
-    assert media_db.teacher_id == teacher.id
-    assert media_db.student_id is None
-    
-    
+    check_add_media(db=db, entity=teacher_db, media=media, is_teacher=True)
+      
 def test_add_media_student(db: Session) -> None:
     """Test l'ajout d'un média à un étudiant."""
     file = create_fake_media()
     student = create_random_student(db)
-    
+    student_db = db.query(Student).where(Student.id==student.id).first()
     media = add_media(db=db, file_type="photo", student_id=student.id, file=file)
-
-    # verifier que l'étudiant de la bdd est relié au média créé
-    student_query = select(Student).where(Student.id == student.id)
-    student = db.execute(student_query).scalar_one_or_none()
-    print(student.medias)
-    assert len(student.medias) >= 1
     
-    # vérifier que le media est relié a l'étudiant
-    assert isinstance(media, Media)
-    assert media.student_id == student.id
-    assert media.teacher_id is None
-    assert media.file_type == "photo"
-    
-    # Vérifier la relation côté étudiant
-    assert student.medias is not None
-    assert media in student.medias
-    
-    # Vérifier que le média existe en base de données
-    media_query = select(Media).where(Media.id == media.id)
-    media_db = db.execute(media_query).scalar_one_or_none()
-    assert media_db is not None
-    assert media_db.student_id == student.id
-    assert media_db.teacher_id is None
+    check_add_media(db=db, entity=student_db, media=media, is_teacher=False)
     
 def test_add_media_with_no_teacher_student(db: Session) -> None:
     """Test l'ajout d'un média sans enseignant ni étudiant."""
@@ -93,78 +51,40 @@ def test_add_media_with_both_teacher_and_student(db: Session) -> None:
     
     assert r is None
 
-def test_get_media_teacher(db: Session) -> None:
+def test_read_media_teacher(db: Session) -> None:
     """Test la récupération des médias d'un enseignant."""
     file1 = create_fake_media()
     file2 = create_fake_media()
     teacher = create_random_teacher(db)
+    teacher_db = db.query(Teacher).where(Teacher.id == teacher.id).first()
     
     # Ajouter plusieurs médias
     media1 = add_media(db=db, file_type="photo", teacher_id=teacher.id, file=file1)
     media2 = add_media(db=db, file_type="document", teacher_id=teacher.id, file=file2)
     
     r = read_media(db=db, teacher_id=teacher.id)
-    
-    teacher_query = select(Teacher).where(Teacher.id == teacher.id)
-    teacher = db.execute(teacher_query).scalar_one_or_none()
-    print(teacher.medias)
-    assert len(teacher.medias) >= 2
-    
-    assert isinstance(r["data"], list)
-    assert r["count"] == 2
-    assert len(r["data"]) >= 2  
-    
-    # Vérifier que tous les médias appartiennent au bon enseignant
-    for m in r["data"]:
-        assert m.teacher_id == teacher.id
-        assert m.student_id is None
-    
-    # Vérifier que nos médias sont dans la liste
-    media_ids = [m.id for m in r["data"]]
-    assert media1.id in media_ids
-    assert media2.id in media_ids
+    data = r["data"]
+    count = r["count"]
 
-    # Vérifier que l'enseignant a les médias
-    assert teacher.medias
-    for media in r["data"]:
-        assert media in teacher.medias
+    check_read_media(db=db, entity=teacher_db, media1=media1, media2=media2, data=data, count=count, is_teacher=True)
 
 def test_read_media_student(db: Session) -> None:
     """Test la récupération des médias d'un étudiant."""
     file1 = create_fake_media()
     file2 = create_fake_media()
     student = create_random_student(db)
+    student_db = db.query(Student).where(Student.id == student.id).first()
     
     # Ajouter plusieurs médias
     media1 = add_media(db=db, file_type="photo", student_id=student.id, file=file1)
     media2 = add_media(db=db, file_type="qr", student_id=student.id, file=file2)
     
     r = read_media(db=db, student_id=student.id)
-    
-    # verifier que l'étudiant de la bdd est relié au média créé
-    student_query = select(Student).where(Student.id == student.id)
-    student = db.execute(student_query).scalar_one_or_none()
-    print(student.medias)
-    assert len(student.medias) >= 2
-    
-    assert isinstance(r["data"], list)
-    assert r["count"] == 2
-    assert len(r["data"]) >= 2 
-    
-    # Vérifier que tous les médias appartiennent au bon étudiant
-    for m in r["data"]:
-        assert m.student_id == student.id
-        assert m.teacher is None
-    
-    # Vérifier que nos médias sont dans la liste
-    media_ids = [m.id for m in r["data"]]
-    assert media1.id in media_ids
-    assert media2.id in media_ids
 
-    # Vérifier que l'enseignant a les médias
-    assert student.medias
-    for media in r["data"]:
-        assert media in student.medias
+    data = r["data"]
+    count = r["count"]
+    
+    check_read_media(db=db, entity=student_db, media1=media1, media2=media2, data=data, count=count, is_teacher=False)
 
 def test_read_media_nonexistent_teacher(db: Session) -> None:
     """Test la récupération des médias pour un enseignant inexistant."""
@@ -232,3 +152,60 @@ def test_multiple_file_types(db: Session) -> None:
         file_student = create_fake_media()
         media_student = add_media(db=db, file_type=file_type, student_id=student.id, file=file_student)
         assert media_student.file_type == file_type
+
+def test_add_principal_photo_student(db: Session) -> None:
+    """
+    Test l'ajout d'une photo principale(sera utilisé pour les cartes et autre)
+    """
+    file_student = create_fake_media()
+    student = create_random_student(db)
+    student_db = db.query(Student).where(Student.id == student.id).first()
+    principal_media = add_principal_photo(db=db,student_id=student.id, file=file_student) 
+    
+    check_principal_photo(db=db, entity=student_db, principal_media=principal_media, is_teacher=False) 
+    
+def test_add_principal_photo_teacher(db: Session) -> None:
+    """
+    Test l'ajout d'une photo principale(sera utilisé pour les cartes et autre)
+    """
+    file_teacher = create_fake_media()
+    teacher = create_random_teacher(db)
+    teacher_db = db.query(Teacher).where(Teacher.id == teacher.id).first()
+    principal_media = add_principal_photo(db=db,teacher_id=teacher.id, file=file_teacher) 
+    
+    check_principal_photo(db=db, entity=teacher_db, principal_media=principal_media, is_teacher=True)
+    
+def test_add_principal_photo_teacher_student(db: Session) -> Any:
+    file = create_fake_media()
+    teacher = create_random_teacher(db)
+    student = create_random_student(db)
+    r = add_principal_photo(db=db, student_id=student.id, teacher_id=teacher.id, file=file)
+    assert r is None
+
+def test_add_principal_photo_no_teacher_student(db: Session) -> Any:
+    file = create_fake_media()
+    r = add_principal_photo(db=db, file=file)
+    assert r is None
+
+def test_update_princ_photo_student(db: Session) -> Any:
+    # ajouter une photo
+    file = create_fake_media("photo1.png")
+    student = create_random_student(db)
+    principal_media = add_principal_photo(db=db,student_id=student.id, file=file)
+    
+    assert principal_media.is_principal
+    
+    # essayer de la mettre à jour
+    update_file = create_fake_media("photo2.png")
+    updated_photo = update_principal_photo(db=db, student_id=student.id, new_file=update_file)
+    
+    # vérifier que l'ancienne photo n'est plus la principale
+    assert principal_media.is_principal is False
+    assert principal_media.file_path != updated_photo.file_path
+    
+    # vérifier que la photo à bien été mise à jour
+    query = select(Student).where(Student.id_etudiant==student.id_etudiant)
+    student_db = db.execute(query).scalar_one_or_none()
+    print(student_db)
+    check_principal_photo(db=db, entity=student_db, principal_media=updated_photo, is_teacher=False) 
+    

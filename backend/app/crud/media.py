@@ -66,7 +66,7 @@ def add_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: UUI
         return db_media
     return None
 
-def change_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: UUID = None, new_file: UploadFile = None) -> Media | None:
+def update_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: UUID = None, new_file: UploadFile = None) -> Media | None:
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
@@ -76,26 +76,25 @@ def change_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: 
             Media.is_principal==True
         ).first()
         if old_principal_media:
-            old_principal_media.is_principal == False
+            old_principal_media.is_principal = False
             db.commit()
             db.refresh(old_principal_media)
-        else: 
-            if new_file:
-                file_location = save_encrypted_file(new_file, new_file.filename)
-                media_data = MediaCreate(
-                    file_path=file_location,
-                    file_type="photo",
-                    mime_type=new_file.content_type,
-                    student_id=student_id,
-                    teacher_id=teacher_id,
-                    is_princpal=True
-                )
-                db_media = Media(**media_data.model_dump())
-                db.add(db_media)
-                db.commit()
-                db.refresh(db_media)
-                return db_media
-            return None
+        if new_file:
+            file_location = save_encrypted_file(new_file, new_file.filename)
+            media_data = MediaCreate(
+                file_path=file_location,
+                file_type="photo",
+                mime_type=new_file.content_type,
+                student_id=student_id,
+                teacher_id=teacher_id,
+                is_principal=True
+            )
+            db_media = Media(**media_data.model_dump())
+            db.add(db_media)
+            db.commit()
+            db.refresh(db_media)
+            return db_media
+        return None
 
 def delete_media(*, db: Session, file_path: str, student_id: UUID = None, teacher_id: UUID = None) -> bool | None:
     if student_id and teacher_id:
@@ -110,5 +109,21 @@ def delete_media(*, db: Session, file_path: str, student_id: UUID = None, teache
             db.delete(media)
             db.commit()
             return True
+        return None
+    return None
+
+def get_media(*, db: Session, file_path: str, student_id: UUID =None, teacher_id = None) -> Media | None:
+    if student_id and teacher_id:
+        return None
+    elif student_id and teacher_id:
+        if file_path:
+            media = db.query(Media).where(
+                Media.student_id==student_id,
+                Media.teacher_id==teacher_id,
+                Media.file_path==file_path
+            ).first()
+            if media:
+                return media
+            return None
         return None
     return None
