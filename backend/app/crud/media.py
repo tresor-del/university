@@ -70,15 +70,18 @@ def update_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: 
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
-        old_principal_media = db.query(Media).filter(
+        old_principal_medias = db.query(Media).filter(
             Media.student_id==student_id,
             Media.teacher_id==teacher_id,
             Media.is_principal==True
-        ).first()
-        if old_principal_media:
-            old_principal_media.is_principal = False
-            db.commit()
-            db.refresh(old_principal_media)
+        ).all()
+        for media in old_principal_medias:
+            media.is_principal = False
+        db.commit()
+        for media in old_principal_medias:
+            db.refresh(media)
+        if not new_file:
+            return None
         if new_file:
             file_location = save_encrypted_file(new_file, new_file.filename)
             media_data = MediaCreate(
@@ -100,30 +103,28 @@ def delete_media(*, db: Session, file_path: str, student_id: UUID = None, teache
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
-        if file_path:
-            media = db.query(Media).where(
-                Media.student_id==student_id,
-                Media.teacher_id==teacher_id,
-                Media.file_path==file_path
-            ).first()
+        media = db.query(Media).where(
+            Media.student_id==student_id,
+             Media.teacher_id==teacher_id,
+             Media.file_path==file_path
+        ).first()
+        if media:
             db.delete(media)
             db.commit()
             return True
         return None
     return None
 
-def get_media(*, db: Session, file_path: str, student_id: UUID =None, teacher_id = None) -> Media | None:
+def get_media(*, db: Session, file_path: str, student_id: UUID =None, teacher_id: UUID = None) -> Media | None:
     if student_id and teacher_id:
         return None
-    elif student_id and teacher_id:
-        if file_path:
-            media = db.query(Media).where(
-                Media.student_id==student_id,
-                Media.teacher_id==teacher_id,
-                Media.file_path==file_path
-            ).first()
-            if media:
-                return media
-            return None
+    elif student_id or teacher_id:
+        media = db.query(Media).where(
+            Media.student_id==student_id,
+            Media.teacher_id==teacher_id,
+            Media.file_path==file_path
+        ).first()
+        if media:
+            return media
         return None
     return None
