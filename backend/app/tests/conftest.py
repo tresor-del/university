@@ -12,7 +12,7 @@ from app.models.media import Media
 from app.models import users
 from app.core.config import Base
 from app.core.settings import settings
-from app.deps import get_db
+from app.api.deps import get_db
 from app.initial_data import init_db
 from app.tests.utils.users import authenticate_user_from_username
 from app.tests.utils.utils import get_superuser_token_headers
