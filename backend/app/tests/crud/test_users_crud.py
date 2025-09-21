@@ -55,5 +55,3 @@ def test_not_authenticate_user(db: Session):
     password = random_lower_string()
     response = users.authenticate_user(db=db, username=username, password=password)
     assert response is None
-
-    

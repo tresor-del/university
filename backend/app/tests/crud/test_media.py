@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.media import add_media, add_principal_photo, read_media, update_principal_photo
+from app.crud.media import add_media, add_principal_photo, delete_media, get_media, read_media, update_principal_photo
 from app.tests.utils.teachers import create_random_teacher
 from app.tests.utils.students import create_random_student
 from app.models.media import Media
@@ -18,6 +18,7 @@ def test_add_media_teacher(db: Session) -> None:
     Test l'ajout d'un média à un enseignant.
     """
     file = create_fake_media()
+    
     teacher = create_random_teacher(db)
     teacher_db = db.query(Teacher).where(Teacher.id==teacher.id).first()
     
@@ -26,8 +27,11 @@ def test_add_media_teacher(db: Session) -> None:
     check_add_media(db=db, entity=teacher_db, media=media, is_teacher=True)
       
 def test_add_media_student(db: Session) -> None:
-    """Test l'ajout d'un média à un étudiant."""
+    """
+    Test l'ajout d'un média à un étudiant.
+    """
     file = create_fake_media()
+    
     student = create_random_student(db)
     student_db = db.query(Student).where(Student.id==student.id).first()
     media = add_media(db=db, file_type="photo", student_id=student.id, file=file)
@@ -191,21 +195,121 @@ def test_update_princ_photo_student(db: Session) -> Any:
     # ajouter une photo
     file = create_fake_media("photo1.png")
     student = create_random_student(db)
-    principal_media = add_principal_photo(db=db,student_id=student.id, file=file)
+    principal_photo = add_principal_photo(db=db,student_id=student.id, file=file)
     
-    assert principal_media.is_principal
+    assert principal_photo.is_principal
     
     # essayer de la mettre à jour
     update_file = create_fake_media("photo2.png")
     updated_photo = update_principal_photo(db=db, student_id=student.id, new_file=update_file)
     
     # vérifier que l'ancienne photo n'est plus la principale
-    assert principal_media.is_principal is False
-    assert principal_media.file_path != updated_photo.file_path
+    assert principal_photo.is_principal is False
+    
+    # s'assurer que les deux fichiers ont des chemins différents
+    assert principal_photo.file_path != updated_photo.file_path
     
     # vérifier que la photo à bien été mise à jour
     query = select(Student).where(Student.id_etudiant==student.id_etudiant)
     student_db = db.execute(query).scalar_one_or_none()
     print(student_db)
     check_principal_photo(db=db, entity=student_db, principal_media=updated_photo, is_teacher=False) 
+
+def test_update_principal_photo_teacher(db: Session) -> Any:
+     # ajouter une photo
+    file = create_fake_media("photo1.png")
+    teacher = create_random_teacher(db)
+    principal_photo = add_principal_photo(db=db,teacher_id=teacher.id, file=file)
+    
+    assert principal_photo.is_principal
+    
+    # essayer de la mettre à jour
+    update_file = create_fake_media("photo2.png")
+    updated_photo = update_principal_photo(db=db, teacher_id=teacher.id, new_file=update_file)
+    
+    # vérifier que l'ancienne photo n'est plus la principale
+    assert principal_photo.is_principal is False
+    
+    # s'assurer que les deux fichiers ont des chemins différents
+    assert principal_photo.file_path != updated_photo.file_path
+    
+    # vérifier que la photo à bien été mise à jour
+    query = select(Teacher).where(Teacher.id==teacher.id)
+    teacher_db = db.execute(query).scalar_one_or_none()
+    check_principal_photo(db=db, entity=teacher_db, principal_media=updated_photo, is_teacher=True) 
+
+def test_update_principal_photo_no_new_file(db: Session) -> Any:
+    teacher = create_random_teacher(db)
+    file = create_fake_media("photo1.png")
+
+    principal_photo = add_principal_photo(db=db,teacher_id=teacher.id, file=file)
+
+    update_princ_photo = update_principal_photo(db=db, teacher_id=teacher.id)
+    
+    assert update_princ_photo is None
+    assert principal_photo.is_principal is False
+    
+def test_delete_media_student(db: Session) -> Any:
+    teacher = create_random_teacher(db)
+    student = create_random_student(db)
+
+    file_teacher = create_fake_media("photo1.png")
+    file_student = create_fake_media("photo2.png")
+
+    media_teacher = add_media(db=db, file_type="photo", teacher_id=teacher.id, file=file_teacher)
+    media_student = add_media(db=db, file_type="photo", student_id=student.id, file=file_student)
+
+    delete_media_t = delete_media(db=db, file_path=media_teacher.file_path, teacher_id=teacher.id)
+    delete_media_s = delete_media(db=db, file_path=media_student.file_path, student_id=student.id)
+    
+    assert delete_media_t
+    assert delete_media_s
+
+    student_media_query = select(Media).where(Media.id==media_student.id)
+    student_media = db.execute(student_media_query).scalar_one_or_none()
+    assert student_media is None
+    
+    teacher_media_query = select(Media).where(Media.id==media_teacher.id)
+    teacher_media = db.execute(teacher_media_query).scalar_one_or_none()
+    assert teacher_media is None
+    
+def test_delete_media_wrong_file_path(db: Session) -> Any:
+    teacher = create_random_teacher(db)
+    student = create_random_student(db)
+    
+    delete_media_t = delete_media(db=db, file_path="fake/path.photo", teacher_id=teacher.id)
+    delete_media_s = delete_media(db=db, file_path="fake/path.photo", student_id=student.id)
+    
+    assert delete_media_s is None
+    assert delete_media_t is None
+    
+def test_get_media(db: Session) -> Any:
+    teacher = create_random_teacher(db)
+    student = create_random_student(db)
+
+    file_teacher = create_fake_media("photo1.png")
+    file_student = create_fake_media("photo2.png")
+
+    media_teacher = add_media(db=db, file_type="photo", teacher_id=teacher.id, file=file_teacher)
+    media_student = add_media(db=db, file_type="photo", student_id=student.id, file=file_student)
+    
+    print(media_teacher.file_path)
+    
+    media_t = get_media(db=db, file_path=media_teacher.file_path, teacher_id=teacher.id)
+    media_s = get_media(db=db, file_path=media_student.file_path, student_id=student.id)
+
+    assert media_t
+    assert isinstance(media_t, Media)
+    assert media_s
+    assert isinstance(media_s, Media)
+
+def test_get_media_wrong_file_path(db: Session) -> Any:
+    teacher = create_random_teacher(db)
+    student = create_random_student(db)
+
+    media_t = get_media(db=db, file_path="fake/photo.png", teacher_id=teacher.id)
+    media_s = get_media(db=db, file_path="fake/photo.png", student_id=student.id)
+    
+    assert media_t is None
+    assert media_s is None
     
