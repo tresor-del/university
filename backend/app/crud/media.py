@@ -1,32 +1,64 @@
 from uuid import UUID
-from fastapi import File, UploadFile
+from fastapi import BackgroundTasks, File, UploadFile
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.media import Media
 from app.models.students import Student
 from app.schemas.media import MediaCreate, MediaResponse
-from app.core.security import save_encrypted_file
+from app.background_tasks.media import encrypt_and_store
+from app.utils.media import save_temp_file
 
-def add_media(*,db: Session,file_type: str, student_id: UUID = None, teacher_id: UUID = None, file: UploadFile = File(...)) -> Media | None:
+def add_media(
+    *,
+    db: Session,
+    file_type: str,
+    file: UploadFile = File(...),
+    student_id: UUID = None,
+    teacher_id: UUID = None,
+    background_tasks: BackgroundTasks,
+    is_principal: bool = False
+) -> Media | None:
+    """Ajoute un nouveau média avec traitement en arrière-plan"""
+    
+    # Validation : un seul propriétaire autorisé
     if student_id and teacher_id:
         return None
-    elif student_id or teacher_id:
-        file_location = save_encrypted_file(file, file.filename)
-        media_data = MediaCreate(
-            file_path=file_location,
-            file_type=file_type, 
-            mime_type=file.content_type,
-            student_id=student_id,
-            teacher_id=teacher_id
-        )
-        db_media = Media(**media_data.model_dump())
-        db.add(db_media)
-        db.commit()
-        db.refresh(db_media)
-        return db_media
-    else:
+    elif not (student_id or teacher_id):
         return None
+    
+    # 1. Créer l'entrée en base avec statut "processing"
+    temp_media_data = MediaCreate(
+        file_path="",  # Sera mis à jour par la background task
+        file_type=file_type,
+        mime_type=file.content_type,
+        status="processing",
+        student_id=student_id,
+        teacher_id=teacher_id,
+        is_principal=is_principal,
+        file_size=0,  # Sera calculé
+        storage_location="local"
+    )
+    
+    # 2. Sauvegarder temporairement et obtenir le média créé
+    temp_path, media = save_temp_file(
+        db=db, 
+        temp_file=temp_media_data, 
+        file=file,
+        file_type=file_type
+    )
+    
+    # 3. Lancer le traitement en arrière-plan
+    background_tasks.add_task(
+        encrypt_and_store,
+        db,
+        media.id,
+        temp_path,
+        file_type,
+    )
+    
+    media = db.execute(select(Media).where(Media.id==media.id)).scalar_one_or_none()
+    return media if media else None
 
 def read_media(*, db: Session, student_id: UUID = None, teacher_id: UUID = None) -> dict | None:
     if student_id and teacher_id:
@@ -66,7 +98,7 @@ def add_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: UUI
         return db_media
     return None
 
-def update_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: UUID = None, new_file: UploadFile = None) -> Media | None:
+def update_principal_photo(*, db: Session,background_tasks: BackgroundTasks, student_id: UUID = None, teacher_id: UUID = None, new_file: UploadFile = None) -> Media | None:
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
@@ -83,20 +115,8 @@ def update_principal_photo(*, db: Session, student_id: UUID = None, teacher_id: 
         if not new_file:
             return None
         if new_file:
-            file_location = save_encrypted_file(new_file, new_file.filename)
-            media_data = MediaCreate(
-                file_path=file_location,
-                file_type="photo",
-                mime_type=new_file.content_type,
-                student_id=student_id,
-                teacher_id=teacher_id,
-                is_principal=True
-            )
-            db_media = Media(**media_data.model_dump())
-            db.add(db_media)
-            db.commit()
-            db.refresh(db_media)
-            return db_media
+            media = add_media(db=db, file_type="photo", file=new_file, student_id=student_id, teacher_id=teacher_id, background_tasks=background_tasks, is_principal=True)
+            return media
         return None
 
 def delete_media(*, db: Session, file_path: str, student_id: UUID = None, teacher_id: UUID = None) -> bool | None:

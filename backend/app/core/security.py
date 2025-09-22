@@ -32,21 +32,5 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
-def save_encrypted_file(file, filename):
-    file_location = os.path.join(UPLOAD_DIR, filename)
-    os.makedirs(os.path.dirname(file_location), exist_ok=True)
-    # lecture du contenu
-    content = file.file.read()
-    # chiffrement
-    encrypted_content = fernet.encrypt(content)
-    # stockage sur le disque
-    with open(file_location, "wb") as f:
-        f.write(encrypted_content)
-    return file_location
 
-
-def read_encrypted_file(path):
-    with open(path, "rb") as f:
-        encrypted_content = f.read()
-    return fernet.decrypt(encrypted_content)
 
