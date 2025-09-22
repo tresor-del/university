@@ -1,3 +1,4 @@
+from fastapi import BackgroundTasks
 import pytest
 
 from fastapi.testclient import TestClient
@@ -72,6 +73,10 @@ def client(db):
 @pytest.fixture(scope="function")
 def superuser_token_headers(client: TestClient) -> dict[str, str]:
     return get_superuser_token_headers(client)
+
+@pytest.fixture(scope="function")
+def bgtasks():
+    return BackgroundTasks()
 
 @pytest.fixture(scope="function")
 def normal_user_token_headers(client: TestClient, db: Session):

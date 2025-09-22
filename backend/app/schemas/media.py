@@ -7,12 +7,13 @@ class MediaBase(BaseModel):
     """
     Modèle de base
     """
-    file_path: str = None
-    file_type: str = None
+    file_path: Optional[str] = None
+    file_type: Optional[str] = None
     mime_type: Optional[str] = None
     teacher_id: Optional[UUID] = None
     student_id: Optional[UUID] = None
     is_principal: Optional[bool] = None
+    status: Optional[str] = None
     
     model_config = ConfigDict(from_attributes=True)
 

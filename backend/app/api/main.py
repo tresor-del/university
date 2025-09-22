@@ -11,4 +11,3 @@ api_router.include_router(courses.router)
 api_router.include_router(departements.router)
 api_router.include_router(programs.router)
 api_router.include_router(media.router)
-
