@@ -15,21 +15,23 @@ def save_temp_file(
     file: UploadFile,
     file_type: str
 ):
-    # 1. Créer l'entrée en base d'abord pour avoir l'ID
+    
     temp_media = Media(**temp_file.model_dump())
     db.add(temp_media)
     db.commit()
     db.refresh(temp_media)
     
-    # 2. Créer le dossier temporaire
+    
     temp_dir = "/tmp/uploads"
     os.makedirs(temp_dir, exist_ok=True)
     
-    # 3. Sauvegarder le fichier temporaire avec l'ID du média
+    
     temp_path = f"{temp_dir}/{temp_media.id}_{file.filename}"
     
     with open(temp_path, "wb") as temp_file_handle:
         shutil.copyfileobj(file.file, temp_file_handle)
+    
+    print("0: ",temp_path)
     
     return temp_path, temp_media
 

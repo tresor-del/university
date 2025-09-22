@@ -19,15 +19,17 @@ def add_media(
     background_tasks: BackgroundTasks,
     is_principal: bool = False
 ) -> Media | None:
-    """Ajoute un nouveau média avec traitement en arrière-plan"""
+    """
+    Ajoute un nouveau média avec traitement en arrière-plan
+    """
     
-    # Validation : un seul propriétaire autorisé
+    
     if student_id and teacher_id:
         return None
     elif not (student_id or teacher_id):
         return None
     
-    # 1. Créer l'entrée en base avec statut "processing"
+    
     temp_media_data = MediaCreate(
         file_path="",  # Sera mis à jour par la background task
         file_type=file_type,
@@ -47,6 +49,8 @@ def add_media(
         file=file,
         file_type=file_type
     )
+    
+    print("1: ", temp_path)
     
     # 3. Lancer le traitement en arrière-plan
     background_tasks.add_task(
