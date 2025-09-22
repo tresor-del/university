@@ -25,6 +25,7 @@ def test_add_media_teacher(db: Session, bgtasks: BackgroundTasks) -> None:
     
     media = add_media(db=db, file_type="photo", teacher_id=teacher.id, file=file, background_tasks=bgtasks)
     
+    print(media.status)
     assert media.file_path != ''
     
     check_add_media(db=db, entity=teacher_db, media=media, is_teacher=True)

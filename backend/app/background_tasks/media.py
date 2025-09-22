@@ -13,18 +13,20 @@ async def encrypt_and_store(
     file_type: str,
 ):
     try:
-        # 1. Calculer les métadonnées du fichier avant encryption
+       
         file_size = os.path.getsize(temp_path)
         checksum = calculate_file_checksum(temp_path)
         
-        # 2. Encrypter et déplacer le fichier
+        
         encrypted_path = encryption_service.encrypt_and_move_file(
             temp_path, 
             str(media_id), 
             file_type
         )
         
-        # 3. Mettre à jour tous les champs en base
+        print("3: ", encrypted_path)
+        
+        
         media = db.query(Media).filter(Media.id == media_id).first()
         if media:
             media.file_path = encrypted_path
@@ -39,13 +41,13 @@ async def encrypt_and_store(
             print(f"Média {media_id} traité avec succès")
         
     except Exception as e:
-        # 4. Gestion d'erreur
+        
         media = db.query(Media).filter(Media.id == media_id).first()
         if media:
             media.status = "error"
             db.commit()
         
-        # Nettoyer le fichier temporaire si il existe
+        
         if os.path.exists(temp_path):
             os.remove(temp_path)
             
