@@ -22,17 +22,17 @@ def save_temp_file(
     db.refresh(temp_media)
     
     
+    # créer un dossier temporaire pour les fichiers
     temp_dir = "/tmp/uploads"
     os.makedirs(temp_dir, exist_ok=True)
     
-    
+    # chemin de fichier temporaire
     temp_path = f"{temp_dir}/{temp_media.id}_{file.filename}"
     
+    # copier le fichier en memoire sur le disque
     with open(temp_path, "wb") as temp_file_handle:
         shutil.copyfileobj(file.file, temp_file_handle)
-    
-    print("0: ",temp_path)
-    
+
     return temp_path, temp_media
 
 def calculate_file_checksum(file_path: str) -> str:
@@ -44,6 +44,7 @@ def calculate_file_checksum(file_path: str) -> str:
             sha256_hash.update(chunk)
     return sha256_hash.hexdigest()
 
+# n'est pas encore utilisé
 def update_missing_media_fields(db: Session, media_id: UUID):
     """Met à jour les champs manquants pour un média existant"""
     media = db.query(Media).filter(Media.id == media_id).first()

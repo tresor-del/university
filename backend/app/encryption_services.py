@@ -5,7 +5,7 @@ from cryptography.fernet import Fernet
 from typing import Optional
 
 class FileEncryptionService:
-    def __init__(self, base_storage_path: str = "/encrypted_files"):
+    def __init__(self, base_storage_path: str = "backend/app/encrypted_files"):
         self.base_storage_path = base_storage_path
         self.encryption_key_id = "default_key_v1"  # Version de la clé
         self.encryption_key = self._get_encryption_key()
@@ -41,29 +41,29 @@ class FileEncryptionService:
         """
         Encrypte un fichier temporaire et le déplace vers le stockage final
         
-        Args:
+        Les arguments à prendre:
             temp_path: Chemin du fichier temporaire
             media_id: ID du média pour le naming
             file_type: Type de fichier (photo, document, qr_code)
             
-        Returns:
+        Ce qu'elle retourne:
             str: Chemin du fichier encrypté final
         """
-        # 1. Créer le chemin de destination
+        #  Créer le chemin de destination
         encrypted_path = self.create_storage_path(media_id, file_type)
         
-        # 2. Lire le fichier temporaire
+        # Lire le fichier temporaire
         with open(temp_path, 'rb') as temp_file:
             file_data = temp_file.read()
         
-        # 3. Encrypter les données
+        # Encrypter les données
         encrypted_data = self.fernet.encrypt(file_data)
         
-        # 4. Sauvegarder le fichier encrypté
+        # Sauvegarder le fichier encrypté
         with open(encrypted_path, 'wb') as encrypted_file:
             encrypted_file.write(encrypted_data)
         
-        # 5. Supprimer le fichier temporaire
+        # Supprimer le fichier temporaire
         os.remove(temp_path)
         
         return encrypted_path
@@ -75,11 +75,12 @@ class FileEncryptionService:
         
         return self.fernet.decrypt(encrypted_data)
     
+    # cette fonction n'est pas encore utilisée
     def decrypt_file_to_temp(self, encrypted_path: str, temp_name: str) -> str:
         """Décrypte un fichier vers un fichier temporaire"""
         decrypted_data = self.decrypt_file(encrypted_path)
         
-        temp_dir = "/tmp"  # ou votre dossier temporaire
+        temp_dir = "/tmp"  
         temp_path = f"{temp_dir}/{temp_name}"
         
         with open(temp_path, 'wb') as temp_file:

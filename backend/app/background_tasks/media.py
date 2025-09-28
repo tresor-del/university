@@ -6,7 +6,7 @@ from app.models.media import Media
 from app.encryption_services import encryption_service
 from app.utils.media import calculate_file_checksum
 
-async def encrypt_and_store(
+def encrypt_and_store(
     db: Session, 
     media_id: UUID, 
     temp_path: str, 
@@ -15,16 +15,15 @@ async def encrypt_and_store(
     try:
        
         file_size = os.path.getsize(temp_path)
+        # calculer une valeur unique du fichier avec l'algorithme SHA-256
         checksum = calculate_file_checksum(temp_path)
         
-        
+        # encrypter le fichier temp et le déplacer vers le stockage final
         encrypted_path = encryption_service.encrypt_and_move_file(
             temp_path, 
             str(media_id), 
             file_type
         )
-        
-        print("3: ", encrypted_path)
         
         
         media = db.query(Media).filter(Media.id == media_id).first()

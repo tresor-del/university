@@ -1,18 +1,30 @@
 import io
+from uuid import UUID
 
+from starlette.datastructures import UploadFile
+from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from fastapi import UploadFile
+# from fastapi import UploadFile
 
 from app.models.media import Media
 from app.models.teachers import Teacher
 from app.models.students import Student
 
+
+def create_fake_media_route(filename: str = "photo.png"):
+    fake_content = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
+    file = io.BytesIO(fake_content)
+    content_type = "imgage/png"
+    return {
+        "file": (filename, file, content_type)
+    }
+
 def create_fake_media(filename: str = "photo.png"):
-    fake_png = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
-    file = io.BytesIO(fake_png)
-    file = UploadFile(filename=filename, file=file)
-    return file
+    fake_content = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
+    file = io.BytesIO(fake_content)
+    upload_file = UploadFile(filename=filename, file=file)
+    return upload_file
 
 def check_principal_photo(*,db, entity, principal_media, is_teacher:bool = False):
     assert principal_media
@@ -94,3 +106,6 @@ def check_read_media(*, db, entity, media1, media2, data, count, is_teacher: boo
     assert entity.medias
     for media in data:
         assert media in entity.medias
+    
+
+    return db.query()
