@@ -2,6 +2,7 @@ import io
 from uuid import UUID
 import qrcode
 
+from fastapi import BackgroundTasks, status
 from fastapi.routing import APIRouter
 from fastapi import UploadFile, File, HTTPException, Depends
 from fastapi.responses import StreamingResponse
@@ -11,19 +12,31 @@ from app.schemas.media import MediaCreate, MediaResponse
 from app.core import settings
 from app.api.deps import SessionDeps, get_current_active_admin
 from app.crud import media
+from app.models.teachers import Teacher
+from app.models.students import Student
 
 router = APIRouter(prefix="/media", tags=["media"])
 
-# @router.post("/", response_model=MediaResponse)
-# def upload_media(db: SessionDeps, file_type: str, student_id: UUID = None, teacher_id: UUID = None, file: UploadFile = File(...)):
+@router.post("/{file_type}/{student_id}",dependencies=[Depends(get_current_active_admin)])
+def upload_media_student(db: SessionDeps, file_type: str, student_id: UUID = None, file: UploadFile = File(...)) -> MediaResponse:
     
-#     return media.create_media(
-#         db=db, 
-#         file_type=file_type, 
-#         student_id=student_id, 
-#         teacher_id=teacher_id, 
-#         file=file
-#     )
+    m = media.add_media(
+        db=db, 
+        file_type=file_type, 
+        student_id=student_id, 
+        teacher_id=None, 
+        file=file,
+        background_tasks=BackgroundTasks,
+    )
+    
+    if m is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You must provide one id, not zero or none"
+        )
+    return MediaResponse.model_validate(m)
+    
+    
 
 # @router.get("/download/{media_id}")
 # def download_media(media_id: UUID, db: SessionDeps):
