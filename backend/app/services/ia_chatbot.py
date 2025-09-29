@@ -19,6 +19,7 @@ def get_university_context(db: Session) -> str:
     try:
         # Récupérer les programmes
         programs_data = crud_programs.read_programs(db=db, skip=0, limit=100)["data"]
+        print(programs_data)
         programs_context = "\n".join([f"- {p.nom}: {p.description}" for p in programs_data])
         
         # Récupérer les départements

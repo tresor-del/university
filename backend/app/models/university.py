@@ -29,6 +29,7 @@ class Program(Base):
     nom = Column(String(255), index=True, nullable=False)
     niveau = Column(String(255), index=True, nullable=False)
     duree = Column(Integer, index=True, nullable=False)
+    description = Column(String(255), index=True, nullable=True)
     
     id_departement = Column(UUID(as_uuid=True), ForeignKey("departements.id"), nullable=False)
     

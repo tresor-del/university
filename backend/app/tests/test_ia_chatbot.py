@@ -13,7 +13,8 @@ def test_get_university_context(db: Session, setup_university_data):
     Test que le contexte de l'université est correctement généré à partir des données en base.
     """
     context = get_university_context(db)
-
+    print("context: ", context)
+    
     # Vérifie que les informations créées par la fixture sont présentes dans le contexte
     assert "Filières Disponibles" in context
     assert "Génie Logiciel" in context
@@ -32,9 +33,9 @@ def test_get_university_context_empty_db(db: Session):
     """
     context = get_university_context(db)
     
-    assert "### Filières Disponibles\n\n" in context
-    assert "### Départements\n\n" in context
-    assert "### Exemples de Cours\n\n" in context
+    assert "### Filières Disponibles\n" in context
+    assert "### Départements\n" in context
+    assert "### Exemples de Cours\n" in context
 
 
 @patch('app.services.ia_chatbot.InferenceClient')

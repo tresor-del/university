@@ -15,7 +15,7 @@ def read_programs(*, db: Session, skip: int, limit: int) -> dict | None:
     count_statement = select(func.count()).select_from(Program)
     count = db.execute(count_statement).scalar()
     
-    statement = select(Program).offset(skip).limit(skip)
+    statement = select(Program).offset(skip).limit(limit)
     data = db.execute(statement).scalars().all()
     return {"data": data, "count": count}
 

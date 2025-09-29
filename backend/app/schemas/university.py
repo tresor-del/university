@@ -67,6 +67,7 @@ class ProgramBase(BaseModel):
     niveau: str
     duree: int
     id_departement: UUID
+    description: Optional[str] = None
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -78,6 +79,7 @@ class ProgramUpdate(BaseModel):
     niveau: Optional[str] = None
     duree: Optional[int] = None
     id_departement: Optional[UUID] = None
+    description: Optional[str] = None
     
     model_config = ConfigDict(from_attributes=True)
 
