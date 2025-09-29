@@ -15,7 +15,7 @@ class Course(Base):
     description = Column(Text, nullable=True)
     credits = Column(Integer, index=True, nullable=False)
 
-    id_parcours = Column(Integer, ForeignKey("parcours.id"), nullable=False)
+    id_parcours = Column(UUID(as_uuid=True), ForeignKey("parcours.id"), nullable=False)
     
     parcours = relationship("Program", back_populates="courses")
     enrollments = relationship("Enrollment", back_populates="courses")
@@ -30,7 +30,7 @@ class Program(Base):
     niveau = Column(String(255), index=True, nullable=False)
     duree = Column(Integer, index=True, nullable=False)
     
-    id_departement = Column(Integer, ForeignKey("departements.id"), nullable=False)
+    id_departement = Column(UUID(as_uuid=True), ForeignKey("departements.id"), nullable=False)
     
     departement = relationship("Department", back_populates="programs")
     students = relationship("Student", back_populates="parcours")
@@ -43,7 +43,7 @@ class Department(Base):
     nom = Column(String(155), index=True, nullable=False)
     description = Column(Text, nullable=True)
     
-    id_faculte = Column(Integer, ForeignKey("facultés.id"), nullable=False)
+    id_faculte = Column(UUID(as_uuid=True), ForeignKey("facultés.id"), nullable=False)
     
     faculte = relationship("Faculty", back_populates="departements")
     students = relationship("Student", back_populates="departement")

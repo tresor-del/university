@@ -12,13 +12,13 @@ from app.models.university import Department
 
 
 
-def read_departement(*, db: Session, skip: int, limit: int) -> DepartementsResponse | None:
+def read_departement(*, db: Session, skip: int, limit: int) -> dict | None:
     count_statement = select(func.count()).select_from(Department)
     count = db.execute(count_statement).scalar()
     
     statement = select(Department).offset(skip).limit(limit)
-    data = db.execute(statement).scalars().all
-    return DepartementsResponse.model_validate({"data": data, "count": count})
+    data = db.execute(statement).scalars().all()
+    return {"data": data, "count": count}
 
 def create_departement(*, db: Session, departement_data: DepartmentCreate) -> DepartmentResponse | None:
     validated_data = departement_data.model_dump()

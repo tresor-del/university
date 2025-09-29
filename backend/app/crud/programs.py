@@ -11,13 +11,13 @@ from app.schemas.university import (
 )
 
 
-def read_programs(*, db: Session, skip: int, limit: int) -> ProgramsResponse:
+def read_programs(*, db: Session, skip: int, limit: int) -> dict | None:
     count_statement = select(func.count()).select_from(Program)
     count = db.execute(count_statement).scalar()
     
     statement = select(Program).offset(skip).limit(skip)
     data = db.execute(statement).scalars().all()
-    return ProgramsResponse.model_validate({"data": data, "count": count})
+    return {"data": data, "count": count}
 
 def create_program(*, db: Session, data: ProgramCreate) -> ProgramResponse:
     validate_data = data.model_dump()

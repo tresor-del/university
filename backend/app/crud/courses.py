@@ -18,7 +18,7 @@ def read_courses(*, db: Session, skip: int, limit: int) -> CoursesResponse | Non
 
     statement = select(Course).offset(skip).limit(limit)
     data = db.execute(statement).scalars().all()
-    return CoursesResponse.model_validate({"data": data, "count": count})
+    return {"data": data, "count": count}
 
 def create_course(*, db: Session, data: CourseCreate) -> CourseResponse | None:
     validate_data = data.model_dump()

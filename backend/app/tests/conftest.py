@@ -17,6 +17,8 @@ from app.api.deps import get_db
 from app.initial_data import init_db
 from app.tests.utils.users import authenticate_user_from_username
 from app.tests.utils.utils import get_superuser_token_headers
+from app.schemas.university import CourseCreate, DepartmentCreate, FacultyCreate, ProgramCreate
+from app.crud import programs, departements, courses, faculty 
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -94,3 +96,48 @@ def normal_user_token_headers(client: TestClient, db: Session):
     if user:
         db.delete(user)
         db.commit()
+
+@pytest.fixture(scope="function")
+def setup_university_data(db: Session):
+    """
+    Fixture pour peupler la base de données avec des données de test.
+    """
+
+    # 1. Créer une faculté
+    faculty1 = faculty.create_faculty(db=db, faculty_data=FacultyCreate(nom="Sciences et Technologies"))
+
+    # 2. Créer un département lié à la faculté
+    
+    d = DepartmentCreate(nom="Informatique", id_faculte=str(faculty1.id))
+    
+    department1 = departements.create_departement(db=db, departement_data=d)
+
+    # 3. Créer un programme (parcours) lié au département
+    
+    data = ProgramCreate(
+        nom="Génie Logiciel",
+        description="Apprenez à construire des logiciels robustes.",
+        niveau="Licence",
+        duree=3,
+        id_departement=str(department1.id)
+    )
+    
+    program1 = programs.create_program(db=db, data=data)
+
+    # 4. Créer un cours lié au programme
+    
+    cours_data = CourseCreate(
+        titre="Algorithmique",
+        description="Bases de l'algorithmique.",
+        code="CS101",
+        credits=5,
+        id_parcours=str(program1.id)
+    )
+    
+    course1 = courses.create_course(db=db, data=cours_data)
+    
+    return {
+        "program": program1,
+        "department": department1,
+        "course": course1
+    }
