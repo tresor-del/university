@@ -1,19 +1,17 @@
-import jwt , os
+import os
 
-from typing import Any
 from datetime import datetime, timezone, timedelta
 from passlib.context import CryptContext
-from cryptography.fernet import Fernet
+from jose import jwt, JWTError
 
 from app.core.settings import settings
 
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(
+    schemes=["bcrypt", "argon2"],
+    deprecated="auto",
+    bcrypt__truncate_error=True)
 
 ALGORITHM = "HS256"
-
-SECRET_KEY = Fernet.generate_key()
-fernet = Fernet(SECRET_KEY)
 UPLOAD_DIR = settings.MEDIA_UPLOAD_DIRE
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -31,6 +29,3 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
-
-
-

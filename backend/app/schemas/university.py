@@ -54,7 +54,7 @@ class DepartmentResponse(DepartmentBase):
     faculte: Optional[FacultyResponse] = None  # relation
 
 class DepartementsResponse(BaseModel):
-    data: List[FacultyResponse] = None
+    data: List[DepartmentResponse]
     count: int
     
     model_config = ConfigDict(from_attributes=True)
@@ -64,6 +64,7 @@ class DepartementsResponse(BaseModel):
 
 class ProgramBase(BaseModel):
     nom: str
+    description: Optional[str] = None
     niveau: str
     duree: int
     id_departement: UUID
@@ -75,6 +76,7 @@ class ProgramCreate(ProgramBase):
 
 class ProgramUpdate(BaseModel):
     nom: Optional[str] = None
+    description: Optional[str] = None
     niveau: Optional[str] = None
     duree: Optional[int] = None
     id_departement: Optional[UUID] = None
@@ -88,7 +90,7 @@ class ProgramResponse(ProgramBase):
     model_config = ConfigDict(from_attributes=True)
 
 class ProgramsResponse(BaseModel):
-    data: List[ProgramResponse] = None
+    data: List[ProgramResponse]
     count: int
     
     model_config = ConfigDict(from_attributes=True)
@@ -96,9 +98,9 @@ class ProgramsResponse(BaseModel):
 # Course
 
 class CourseBase(BaseModel):
-    code: str
     titre: str
     description: Optional[str] = None
+    code: Optional[str] = None
     credits: int
     id_parcours: UUID
 
@@ -108,9 +110,9 @@ class CourseCreate(CourseBase):
     pass
 
 class CourseUpdate(BaseModel):
-    code: Optional[str] = None
     titre: Optional[str] = None
     description: Optional[str] = None
+    code: Optional[str] = None
     credits: Optional[int] = None
     id_parcours: Optional[UUID] = None
     
@@ -123,7 +125,7 @@ class CourseResponse(CourseBase):
     model_config = ConfigDict(from_attributes=True)
 
 class CoursesResponse(BaseModel):
-    data: List[CourseResponse] = None
+    data: List[CourseResponse]
     count: int
     
     model_config = ConfigDict(from_attributes=True)

@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import jwt
-from jwt.exceptions import InvalidTokenError
+from jwt import InvalidTokenError
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -25,8 +25,6 @@ reusable_oauth2 = OAuth2PasswordBearer (
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
 )
 TokenDeps = Annotated [str, Depends(reusable_oauth2)]
-
-Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = sessionLocal()

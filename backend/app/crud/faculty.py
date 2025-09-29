@@ -14,7 +14,7 @@ from app.schemas.university import (
 
 
 def read_faculties(*, db: Session, skip: int, limit: int) -> FacultiesResponse | None:
-    count_statement = select(func.count()).select_from(Faculty)
+    count_statement = select(func.count(Faculty.id))
     count = db.execute(count_statement).scalar()
 
     statement = select(Faculty).offset(skip).limit(limit)
@@ -30,25 +30,25 @@ def create_faculty(*, db: Session, faculty_data: FacultyCreate) -> FacultyRespon
     return FacultyResponse.model_validate(faculty)
 
 def update_faculty(*, db: Session, faculty_id: UUID, data: FacultyUpdate) -> FacultyResponse | None:
-    faculty = db.query(Faculty).where(Faculty.id==faculty_id).first()
+    faculty = db.get(Faculty, faculty_id)
     if faculty:
-        validate_data = data.model_validate()
-        for key, value in validate_data:
+        update_data = data.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
             setattr(faculty, key, value)
         db.commit()
         db.refresh(faculty)
         return FacultyResponse.model_validate(faculty)
     return None
 
-def delete_faculty(*, db: Session, faculty_id: UUID) -> FacultyResponse | None:
-    faculty = db.query(Faculty).where(Faculty.id==faculty_id).first()
+def delete_faculty(*, db: Session, faculty_id: UUID) -> bool:
+    faculty = db.get(Faculty, faculty_id)
     if faculty:
         db.delete(faculty)
         db.commit()
         return True
     return False
 
-def get_faculty(*, db: Session, faculty_id: UUID) -> FacultyResponse | None:
+def get_faculty(*, db: Session, faculty_id: UUID) -> Faculty | None:
     statement = select(Faculty).where(Faculty.id==faculty_id)
-    faculty = db.execute(statement).scalar_one()
-    return faculty if faculty else None
+    faculty = db.execute(statement).scalar_one_or_none()
+    return faculty

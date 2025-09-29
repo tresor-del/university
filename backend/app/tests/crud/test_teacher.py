@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.teacher import delete_teacher, get_teacher, update_teacher, teachers_list
+from app.crud.teacher import delete_teacher, get_teacher, update_teacher, read_teachers
 from app.schemas.teacher import TeacherResponse, TeacherUpdate
 from app.tests.utils.teachers import create_random_teacher, create_random_teachers
 from app.tests.utils.utils import random_lower_string
@@ -12,7 +12,7 @@ from app.models.teachers import Teacher
 
 def test_read_teachers(db: Session) -> Any:
     teachers = create_random_teachers(db)
-    r = teachers_list(db=db, skip=1, limit=1)
+    r = read_teachers(db=db, skip=1, limit=1)
     assert isinstance(r["data"], List)
     assert len(r["data"]) == 1
     assert r["count"] == len(teachers)
@@ -74,11 +74,11 @@ def test_update_teacher_not_exists(db: Session) -> Any:
 
 def test_get_teacher(db: Session) -> Any:
     teacher = create_random_teacher(db)
-    r = get_teacher(db=db, id=teacher.id)
-    assert isinstance(r, TeacherResponse)
+    r = get_teacher(db=db, teacher_id=teacher.id)
+    assert isinstance(r, Teacher)
     
     delete_teacher(db=db, teacher_id=teacher.id)
 
 def test_get_teacher_not_exists(db: Session) -> Any:
-    r = get_teacher(db=db, id=uuid.uuid4())
+    r = get_teacher(db=db, teacher_id=uuid.uuid4())
     assert r is None

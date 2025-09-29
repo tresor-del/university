@@ -8,7 +8,7 @@ from app.schemas.students import StudentResponse, StudentsResponse, StudentCreat
 
 
 def students_list(*, db: Session, skip:int, limit: int) -> StudentsResponse | Any:
-    count_statement = select(func.count()).select_from(Student)
+    count_statement = select(func.count(Student.id))
     count = db.execute(count_statement).scalar()
 
     statement = select(Student).offset(skip).limit(limit)

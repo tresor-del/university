@@ -33,8 +33,8 @@ def enroll_student_route(data: StudentCreate, db: SessionDeps) -> StudentRespons
     """
     Enrégistre un étudiant
     """
-    statement = select(Student).where(Student.email==data.email)
-    existing_student = db.execute(statement).first()
+    # La vérification de l'email devrait être dans la couche CRUD pour la réutilisabilité
+    existing_student = db.execute(select(Student).where(Student.email==data.email)).first()
     if existing_student:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

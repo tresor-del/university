@@ -71,11 +71,12 @@ def read_media(*, db: Session, student_id: UUID = None, teacher_id: UUID = None)
             Media.student_id==student_id, 
             Media.teacher_id==teacher_id
         )
-        count = db.execute(count_stm).scalar()
-        medias = db.query(Media).filter(
+        statement = select(Media).where(
             Media.student_id==student_id,
             Media.teacher_id==teacher_id
-        ).all()
+        )
+        count = db.execute(select(func.count()).select_from(statement.subquery())).scalar()
+        medias = db.execute(statement).scalars().all()
         return {"data": medias, "count": count}
     return None
 
@@ -83,11 +84,12 @@ def update_principal_photo(*, db: Session,background_tasks: BackgroundTasks, stu
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
-        old_principal_medias = db.query(Media).filter(
+        statement = select(Media).where(
             Media.student_id==student_id,
             Media.teacher_id==teacher_id,
             Media.is_principal==True
-        ).all()
+        )
+        old_principal_medias = db.execute(statement).scalars().all()
         for media in old_principal_medias:
             media.is_principal = False
         db.commit()
@@ -104,11 +106,12 @@ def delete_media(*, db: Session, file_path: str, student_id: UUID = None, teache
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
-        media = db.query(Media).where(
+        statement = select(Media).where(
             Media.student_id==student_id,
              Media.teacher_id==teacher_id,
              Media.file_path==file_path
-        ).first()
+        )
+        media = db.execute(statement).scalar_one_or_none()
         if media:
             db.delete(media)
             db.commit()
@@ -120,11 +123,12 @@ def get_media(*, db: Session, file_path: str, student_id: UUID =None, teacher_id
     if student_id and teacher_id:
         return None
     elif student_id or teacher_id:
-        media = db.query(Media).where(
+        statement = select(Media).where(
             Media.student_id==student_id,
             Media.teacher_id==teacher_id,
             Media.file_path==file_path
-        ).first()
+        )
+        media = db.execute(statement).scalar_one_or_none()
         if media:
             return media
         return None

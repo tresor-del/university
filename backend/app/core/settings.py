@@ -42,5 +42,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     USERNAME_TEST_USER: str = "tresortest"
     MEDIA_UPLOAD_DIRE: str = "app/media"
+    
 
 settings = Settings()

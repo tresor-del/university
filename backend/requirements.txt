@@ -9,9 +9,8 @@ pymysql
 cryptography
 alembic
 jwt
-passlib
+passlib[bcrypt]
 pyjwt
 python-multipart
 pydantic[email]
 qrcode
-bcrypt

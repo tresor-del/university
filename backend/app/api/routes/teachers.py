@@ -23,9 +23,9 @@ def read_teachers_route(db: SessionDeps, skip: int = 0, limit: int = 100) -> Tea
     """
     Retourne la liste de tous les proffesseurs
     """
-    data = teacher.teachers_list(db=db, skip=skip, limit=limit)
+    data = teacher.read_teachers(db=db, skip=skip, limit=limit)
     print(data)
-    return TeachersResponse.model_validate({"data": data["data"], "count": data["count"]})
+    return data
 
 @router.post("/create", dependencies=[Depends(get_current_active_admin)])
 def create_teacher_route(db: SessionDeps, data: TeacherCreate) -> TeacherResponse:
@@ -39,7 +39,7 @@ def create_teacher_route(db: SessionDeps, data: TeacherCreate) -> TeacherRespons
             status_code=status.HTTP_409_CONFLICT,
             detail="Teacher with this email already exists"
         )
-    return teacher.create_teacher(db=db, data=data)
+    return teacher.create_teacher(db=db, teacher_data=data)
 
 @router.delete("/{teacher_id}", dependencies=[Depends(get_current_active_admin)])
 def delete_teacher(db: SessionDeps, teacher_id: UUID) -> Message:

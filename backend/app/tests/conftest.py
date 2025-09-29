@@ -14,6 +14,7 @@ from app.models import users
 from app.core.config import Base
 from app.core.settings import settings
 from app.api.deps import get_db
+from app.core.security import get_password_hash
 from app.initial_data import init_db
 from app.tests.utils.users import authenticate_user_from_username
 from app.tests.utils.utils import get_superuser_token_headers
@@ -29,34 +30,27 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(bind=engine)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_database():
-    """
-    Crée les tables, initialise la base de donnée avec le superuser.
-    Supprime les tables à la fin. 
-    """
-    Base.metadata.create_all(bind=engine)  
-    with Session(engine) as session:
-        init_db(session)  
-        session.commit()
-    yield
-    Base.metadata.drop_all(bind=engine)
-
 @pytest.fixture(scope="function")
 def db():
     """
-    Ouvre une session pour le test
-    Après le test, nettoie les données crées sauf pour les users
+    Crée les tables, initialise la DB avec le superuser, et fournit une session.
+    Nettoie tout après chaque test.
     """
+    # Créer toutes les tables
+    Base.metadata.create_all(bind=engine)
+    
+    # Initialiser les données de base (comme le superuser)
+    with Session(engine) as session:
+        init_db(session)
+        session.commit()
+
     session = TestingSessionLocal()
     try:
         yield session
     finally:
-        session.query(Student).delete() 
-        session.query(Teacher).delete() 
-        session.query(Media).delete()
-        session.commit()
         session.close()
+        # Supprimer toutes les tables pour un nettoyage complet
+        Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture(scope="function")   
 def client(db):

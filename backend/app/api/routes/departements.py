@@ -11,7 +11,7 @@ from app.crud.departements import (
     read_departement,
     create_departement,
     update_departement,
-    delete_department,
+    delete_departement,
     get_departement
 )
 
@@ -28,11 +28,11 @@ def read_departement_route(db: SessionDeps, skip: int = 0, limit: int = 100) -> 
     return department
 
 @router.post("/", dependencies=[Depends(get_current_active_admin)], response_model=DepartmentResponse)
-def create_departemnt_route(db: SessionDeps, data: DepartmentCreate) -> DepartmentResponse:
+def create_departement_route(db: SessionDeps, data: DepartmentCreate) -> DepartmentResponse:
     """
     creéer un departement
     """
-    departement = create_departement(db=db, department_data=data)
+    departement = create_departement(db=db, departement_data=data)
     return departement
 
 @router.patch("/{department_id}", dependencies=[Depends(get_current_active_admin)], response_model=DepartmentResponse)
@@ -54,7 +54,7 @@ def delete_department_route(db: SessionDeps, department_id: UUID) -> Message:
     """
     Supprime un Departement
     """
-    result = delete_department(db=db, department_id=department_id)
+    result = delete_departement(db=db, department_id=department_id)
     if result:
         return Message("Departement supprimé avec succès")
     raise HTTPException(
