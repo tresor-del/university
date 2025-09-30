@@ -1,5 +1,6 @@
 *.venv
 *.env*
+*.env*
 *_pycache__/
 frontend/node_modules/
 backend/app/tests/__init__.py
