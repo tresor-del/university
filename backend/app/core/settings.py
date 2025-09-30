@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     MYSQL_USER: str = ""
     MYSQL_PASSWORD: str = ""
     MYSQL_DB: str = ""
-    HUGGINGFACE_API_KEY: str 
+    HUGGINGFACE_API_KEY: str = ""
     
     @computed_field
     @property
