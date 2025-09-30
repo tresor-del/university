@@ -6,3 +6,6 @@ backend/app/tests/__init__.py
 backend/app/tests/__pycache__/
 test.db
 backend/.test.db
+backend/encryption_default_key_v1.key
+backend/app/encrypted_files
+encryption_default_key_v1.key
