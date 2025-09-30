@@ -6,7 +6,6 @@ from app.models.university import Program
 from app.schemas.university import (
     ProgramCreate,
     ProgramResponse,
-    ProgramsResponse,
     ProgramUpdate,
 )
 
