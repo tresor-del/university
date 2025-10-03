@@ -51,14 +51,6 @@ def add_media(
     
     encrypt_and_store(db=db, media_id=media.id, temp_path=temp_path, file_type=file_type) # parceque bg_tasks ne marche que dans les routes
     
-    # background_tasks.add_task(
-    #     encrypt_and_store,
-    #     db,
-    #     media.id,
-    #     temp_path,
-    #     file_type,
-    # )
-    
     media = db.execute(select(Media).where(Media.id==media.id)).scalar_one_or_none()
     return media if media else None
 
