@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     
     API_V1_STR: str = "/api/v1"
     FRONTEND_HOST: str = "https://localhost:5173"
-    BACKEND_CORS_ORIGINS = Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
 
     @computed_field
     @property

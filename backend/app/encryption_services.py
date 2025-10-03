@@ -88,4 +88,11 @@ class FileEncryptionService:
         
         return temp_path
     
+    def decrypt_file(self, encrypted_path: str) -> str:
+        
+        decrypted_data = self.decrypt_file(encrypted_path)
+        
+        return decrypted_data
+    
+    
 encryption_service = FileEncryptionService()

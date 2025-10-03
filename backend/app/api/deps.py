@@ -11,8 +11,7 @@ from sqlalchemy import select
 
 from pydantic import ValidationError
 
-from app.core.config import sessionLocal, engine
-from app.core.config import Base
+from app.core.config import sessionLocal, engine, Base
 from app.core.settings import settings
 from app.core import security
 from app.models.users import User
