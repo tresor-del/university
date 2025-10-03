@@ -17,7 +17,6 @@ def test_add_media_student(db: Session, client: TestClient, superuser_token_head
     
     r_student = client.post(
         f"{settings.API_V1_STR}/media/{file_type}/?student_id={student.id}", 
-        # data= {"student_id": str(student.id)},
         headers=superuser_token_headers,
         files=file_student
     )
@@ -32,7 +31,6 @@ def test_add_media_teacher(db: Session, client: TestClient, superuser_token_head
     
     r = client.post(
         f"{settings.API_V1_STR}/media/{file_type}/?teacher_id={teacher.id}", 
-        # data= {"teacher_id": str(teacher.id)},
         headers=superuser_token_headers,
         files=file_teacher
     )
@@ -46,7 +44,6 @@ def test_delet_media(db: Session, client: TestClient, superuser_token_headers: d
     file_type = "photo"
     r_student = client.post(
         f"{settings.API_V1_STR}/media/{file_type}/?student_id={student.id}", 
-        # data= {"student_id": str(student.id)},
         headers=superuser_token_headers,
         files=file_student
     )
@@ -60,7 +57,7 @@ def test_delet_media(db: Session, client: TestClient, superuser_token_headers: d
         f"{settings.API_V1_STR}/media/delete/?student_id={student.id}&file_path={file_path}",
         headers=superuser_token_headers
     )
-    
+
     assert response.status_code == 200
     
     media_db = db.query(Media).where(Media.file_path == file_path).first()
