@@ -23,8 +23,8 @@ jobs:
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
       
-      - name: Sync Dependances
-        run: uv sync
+      - name: Sync Dependencies
+        run: uv sync --project ./backend
 
       - name: Run tests
-        run: pytest
+        run: pytest ./backend
