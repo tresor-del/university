@@ -19,12 +19,12 @@ jobs:
         run: |
           git config user.name 'tresor-del'
           git config user.email 'tresoradzanto7@gmail.com'
-      
+
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
-      
-      - name: Sync Dependances
-        run: uv sync
+
+      - name: Sync Dependencies
+        run: uv sync --project ./backend
 
       - name: Run tests
-        run: pytest
+        run: pytest ./backend
