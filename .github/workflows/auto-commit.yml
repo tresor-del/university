@@ -15,6 +15,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+
       - name: Configure Git
         run: |
           git config user.name 'tresor-del'
@@ -25,6 +30,9 @@ jobs:
 
       - name: Sync Dependencies
         run: uv sync --project ./backend
+
+      - name: Add Python scripts to PATH
+        run: echo "${HOME}/.local/bin:$PATH"
 
       - name: Run tests
         run: pytest ./backend
