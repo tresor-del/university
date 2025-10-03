@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build 
 
 
-# SERVER
+### SERVER
 
 # Image Nginx minimale pour servir les fichiers statiques
 FROM nginx:alpine
