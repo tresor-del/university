@@ -10,29 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.13
+
 
       - name: Configure Git
         run: |
           git config user.name 'tresor-del'
           git config user.email 'tresoradzanto7@gmail.com'
 
+      - name: Create and activate venv
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+        shell: bash
+
+
       - name: Install uv
-        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        run: |
+          source .venv/bin/activate
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+        shell: bash
 
-      - name: Sync Dependencies
-        run: uv sync --project ./backend
 
-      - name: Add Python scripts to PATH
-        run: echo "${HOME}/.local/bin:$PATH"
+      - name: Sync dependencies
+        run: |
+          source .venv/bin/activate
+          uv sync --project ./backend
+        shell: bash
 
       - name: Run tests
-        run: pytest ./backend
+        run: |
+          source .venv/bin/activate
+          pytest ./backend
+        shell: bash
