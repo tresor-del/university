@@ -1,26 +1,41 @@
-"""
-Fichier non utilisé
-"""
 import secrets
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+
+from typing import Annotated, Any, List
+
 from functools import lru_cache
-from pydantic import (
-    computed_field,
-    MySQLDsn
-)
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import computed_field, MySQLDsn, BeforeValidator, AnyUrl
+
 from pydantic_core import MultiHostUrl
 
 
-# validation des variables récuperé depuis le fichier .env
+def parse_cors(v: Any) -> List[str] | str:
+    if isinstance(v, str) and not v.startswith("["):
+        return [i.strip() for i in v.split(",") if v.split()]
+    elif  isinstance(v, list | str):
+        return v
+    return ValueError(v)
+
+
 class Settings(BaseSettings):
     
     model_config = SettingsConfigDict(
-        env_file = '../.env',
+        env_file = '../.env.dev',
         env_ignore_empty=True,
+        extra = "ignore"
     )
     
     API_V1_STR: str = "/api/v1"
+    FRONTEND_HOST: str = "https://localhost:5173"
+    BACKEND_CORS_ORIGINS = Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
+
+    @computed_field
+    @property
+    def all_cors_origins(self) -> list[str]:
+        return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
+    
+    
     SECRET_KEY: str = secrets.token_urlsafe(32)
     
     PROJECT_NAME: str = ""

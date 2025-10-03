@@ -1,13 +1,16 @@
-
-
 services:
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    image: university-frontend
+    env-file:
+      - .env.prod
     ports:
-      - "3000:80"
+      - "{PORT_F1}:{PORT_F2}"
+    networks:
+      - app-network
     depends_on:
       - backend
 
@@ -15,11 +18,30 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    image: university-backend
+    command: uvicorn app.main.app --host 0.0.0.0 --port ${PORT} ${DEBUG:+--reload}
+    env-file:
+      - .env.prod
     ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=mysql+pymysql://docker_user:votre_mot_de_passe@host.docker.internal:3306/gestion_ecole
+      - "${PORT}:${PORT}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - app-network
+    depends_on:
+      - db
+  
+  db:
+    image: postgres
+    container_name: db
     volumes:
-      - ./backend:/app
+      - db_data: /var/lib/postgresql/data
+    env-fle:
+      - .env.prod
+
+  volumes:
+    db_data:
+
+  networks:
+    app-network:
+      driver: bridge
