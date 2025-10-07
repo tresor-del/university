@@ -29,8 +29,8 @@ def create_program(*, db: Session, data: ProgramCreate) -> ProgramResponse:
 def update_program(*, db: Session, program_id: UUID, data: ProgramUpdate) -> ProgramResponse | None:
     program = db.query(Program).where(Program.id==program_id).first()
     if program:
-        validate_data = data.model_validate()
-        for key, value in validate_data:
+        validate_data = data.model_dump(exclude_unset=True)
+        for key, value in validate_data.items():
             setattr(program, key, value)
         db.commit()
         db.refresh(program)
@@ -47,5 +47,5 @@ def delete_program(*, db: Session, program_id: UUID) -> ProgramResponse | None:
 
 def get_program(*, db: Session, program_id: UUID) -> ProgramResponse | None:
     statement = select(Program).where(Program.id==program_id)
-    program = db.execute(statement).scalar_one()
+    program = db.execute(statement).scalar_one_or_none()
     return program if program else None

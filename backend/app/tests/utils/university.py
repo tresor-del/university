@@ -1,3 +1,4 @@
+from typing import List
 import uuid
 from uuid import UUID
 from sqlalchemy.orm import Session
@@ -5,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.crud.courses import  create_course
 from app.crud.departements import create_departement
 from app.models.university import Program, Faculty
-from app.schemas.university import CourseCreate, CourseResponse, ProgramCreate, FacultyCreate, FacultyResponse, DepartmentCreate
+from app.schemas.university import CourseCreate, CourseResponse, ProgramCreate, FacultyCreate, FacultyResponse, DepartmentCreate, ProgramResponse
 from app.tests.utils.utils import random_lower_string
 
 def create_random_faculty(db: Session) -> FacultyResponse:
@@ -68,3 +69,12 @@ def create_random_department(db: Session, faculty_id: UUID):
     )
     return create_departement(db=db, departement_data=data)
 
+def create_random_programs(db: Session, n: int = 3, id_departement: UUID = None) -> List[Program]:
+    programs = []
+    for _ in range(n):
+        programs.append(create_random_program(db, id_departement=id_departement or uuid.uuid4()))
+    return programs
+
+def get_random_program(db: Session, program_id: UUID) -> ProgramResponse | None:
+    from app.crud.programs import get_program
+    return get_program(db=db, program_id=program_id)
