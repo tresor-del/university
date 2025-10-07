@@ -5,29 +5,13 @@ from sqlalchemy.orm import Session
 
 from app.crud.faculty import (
     read_faculties,
-    create_faculty,
     update_faculty,
     delete_faculty,
     get_faculty,
 )
-from app.schemas.university import FacultyCreate, FacultyUpdate, FacultyResponse
+from app.schemas.university import  FacultyUpdate, FacultyResponse
 from app.models.university import Faculty
-from app.tests.utils.utils import random_lower_string
-
-
-def create_random_faculty(db: Session) -> FacultyResponse:
-    data = FacultyCreate(
-        nom=random_lower_string(),
-        description=random_lower_string(),
-    )
-    return create_faculty(db=db, faculty_data=data)
-
-
-def create_random_faculties(db: Session, n: int = 3) -> list[FacultyResponse]:
-    faculties = []
-    for _ in range(n):
-        faculties.append(create_random_faculty(db))
-    return faculties
+from app.tests.utils.university import create_random_faculties, create_random_faculty
 
 
 def test_read_faculties(db: Session) -> Any:

@@ -32,8 +32,8 @@ def create_faculty(*, db: Session, faculty_data: FacultyCreate) -> FacultyRespon
 def update_faculty(*, db: Session, faculty_id: UUID, data: FacultyUpdate) -> FacultyResponse | None:
     faculty = db.query(Faculty).where(Faculty.id==faculty_id).first()
     if faculty:
-        validate_data = data.model_validate()
-        for key, value in validate_data:
+        validate_data = data.model_dump(exclude_unset=True)
+        for key, value in validate_data.items():
             setattr(faculty, key, value)
         db.commit()
         db.refresh(faculty)
@@ -50,5 +50,5 @@ def delete_faculty(*, db: Session, faculty_id: UUID) -> FacultyResponse | None:
 
 def get_faculty(*, db: Session, faculty_id: UUID) -> FacultyResponse | None:
     statement = select(Faculty).where(Faculty.id==faculty_id)
-    faculty = db.execute(statement).scalar_one()
+    faculty = db.execute(statement).scalar_one_or_none()
     return faculty if faculty else None

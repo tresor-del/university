@@ -6,7 +6,7 @@ from app.models.university import Program, Faculty
 from app.schemas.university import CourseCreate, CourseResponse, ProgramCreate, FacultyCreate, FacultyResponse
 from app.tests.utils.utils import random_lower_string
 
-def create_random_faculty(db: Session):
+def create_random_faculty(db: Session) -> FacultyResponse:
     data = FacultyCreate(
         nom=random_lower_string(),
         description=random_lower_string(),
@@ -15,7 +15,7 @@ def create_random_faculty(db: Session):
     db.add(faculty)
     db.commit()
     db.refresh(faculty)
-    return faculty
+    return FacultyResponse.model_validate(faculty)
 
 def create_random_faculties(db: Session, n: int = 3) -> list[FacultyResponse]:
     faculties = []
