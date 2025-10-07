@@ -12,7 +12,6 @@ from app.schemas.university import (
 )
 
 
-
 def read_faculties(*, db: Session, skip: int, limit: int) -> FacultiesResponse | None:
     count_statement = select(func.count()).select_from(Faculty)
     count = db.execute(count_statement).scalar()
