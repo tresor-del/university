@@ -11,7 +11,6 @@ from app.schemas.university import (
 from app.models.university import Course
 
 
-
 def read_courses(*, db: Session, skip: int, limit: int) -> CoursesResponse | None :
     count_statement = select(func.count()).select_from(Course)
     count = db.execute(count_statement).scalar()
@@ -29,10 +28,10 @@ def create_course(*, db: Session, data: CourseCreate) -> CourseResponse | None:
     return CourseResponse.model_validate(course)
 
 def update_course(*, db: Session, course_id: UUID, data: CourseUpdate) -> CourseResponse | None:
-    course = db.query(course).where(course.id==course_id).first()
+    course = db.query(Course).where(Course.id==course_id).first()
     if course:
-        validate_data = data.model_validate()
-        for key, value in validate_data:
+        validate_data = data.model_dump(exclude_unset=True)
+        for key, value in validate_data.items():
             setattr(course, key, value)
         db.commit()
         db.refresh(course)
@@ -40,7 +39,7 @@ def update_course(*, db: Session, course_id: UUID, data: CourseUpdate) -> Course
     return None
 
 def delete_course(*, db: Session, course_id: UUID) -> CourseResponse | None:
-    course = db.query(course).where(course.id==course_id).first()
+    course = db.query(Course).where(Course.id==course_id).first()
     if course:
         db.delete(course)
         db.commit()
@@ -50,5 +49,5 @@ def delete_course(*, db: Session, course_id: UUID) -> CourseResponse | None:
 
 def get_course(*, db: Session, course_id: UUID) -> CourseResponse | None:
     statement = select(Course).where(Course.id==course_id)
-    course = db.execute(statement).scalar_one()
+    course = db.execute(statement).scalar_one_or_none()
     return course if course else None
