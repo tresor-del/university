@@ -1,54 +1,18 @@
-from typing import Any, List
+import uuid
 from uuid import UUID
+from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.crud.courses import (
     read_courses,
-    create_course,
     update_course,
     delete_course,
     get_course,
 )
-from app.models.university import Course, Program
-from app.schemas.university import CourseCreate, CourseUpdate, CourseResponse, ProgramCreate
-from app.tests.utils.utils import random_lower_string
-
-
-def create_random_program(db: Session) -> Program:
-    """Crée un programme aléatoire pour rattacher les cours."""
-    data = ProgramCreate(
-        nom=random_lower_string(),
-        niveau="Licence",
-        duree=3,
-        id_departement=UUID(int=0), 
-        description="Programme test"
-    )
-    program = Program(**data.model_dump())
-    db.add(program)
-    db.commit()
-    db.refresh(program)
-    return program
-
-
-def create_random_course(db: Session) -> CourseResponse:
-    """Crée un cours aléatoire avec un programme lié."""
-    program = create_random_program(db)
-    data = CourseCreate(
-        code=random_lower_string(),
-        titre=random_lower_string(),
-        description=random_lower_string(),
-        credits=4,
-        id_parcours=program.id,
-    )
-    return create_course(db=db, data=data)
-
-
-def create_random_courses(db: Session, n: int = 3) -> list[CourseResponse]:
-    courses = []
-    for _ in range(n):
-        courses.append(create_random_course(db))
-    return courses
+from app.models.university import Course
+from app.schemas.university import CourseUpdate, CourseResponse
+from app.tests.utils.university import  create_random_course, create_random_courses
 
 
 def test_read_courses(db: Session) -> Any:
