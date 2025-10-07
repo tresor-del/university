@@ -10,17 +10,36 @@ from app.crud.courses import (
     delete_course,
     get_course,
 )
-from app.schemas.university import CourseCreate, CourseUpdate, CourseResponse
-from app.models.university import Course
+from app.models.university import Course, Program
+from app.schemas.university import CourseCreate, CourseUpdate, CourseResponse, ProgramCreate
 from app.tests.utils.utils import random_lower_string
 
 
+def create_random_program(db: Session) -> Program:
+    """Crée un programme aléatoire pour rattacher les cours."""
+    data = ProgramCreate(
+        nom=random_lower_string(),
+        niveau="Licence",
+        duree=3,
+        id_departement=UUID(int=0), 
+        description="Programme test"
+    )
+    program = Program(**data.model_dump())
+    db.add(program)
+    db.commit()
+    db.refresh(program)
+    return program
+
+
 def create_random_course(db: Session) -> CourseResponse:
+    """Crée un cours aléatoire avec un programme lié."""
+    program = create_random_program(db)
     data = CourseCreate(
-        titre=random_lower_string(),
         code=random_lower_string(),
+        titre=random_lower_string(),
         description=random_lower_string(),
-        credits=random_lower_string(),
+        credits=4,
+        id_parcours=program.id,
     )
     return create_course(db=db, data=data)
 
@@ -54,18 +73,18 @@ def test_create_course(db: Session) -> Any:
     statement = select(Course).where(Course.id == course.id)
     course_db = db.execute(statement).scalar_one_or_none()
     assert course_db is not None
-    assert course_db.name == course.name
+    assert course_db.titre == course.titre
 
     delete_course(db=db, course_id=course.id)
 
 
 def test_update_course(db: Session) -> Any:
     course = create_random_course(db)
-    update_data = CourseUpdate(name="updated_name")
+    update_data = CourseUpdate(titre="updated_title")
 
     updated = update_course(db=db, course_id=course.id, data=update_data)
     assert updated is not None
-    assert updated.name == "updated_name"
+    assert updated.titre == "updated_title"
 
     delete_course(db=db, course_id=course.id)
 
