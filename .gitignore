@@ -10,3 +10,4 @@ backend/.test.db
 backend/encryption_default_key_v1.key
 backend/app/encrypted_files
 encryption_default_key_v1.key
+backend/backend/
