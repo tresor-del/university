@@ -1,9 +1,11 @@
 import uuid
+from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.crud.courses import  create_course
+from app.crud.departements import create_departement
 from app.models.university import Program, Faculty
-from app.schemas.university import CourseCreate, CourseResponse, ProgramCreate, FacultyCreate, FacultyResponse
+from app.schemas.university import CourseCreate, CourseResponse, ProgramCreate, FacultyCreate, FacultyResponse, DepartmentCreate
 from app.tests.utils.utils import random_lower_string
 
 def create_random_faculty(db: Session) -> FacultyResponse:
@@ -23,13 +25,13 @@ def create_random_faculties(db: Session, n: int = 3) -> list[FacultyResponse]:
         faculties.append(create_random_faculty(db))
     return faculties
 
-def create_random_program(db: Session) -> Program:
+def create_random_program(db: Session, id_departement: UUID = uuid.uuid4()) -> Program:
     """Crée un programme aléatoire pour rattacher les cours."""
     data = ProgramCreate(
         nom=random_lower_string(),
         niveau="Licence",
         duree=3,
-        id_departement=uuid.uuid4(), 
+        id_departement=id_departement, 
         description="Programme test"
     )
     program = Program(**data.model_dump())
@@ -39,15 +41,14 @@ def create_random_program(db: Session) -> Program:
     return program
 
 
-def create_random_course(db: Session) -> CourseResponse:
+def create_random_course(db: Session, program_id: UUID = uuid.uuid4()) -> CourseResponse:
     """Crée un cours aléatoire avec un programme lié."""
-    program = create_random_program(db)
     data = CourseCreate(
         code=random_lower_string(),
         titre=random_lower_string(),
         description=random_lower_string(),
         credits=4,
-        id_parcours=program.id,
+        id_parcours=program_id,
     )
     return create_course(db=db, data=data)
 
@@ -57,3 +58,13 @@ def create_random_courses(db: Session, n: int = 3) -> list[CourseResponse]:
     for _ in range(n):
         courses.append(create_random_course(db))
     return courses
+
+
+def create_random_department(db: Session, faculty_id: UUID):
+    data = DepartmentCreate(
+        nom=random_lower_string(),
+        description=random_lower_string(),
+        id_faculte=faculty_id,
+    )
+    return create_departement(db=db, departement_data=data)
+

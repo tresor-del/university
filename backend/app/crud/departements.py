@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from app.schemas.university import (
     DepartmentCreate,
     DepartmentResponse,
-    DepartementsResponse,
     DepartmentUpdate,
 )
 from app.models.university import Department
@@ -31,8 +30,8 @@ def create_departement(*, db: Session, departement_data: DepartmentCreate) -> De
 def update_departement(*, db: Session, dep_id: UUID, data: DepartmentUpdate) -> DepartmentResponse | None:
     departement = db.query(Department).where(Department.id==dep_id).first()
     if departement:
-        validate_data = data.model_validate()
-        for key, value in validate_data:
+        validate_data = data.model_dump(exclude_unset=True)
+        for key, value in validate_data.items():
             setattr(departement, key, value)
         db.commit()
         db.refresh(departement)
@@ -40,7 +39,7 @@ def update_departement(*, db: Session, dep_id: UUID, data: DepartmentUpdate) -> 
     return None
 
 def delete_department(*, db: Session, department_id: UUID) -> DepartmentResponse | None:
-    department = db.query(Department).where(department.id==department_id).first()
+    department = db.query(Department).where(Department.id==department_id).first()
     if department:
         db.delete(department)
         db.commit()
@@ -49,5 +48,5 @@ def delete_department(*, db: Session, department_id: UUID) -> DepartmentResponse
 
 def get_departement(*, db: Session, department_id: UUID) -> DepartmentResponse | None:
     statement = select(Department).where(Department.id==department_id)
-    department = db.execute(statement).scalar_one()
+    department = db.execute(statement).scalar_one_or_none()
     return department if department else None
