@@ -56,7 +56,7 @@ def delete_faculty_route(db: SessionDeps, faculty_id: UUID) -> Message:
     """
     result = delete_faculty(db=db, faculty_id=faculty_id)
     if result:
-        return Message("Faculté supprimé avec succès")
+        return Message(message="Faculté supprimé avec succès")
     raise HTTPException(
             status_code=404,
             detail="Faculté non trouvé sur le système"

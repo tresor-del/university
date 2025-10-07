@@ -32,7 +32,7 @@ def create_course_route(db: SessionDeps, data: CourseCreate) -> CourseResponse:
     """
     creéer un cours
     """
-    course = create_course(db=db, course_data=data)
+    course = create_course(db=db, data=data)
     return course
 
 @router.patch("/{course_id}", dependencies=[Depends(get_current_active_admin)], response_model=CourseResponse)
@@ -56,7 +56,7 @@ def delete_course_route(db: SessionDeps, course_id: UUID) -> Message:
     """
     result = delete_course(db=db, course_id=course_id)
     if result:
-        return Message("Cours supprimé avec succès")
+        return Message(message="Cours supprimé avec succès")
     raise HTTPException(
             status_code=404,
             detail="Cours non trouvé sur le système"

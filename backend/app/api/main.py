@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.routes import users, students, login, teachers, courses, departements, programs, media
+from app.api.routes import users, students, login, teachers, courses, departements, programs, media, faculties
 
 api_router = APIRouter()
 api_router.include_router(users.router)
@@ -11,3 +11,4 @@ api_router.include_router(courses.router)
 api_router.include_router(departements.router)
 api_router.include_router(programs.router)
 api_router.include_router(media.router)
+api_router.include_router(faculties.router)

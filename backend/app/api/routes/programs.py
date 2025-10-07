@@ -18,7 +18,6 @@ from app.crud.programs import (
 router = APIRouter(prefix="/programs", tags=["programs"])
 
 
-
 @router.get("/", dependencies=[Depends(get_current_active_admin)], response_model=ProgramsResponse)
 def read_programs_route(db: SessionDeps, skip: int = 0, limit: int = 100) -> ProgramsResponse:
     """
@@ -32,7 +31,7 @@ def create_program_route(db: SessionDeps, data: ProgramCreate) -> ProgramRespons
     """
     creéer un program
     """
-    program = create_program(db=db, program_data=data)
+    program = create_program(db=db, data=data)
     return program
 
 @router.patch("/{program_id}", dependencies=[Depends(get_current_active_admin)], response_model=ProgramResponse)
@@ -56,7 +55,7 @@ def delete_program_route(db: SessionDeps, program_id: UUID) -> Message:
     """
     result = delete_program(db=db, program_id=program_id)
     if result:
-        return Message("Program supprimé avec succès")
+        return Message(message="Program supprimé avec succès")
     raise HTTPException(
             status_code=404,
             detail="Program non trouvé sur le système"
