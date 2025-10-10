@@ -1,4 +1,4 @@
-name: Auto commit change
+name: Test FastAPI Backend
 
 on:
   pull_request:
@@ -6,68 +6,29 @@ on:
       - main
 
 jobs:
-  auto-commit:
+  test:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-python@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.13
-
-      - name: Configure Git
-        run: |
-          git config user.name 'tresor-del'
-          git config user.email 'tresoradzanto7@gmail.com'
-
-      - name: Create and activate venv
-        run: |
-          name: Auto commit change
-
-          on:
-            pull_request:
-              branches:
-                - main
-
-          jobs:
-            auto-commit:
-              runs-on: ubuntu-latest
-
-              steps:
-
-                - uses: actions/checkout@v3
-
-                - uses: actions/setup-python@v4
-                  with:
-                    python-version: '3.13'
-
-                - name: Configure Git
-                  run: |
-                    git config user.name 'tresor-del'
-                    git config user.email 'tresoradzanto7@gmail.com'
-
-                - name: Create and activate venv
-                  run: |
-                    python -m venv .venv
-                    source .venv/bin/activate
-                    python -m pip install --upgrade pip
-                  shell: bash
-
-                - name: Install uv
-                  run: |
-                    source .venv/bin/activate
-                    curl -LsSf https://astral.sh/uv/install.sh | sh
-                  shell: bash
-
-                - name: Sync dependencies
-                  run: |
-                    source .venv/bin/activate
-                    uv sync --project ./backend
-                  shell: bash
-
-                - name: Run tests
-                  run: |
-                    source .venv/bin/activate
-                    pytest ./backend
-                  shell: bash
+          python-version: '3.13'
+      
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        shell: bash
+      
+      - name: Add uv to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      
+      - name: Sync dependencies with uv
+        run: uv sync --project ./backend
+        shell: bash
+      
+      - name: Run tests
+        run: uv run --project ./backend pytest ./backend
+        shell: bash
