@@ -71,7 +71,7 @@ def update_student_route(student_id: UUID, data: StudentUpdate, db: SessionDeps)
 @router.delete("/{student_id}", dependencies=[Depends(get_current_active_admin)])
 def delete_student_route(student_id: UUID, db: SessionDeps) -> Message:
     """
-    Supprime un étudiant du système
+    Supprime un étudiant de la base de donnée
     """
     result = crud_delete_student(db=db, id=student_id)
     if not result:
