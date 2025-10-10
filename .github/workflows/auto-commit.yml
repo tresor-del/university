@@ -30,5 +30,6 @@ jobs:
         shell: bash
       
       - name: Run tests
-        run: uv run --project ./backend pytest ./backend
-        shell: bash
+        working-directory: ./backend
+        run: uv run pytest
+        
