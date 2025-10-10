@@ -45,7 +45,7 @@ def enroll_student_route(data: StudentCreate, db: SessionDeps) -> StudentRespons
 @router.get("/{student_id}", dependencies=[Depends(get_current_active_admin)])
 def get_student_route(student_id: UUID, db: SessionDeps) -> StudentResponse | Any:
     """
-    Retourne un étudiant dans la base de donnée
+    Retourne un étudiant présent dans la base de donnée
     """
     student = db.get(Student, student_id)
     if not student:
