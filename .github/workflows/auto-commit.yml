@@ -10,13 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v4
         with:
           python-version: 3.13
-
 
       - name: Configure Git
         run: |
@@ -25,29 +23,51 @@ jobs:
 
       - name: Create and activate venv
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-        shell: bash
+          name: Auto commit change
 
+          on:
+            pull_request:
+              branches:
+                - main
 
-      - name: Install uv
-        run: |
-          source .venv/bin/activate
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-        shell: bash
+          jobs:
+            auto-commit:
+              runs-on: ubuntu-latest
 
+              steps:
 
-      - name: Sync dependencies
-        run: |
-          source .venv/bin/activate
-          uv sync --project ./backend
-        shell: bash
+                - uses: actions/checkout@v3
 
-      - name: Run tests
-        run: |
-          source .venv/bin/activate
-          pytest ./backend
-        shell: bash
+                - uses: actions/setup-python@v4
+                  with:
+                    python-version: '3.13'
 
-        
+                - name: Configure Git
+                  run: |
+                    git config user.name 'tresor-del'
+                    git config user.email 'tresoradzanto7@gmail.com'
+
+                - name: Create and activate venv
+                  run: |
+                    python -m venv .venv
+                    source .venv/bin/activate
+                    python -m pip install --upgrade pip
+                  shell: bash
+
+                - name: Install uv
+                  run: |
+                    source .venv/bin/activate
+                    curl -LsSf https://astral.sh/uv/install.sh | sh
+                  shell: bash
+
+                - name: Sync dependencies
+                  run: |
+                    source .venv/bin/activate
+                    uv sync --project ./backend
+                  shell: bash
+
+                - name: Run tests
+                  run: |
+                    source .venv/bin/activate
+                    pytest ./backend
+                  shell: bash
