@@ -1,0 +1,7 @@
+# Dépendances principales
+pandas
+numpy
+scikit-learn
+joblib
+fastapi
+uvicorn
