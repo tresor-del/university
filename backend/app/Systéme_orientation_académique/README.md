@@ -16,6 +16,7 @@ Système intelligent d'orientation académique combinant **règles expertes** et
 - [Architecture](#architecture)
 - [Installation](#installation)
 - [Utilisation](#utilisation)
+- [Lancement de l'API](#lancement-de-lapi)
 - [Intégration avec FastAPI](#intégration-avec-fastapi)
 - [Structure du projet](#structure-du-projet)
 - [Algorithmes](#algorithmes)
@@ -106,7 +107,7 @@ Le système combine trois méthodes:
 ### Étapes d'installation
 
 ```bash
-# 1. Cloner le projet
+# 1. Se placer dans le répertoire du projet
 cd votre_projet/
 mkdir backend_ml
 cd backend_ml
@@ -117,11 +118,6 @@ source venv/bin/activate  # Sur Windows: venv\Scripts\activate
 
 # 3. Installer les dépendances
 pip install -r requirements.txt
-
-# 4. Créer la structure de répertoires
-mkdir -p data/{raw,processed,synthetic}
-mkdir -p models/{saved,rules}
-mkdir -p logs
 ```
 
 ---
@@ -298,15 +294,12 @@ curl -X POST "http://localhost:8000/api/v1/orientation/predict" \
 ---
 
 ## 📁 Structure du projet
-
 ```
-backend_ml/
-│
+Systéme_orientation_académique/ 
 ├── data/
 │   ├── raw/                          # Données brutes (Kaggle, CSV...)
 │   ├── processed/                    # Données nettoyées
 │   └── synthetic/                    # Données synthétiques générées
-│       └── generated_data.csv
 │
 ├── models/
 │   ├── saved/                        # Modèles entraînés
@@ -314,6 +307,7 @@ backend_ml/
 │   │   ├── scaler.pkl
 │   │   └── label_encoder.pkl
 │   └── rules/                        # Règles expertes (JSON)
+│       └── orientation_rules.json
 │
 ├── src/
 │   ├── data/
@@ -321,14 +315,25 @@ backend_ml/
 │   │   ├── data_loader.py           # Chargement
 │   │   └── preprocessor.py          # Prétraitement
 │   │
+│   ├── features/
+│   │   └── feature_engineering.py   # Création de features
+│   │
 │   ├── models/
 │   │   ├── rule_based.py            # Système à règles
 │   │   ├── ml_model.py              # Modèle ML
 │   │   └── hybrid_system.py         # Système hybride
 │   │
+│   ├── evaluation/
+│   │   └── metrics.py               # Métriques d'évaluation
+│   │
 │   └── utils/
 │       ├── config.py                # Configuration
 │       └── logger.py                # Logs
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb    # Exploration des données
+│   ├── 02_feature_engineering.ipynb # Création de features
+│   └── 03_model_training.ipynb      # Entraînement du modèle
 │
 ├── api/
 │   ├── predict.py                   # API FastAPI
@@ -336,6 +341,7 @@ backend_ml/
 │
 ├── tests/                           # Tests unitaires
 ├── logs/                            # Fichiers de logs
+├── config.py                        # Module de chargement de la config
 ├── requirements.txt                 # Dépendances Python
 ├── config.yaml                      # Configuration globale
 ├── main.py                          # Point d'entrée principal

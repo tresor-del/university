@@ -1,7 +1,10 @@
-# Dépendances principales
-pandas
-numpy
-scikit-learn
-joblib
+# --- API Server ---
 fastapi
-uvicorn
+uvicorn[standard]
+python-multipart
+
+# --- Machine Learning & Data ---
+scikit-learn
+pandas
+PyYAML
+joblib

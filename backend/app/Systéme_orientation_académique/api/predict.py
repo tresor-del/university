@@ -3,6 +3,7 @@ API de prédiction pour intégration avec le backend FastAPI existant
 """
 
 from typing import List, Optional
+from functools import lru_cache
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 import os
@@ -15,6 +16,7 @@ from pathlib import Path
 # lorsque ce fichier est utilisé par FastAPI.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from config import get_config
 from api.schemas import StudentProfileInput, OrientationRecommendation, OrientationResponse
 from src.models.rule_based import RuleBasedOrientationSystem
 from src.models.ml_model import OrientationMLModel
@@ -27,57 +29,55 @@ from src.models.hybrid_system import HybridOrientationSystem
 class OrientationService:
     """Service singleton pour les modèles d'orientation"""
     
-    _instance = None
-    _rule_system = None
-    _ml_model = None
-    _hybrid_system = None
-    _initialized = False
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-    
-    def initialize(self, models_dir: str = "models/saved", rules_path: str = "models/rules/orientation_rules.json"):
-        """Initialise les modèles (appelé au démarrage de l'app)"""
-        if self._initialized:
-            return
-        
+    def __init__(self):
+        """Initialise les modèles en lisant la configuration."""
         try:
+            config = get_config()
+            models_dir = config['paths']['models_saved']
+            rules_path = os.path.join(config['paths']['rules'], config['files']['rules'])
+            
             # Système à règles
-            self._rule_system = RuleBasedOrientationSystem(rules_path=rules_path)
+            self.rule_system = RuleBasedOrientationSystem(rules_path=rules_path)
             
             # Modèle ML
-            self._ml_model = OrientationMLModel()
-            self._ml_model.load(
-                os.path.join(models_dir, "orientation_model.pkl"),
-                os.path.join(models_dir, "scaler.pkl"),
-                os.path.join(models_dir, "label_encoder.pkl")
+            self.ml_model = OrientationMLModel()
+            self.ml_model.load(
+                os.path.join(models_dir, config['files']['model']),
+                os.path.join(models_dir, config['files']['scaler']),
+                os.path.join(models_dir, config['files']['encoder'])
             )
             
             # Système hybride
-            self._hybrid_system = HybridOrientationSystem(
-                self._rule_system, 
-                self._ml_model
+            self.hybrid_system = HybridOrientationSystem(
+                self.rule_system, 
+                self.ml_model,
+                weights=config.get('weights')
             )
             
-            self._initialized = True
+            self.initialized = True
             print("✓ Système d'orientation initialisé avec succès")
             
         except Exception as e:
+            self.initialized = False
             print(f"❌ Erreur lors de l'initialisation: {e}")
             raise
     
     def get_recommendations(self, profile: dict, top_n: int = 3) -> List[dict]:
         """Obtient les recommandations"""
-        if not self._initialized:
+        if not self.initialized:
             raise RuntimeError("Le service n'est pas initialisé")
         
-        return self._hybrid_system.recommend(profile, top_n=top_n)
+        return self.hybrid_system.recommend(profile, top_n=top_n)
     
 
 # Instance globale
-orientation_service = OrientationService()
+@lru_cache()
+def get_orientation_service():
+    """Crée et retourne une instance unique du service (injection de dépendance)"""
+    service = OrientationService()
+    if not service.initialized:
+        raise RuntimeError("Le service d'orientation n'a pas pu être initialisé.")
+    return service
 
 
 # ============================================================================
@@ -95,6 +95,7 @@ CurrentUser = dict # Placeholder
 async def predict_orientation(
     profile: StudentProfileInput,
     current_user: CurrentUser,
+    service: OrientationService = Depends(get_orientation_service),
     top_n: int = 3
 ) -> OrientationResponse:
     """
@@ -109,7 +110,7 @@ async def predict_orientation(
         profile_dict = profile.model_dump()
         
         # Obtenir les recommandations
-        recommendations = orientation_service.get_recommendations(
+        recommendations = service.get_recommendations(
             profile_dict, 
             top_n=top_n
         )
@@ -138,15 +139,16 @@ async def predict_orientation_for_student(
     student_id: UUID,
     profile: StudentProfileInput,
     # db: SessionDeps, # Placeholder
+    service: OrientationService = Depends(get_orientation_service),
     current_user: CurrentUser,
     top_n: int = 3
 ) -> OrientationResponse:
     """
     Prédit et sauvegarde les recommandations pour un étudiant spécifique
     """
-    # Obtenir les recommandations
+    # Obtenir les recommandations via le service injecté
     profile_dict = profile.model_dump()
-    recommendations = orientation_service.get_recommendations(
+    recommendations = service.get_recommendations(
         profile_dict,
         top_n=top_n
     )
@@ -166,11 +168,14 @@ async def predict_orientation_for_student(
 
 
 @router.get("/filieres")
-async def get_available_filieres(current_user: CurrentUser) -> dict:
+async def get_available_filieres(
+    current_user: CurrentUser,
+    service: OrientationService = Depends(get_orientation_service)
+) -> dict:
     """
     Retourne la liste des filières disponibles
     """
-    filieres = list(orientation_service._rule_system.rules.keys())
+    filieres = list(service.rule_system.rules.keys())
     
     return {
         "filieres": filieres,
@@ -179,10 +184,12 @@ async def get_available_filieres(current_user: CurrentUser) -> dict:
 
 
 @router.get("/health")
-async def health_check() -> dict:
+async def health_check(
+    service: OrientationService = Depends(get_orientation_service)
+) -> dict:
     """Vérifie que le système d'orientation est opérationnel"""
     return {
-        "status": "ok" if orientation_service._initialized else "not_initialized",
+        "status": "ok" if service.initialized else "error",
         "system": "Système d'orientation académique",
         "version": "1.0.0"
     }
