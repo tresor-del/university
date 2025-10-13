@@ -1,0 +1,43 @@
+{
+  "Génie Logiciel": {
+    "required": [
+      { "feature": "competence_programmation", "operator": ">=", "value": 8 },
+      { "feature": "interet_informatique", "operator": ">=", "value": 8 }
+    ],
+    "preferred": [
+      { "feature": "trait_rigoureux", "operator": ">=", "value": 7 },
+      { "feature": "trait_methodique", "operator": ">=", "value": 7 }
+    ],
+    "bonus": [
+      { "feature": "moyenne_informatique", "operator": ">=", "value": 14 }
+    ]
+  },
+  "Intelligence Artificielle": {
+    "required": [
+      { "feature": "competence_programmation", "operator": ">=", "value": 8 },
+      { "feature": "competence_math", "operator": ">=", "value": 8 },
+      { "feature": "interet_informatique", "operator": ">=", "value": 8 }
+    ],
+    "preferred": [
+      { "feature": "interet_donnees", "operator": ">=", "value": 7 },
+      { "feature": "trait_analytique", "operator": ">=", "value": 8 }
+    ],
+    "bonus": [
+      { "feature": "moyenne_math", "operator": ">=", "value": 14 },
+      { "feature": "moyenne_informatique", "operator": ">=", "value": 13 }
+    ]
+  },
+  "Big Data": {
+    "required": [
+      { "feature": "competence_math", "operator": ">=", "value": 7 },
+      { "feature": "interet_donnees", "operator": ">=", "value": 8 }
+    ],
+    "preferred": [
+      { "feature": "competence_programmation", "operator": ">=", "value": 7 },
+      { "feature": "trait_analytique", "operator": ">=", "value": 8 }
+    ],
+    "bonus": [
+      { "feature": "moyenne_math", "operator": ">=", "value": 15 }
+    ]
+  }
+}

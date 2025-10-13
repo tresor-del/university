@@ -1,37 +1,49 @@
-# ==================================================
+# =================================================
 # CONFIGURATION GLOBALE DU SYSTÈME D'ORIENTATION
-# ==================================================
+# =================================================
 
-# Chemins (relatifs à la racine du projet backend_ml)
+# --- Chemins et Fichiers ---
 paths:
-  data: "data"
-  data_raw: "data/raw"
-  data_processed: "data/processed"
-  data_synthetic: "data/synthetic"
-  models_saved: "models/saved"
-  rules: "models/rules"
-  logs: "logs"
+  data_raw: "data/raw/"
+  data_processed: "data/processed/"
+  data_synthetic: "data/synthetic/"
+  models_saved: "models/saved/"
+  rules: "models/rules/"
+  logs: "logs/"
 
-# Fichiers
 files:
-  generated_data: "generated_data.csv"
+  synthetic_data: "generated_data.csv"
   rules: "orientation_rules.json"
   model: "orientation_model.pkl"
   scaler: "scaler.pkl"
   encoder: "label_encoder.pkl"
 
-# Modèle ML
+# --- Filières ---
+# Liste complète des filières gérées par le système
+filieres:
+  - "Génie Logiciel"
+  - "Intelligence Artificielle"
+  - "Big Data"
+  - "Objets Connectés (IoT)"
+  - "Cybersécurité"
+  - "Robotique"
+  - "Aéronautique"
+  - "Pilotage"
+  - "Pétrochimie"
+  - "Topographie"
+  - "Maintenance Automobile"
+
+# --- Modèle ML ---
 model:
-  type: "RandomForest"
+  algorithm: "RandomForest"
   test_size: 0.2
   random_state: 42
   rf_params:
     n_estimators: 100
     max_depth: 15
-    min_samples_split: 5
     min_samples_leaf: 2
 
-# Pondération du système hybride
+# --- Système Hybride ---
 weights:
   rules: 0.4
   ml: 0.6

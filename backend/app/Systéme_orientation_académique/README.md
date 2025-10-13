@@ -102,22 +102,26 @@ Le système combine trois méthodes:
 
 - Python 3.8+
 - pip
-- (Optionnel) Environnement virtuel
+- uv (recommandé pour la gestion de l'environnement)
 
 ### Étapes d'installation
 
 ```bash
-# 1. Se placer dans le répertoire du projet
+# 1. Installer uv (si ce n'est pas déjà fait)
+# https://github.com/astral-sh/uv
+pip install uv
+
+# 2. Se placer dans le répertoire du projet
 cd votre_projet/
 mkdir backend_ml
 cd backend_ml
 
-# 2. Créer un environnement virtuel (recommandé)
-python -m venv venv
+# 3. Créer et activer un environnement virtuel avec uv (recommandé)
+uv venv venv
 source venv/bin/activate  # Sur Windows: venv\Scripts\activate
 
-# 3. Installer les dépendances
-pip install -r requirements.txt
+# 4. Installer les dépendances avec uv (plus rapide)
+uv pip install -r requirements.txt
 ```
 
 ---
@@ -180,20 +184,28 @@ for rec in recommendations:
 ---
 
 ## 🔌 Intégration avec FastAPI
+## 🔌 Lancement de l'API (FastAPI)
 
 ### 1. Ajouter le router d'orientation
+Le point d'entrée pour l'API est le fichier `api_runner.py`. Il utilise `uvicorn` pour lancer le serveur.
 
 Dans `backend/app/api/main.py`:
+### 1. Activer l'environnement virtuel
 
 ```python
 from app.api.routes import orientation
+Assurez-vous que votre environnement virtuel est activé :
 
 api_router.include_router(orientation.router)
+```bash
+source venv/bin/activate
 ```
 
 ### 2. Initialiser au démarrage
+### 2. Lancer le serveur
 
 Dans `backend/app/main.py`:
+Exécutez la commande suivante à la racine du projet :
 
 ```python
 from app.api.routes.orientation import orientation_service
@@ -202,7 +214,12 @@ from app.api.routes.orientation import orientation_service
 async def startup_event():
     """Initialise le système d'orientation au démarrage"""
     orientation_service.initialize(models_dir="backend_ml/models/saved/")
+```bash
+# Lance le serveur avec rechargement automatique pour le développement
+uvicorn api_runner:app --host 0.0.0.0 --port 8000 --reload
 ```
+
+L'API sera alors disponible à l'adresse http://localhost:8000/docs.
 
 ### 3. Utiliser l'API
 
@@ -339,6 +356,7 @@ Systéme_orientation_académique/
 │   ├── predict.py                   # API FastAPI
 │   └── schemas.py                   # Schémas Pydantic
 │
+├── api_runner.py                    # Point d'entrée pour lancer l'API
 ├── tests/                           # Tests unitaires
 ├── logs/                            # Fichiers de logs
 ├── config.py                        # Module de chargement de la config
@@ -613,8 +631,14 @@ Pour toute question ou suggestion:
 ```bash
 # Installation
 pip install -r requirements.txt
+# 1. Créer l'environnement et installer les dépendances
+pip install uv
+uv venv venv
+source venv/bin/activate
+uv pip install -r requirements.txt
 
 # Lancer le pipeline complet
+# 2. Lancer le pipeline complet (génération, entraînement, test)
 python main.py --full-pipeline
 
 # Tester l'API
@@ -622,6 +646,8 @@ python main.py --predict
 
 # Intégrer à FastAPI
 # Voir section "Intégration avec FastAPI"
+# 3. Lancer le serveur API
+uvicorn api_runner:app --reload
 ```
 
 **Ça fonctionne? Félicitations! 🎉**

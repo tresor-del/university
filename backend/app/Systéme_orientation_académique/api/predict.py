@@ -32,10 +32,14 @@ class OrientationService:
     def __init__(self):
         """Initialise les modèles en lisant la configuration."""
         try:
+            # Définir le chemin de base du projet (le parent du dossier 'api')
+            BASE_DIR = Path(__file__).resolve().parent.parent
+
             config = get_config()
-            models_dir = config['paths']['models_saved']
-            rules_path = os.path.join(config['paths']['rules'], config['files']['rules'])
-            
+            # Construire des chemins absolus à partir de la racine du projet
+            models_dir = BASE_DIR / config['paths']['models_saved']
+            rules_path = BASE_DIR / config['paths']['rules'] / config['files']['rules']
+
             # Système à règles
             self.rule_system = RuleBasedOrientationSystem(rules_path=rules_path)
             
@@ -139,9 +143,9 @@ async def predict_orientation_for_student(
     student_id: UUID,
     profile: StudentProfileInput,
     # db: SessionDeps, # Placeholder
-    service: OrientationService = Depends(get_orientation_service),
     current_user: CurrentUser,
-    top_n: int = 3
+    service: OrientationService = Depends(get_orientation_service),
+    top_n: int = 3,
 ) -> OrientationResponse:
     """
     Prédit et sauvegarde les recommandations pour un étudiant spécifique
