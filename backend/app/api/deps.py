@@ -1,7 +1,6 @@
 from typing import Annotated
 
-import jwt
-from jwt.exceptions import InvalidTokenError
+from jose import JWTError, jwt
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -46,7 +45,7 @@ def get_current_user(db: SessionDeps, token: TokenDeps) -> UserPublic:
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
         token_data = payload.get("sub")
-    except (InvalidTokenError, ValidationError):
+    except (JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
