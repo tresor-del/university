@@ -20,6 +20,8 @@ def get_superuser_token_headers(client: TestClient):
 
 
 def random_lower_string(length: int = 8) -> str:
+    # Assure que la longueur ne dépasse pas 72 caractères pour bcrypt
+    length = min(length, 72)
     return ''.join(random.choices(string.ascii_lowercase, k=length))
 
 def random_age() -> int:
