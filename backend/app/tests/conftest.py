@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from app.main import app
 from app.models.students import Student
 from app.models.teachers import Teacher
+from app.models.university import Faculty, Program, Course, Department
 from app.models.media import Media
 from app.models import users
 from app.core.config import Base
@@ -57,6 +58,10 @@ def db():
         session.query(Student).delete() 
         session.query(Teacher).delete() 
         session.query(Media).delete()
+        session.query(Faculty).delete()
+        session.query(Program).delete()
+        session.query(Course).delete()
+        session.query(Department).delete()
         session.commit()
         session.close()
 
