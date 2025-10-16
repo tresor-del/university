@@ -71,7 +71,7 @@ def test_creation_etudiant_sans_champ_obligatoire(client: TestClient, superuser_
         json=data,
         headers=superuser_token_headers
     )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 # -------- LECTURE --------
 def test_get_student(client: TestClient, db: Session, superuser_token_headers: dict[str, str]) -> Any:
