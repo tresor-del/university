@@ -9,8 +9,7 @@ from app.tests.utils.university import create_random_faculty, create_random_facu
 from app.core.settings import settings
 
 
-# ------------------- LISTE -------------------
-def test_list_faculties(client: TestClient, db: Session, superuser_token_headers: dict[str, str]):
+def test_read_faculties(client: TestClient, db: Session, superuser_token_headers: dict[str, str]):
     # Créer plusieurs facultés
     create_random_faculties(db)
 
@@ -25,12 +24,11 @@ def test_list_faculties(client: TestClient, db: Session, superuser_token_headers
     assert data["count"] >= 3
 
 
-def test_list_faculties_without_auth(client: TestClient):
+def test_read_faculties_without_auth(client: TestClient):
     response = client.get(f"{settings.API_V1_STR}/faculties")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-# ------------------- CREATION -------------------
 def test_create_faculty(client: TestClient, db: Session, superuser_token_headers: dict[str, str]):
     faculty_data = {
         "nom": "Faculté de Test",
@@ -48,7 +46,6 @@ def test_create_faculty(client: TestClient, db: Session, superuser_token_headers
     assert faculty["id"] is not None
 
 
-# ------------------- LECTURE -------------------
 def test_get_faculty(client: TestClient, db: Session, superuser_token_headers: dict[str, str]):
     faculty = create_random_faculty(db)
 
@@ -71,7 +68,6 @@ def test_get_faculty_not_found(client: TestClient, superuser_token_headers: dict
     assert response.json()["detail"] == "Faculté non trouvé sur le système"
 
 
-# ------------------- MISE A JOUR -------------------
 def test_update_faculty(client: TestClient, db: Session, superuser_token_headers: dict[str, str]):
     faculty = create_random_faculty(db)
     update_data = {"nom": "Nom mis à jour"}
@@ -101,7 +97,6 @@ def test_update_faculty_not_found(client: TestClient, superuser_token_headers: d
     assert response.json()["detail"] == "Faculté non trouvé sur le système"
 
 
-# ------------------- SUPPRESSION -------------------
 def test_delete_faculty(client: TestClient, db: Session, superuser_token_headers: dict[str, str]):
     faculty = create_random_faculty(db)
 

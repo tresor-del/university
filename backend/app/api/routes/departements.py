@@ -18,7 +18,6 @@ from app.crud.departements import (
 router = APIRouter(prefix="/departments", tags=["departments"])
 
 
-
 @router.get("/", dependencies=[Depends(get_current_active_admin)], response_model=DepartementsResponse)
 def read_departement_route(db: SessionDeps, skip: int = 0, limit: int = 100) -> DepartementsResponse:
     """
