@@ -72,7 +72,7 @@ def create_random_department(db: Session, faculty_id: UUID):
 def create_random_departements(db: Session,n: int = 3, faculty_id: UUID = None) -> list:
     departements = []
     for _ in range(n):
-        departements.append(create_random_departements(db,faculty_id=faculty_id or uuid.uuid4()))
+        departements.append(create_random_department(db,faculty_id=faculty_id or uuid.uuid4()))
     return departements
 
 def create_random_programs(db: Session, n: int = 3, id_departement: UUID = None) -> List[Program]:

@@ -43,7 +43,7 @@ class DepartmentCreate(DepartmentBase):
     pass
 
 class DepartmentUpdate(BaseModel):
-    nom: Optional[str] = None
+    nom: str
     description: Optional[str] = None
     id_faculte: Optional[UUID] = None
     

@@ -31,8 +31,9 @@ def create_departemnt_route(db: SessionDeps, data: DepartmentCreate) -> Departme
     """
     creéer un departement
     """
-    departement = create_departement(db=db, department_data=data)
+    departement = create_departement(db=db, departement_data=data)
     return departement
+
 
 @router.patch("/{department_id}", dependencies=[Depends(get_current_active_admin)], response_model=DepartmentResponse)
 def update_department_route(db: SessionDeps, department_id: UUID, data: DepartmentUpdate) -> DepartmentResponse:
@@ -45,7 +46,7 @@ def update_department_route(db: SessionDeps, department_id: UUID, data: Departme
             status_code=404,
             detail="Departement non trouvé sur le système"
         )
-    department_updated = update_departement(db=db, department_id=department_id, data=data)
+    department_updated = update_departement(db=db, dep_id=department_id, data=data)
     return department_updated
 
 @router.delete("/{department_id}", dependencies=[Depends(get_current_active_admin)], response_model=Message)
@@ -55,7 +56,7 @@ def delete_department_route(db: SessionDeps, department_id: UUID) -> Message:
     """
     result = delete_department(db=db, department_id=department_id)
     if result:
-        return Message("Departement supprimé avec succès")
+        return Message(message="Departement supprimé avec succès")
     raise HTTPException(
             status_code=404,
             detail="Departement non trouvé sur le système"

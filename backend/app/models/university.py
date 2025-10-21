@@ -41,7 +41,7 @@ class Department(Base):
     __tablename__ = "departements"
 
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
-    nom = Column(String(155), index=True, nullable=False)
+    nom = Column(String(155), index=True, nullable=True)
     description = Column(Text, nullable=True)
     
     id_faculte = Column(UUID(as_uuid=True), ForeignKey("facultés.id"), nullable=False)
