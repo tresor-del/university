@@ -7,7 +7,7 @@ from app.api.deps import get_current_active_admin, SessionDeps
 from app.models.university import Faculty
 from app.schemas.message import Message
 from app.schemas.university import FacultiesResponse, FacultyResponse, FacultyCreate, FacultyUpdate
-from app.crud.faculty import (
+from app.crud.admin.faculty import (
     read_faculties,
     create_faculty,
     update_faculty,

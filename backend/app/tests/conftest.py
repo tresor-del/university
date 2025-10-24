@@ -1,3 +1,4 @@
+from app.crud.admin import courses, departements, faculty
 from fastapi import BackgroundTasks
 import pytest
 
@@ -19,7 +20,7 @@ from app.initial_data import init_db
 from app.tests.utils.users import authenticate_user_from_username
 from app.tests.utils.utils import get_superuser_token_headers
 from app.schemas.university import CourseCreate, DepartmentCreate, FacultyCreate, ProgramCreate
-from app.crud import programs, departements, courses, faculty 
+from app.crud.admin import programs 
 
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

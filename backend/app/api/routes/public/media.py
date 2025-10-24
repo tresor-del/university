@@ -12,7 +12,7 @@ from app.schemas.media import MediaCreate, MediaResponse
 from app.schemas.message import Message
 from app.core import settings
 from app.api.deps import SessionDeps, get_current_active_admin
-from app.crud.media import add_media, delete_media
+from app.crud.public.media import add_media, delete_media
 from app.models.teachers import Teacher
 from app.models.students import Student
 

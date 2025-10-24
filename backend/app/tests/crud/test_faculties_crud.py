@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.faculty import (
+from app.crud.admin.faculty import (
     read_faculties,
     update_faculty,
     delete_faculty,

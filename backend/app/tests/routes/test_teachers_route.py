@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from fastapi.testclient import TestClient
 
 from app.schemas.teacher import TeacherCreate, TeacherResponse
-from app.crud.teacher import delete_teacher
+from app.crud.admin.teacher import delete_teacher
 from app.core.config import settings
 from app.tests.utils.teachers import create_random_teachers, random_teacher_data, create_random_teacher
 from app.tests.utils.utils import random_email, random_lower_string, random_phone

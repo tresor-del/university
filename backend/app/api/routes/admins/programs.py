@@ -7,7 +7,7 @@ from app.api.deps import get_current_active_admin, SessionDeps
 from app.models.university import Program
 from app.schemas.message import Message
 from app.schemas.university import ProgramCreate, ProgramUpdate, ProgramResponse, ProgramsResponse
-from app.crud.programs import (
+from app.crud.admin.programs import (
     read_programs,
     create_program,
     update_program,

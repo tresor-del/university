@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import UUID, Column, String, Integer, Boolean, ForeignKey
+from sqlalchemy import UUID, Column, String, Integer, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
 from app.core.config import Base
@@ -20,6 +20,8 @@ class User(Base):
     is_active = Column(Boolean, index=True)
     is_superuser = Column(Boolean, index=True)
     hashed_password = Column(String(128), index=True, nullable=False)
+    
+    role = Column(Enum(UserRole), nullable=False, default=UserRole.STUDENT)
 
     student_id = Column(UUID(as_uuid=True),ForeignKey("etudiants.id") ,nullable=True)
     teacher_id = Column(UUID(as_uuid=True),ForeignKey("teachers.id") ,nullable=True)

@@ -11,7 +11,7 @@ from app.api.deps import get_current_active_admin, SessionDeps
 from app.schemas.teacher import TeacherUpdate, TeacherCreate, TeacherResponse, TeachersResponse
 from app.schemas.message import Message
 from app.models.teachers import Teacher
-from app.crud import teacher
+from app.crud.admin import teacher
 
 
 

@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.teacher import delete_teacher, get_teacher, update_teacher, teachers_list
+from app.crud.admin.teacher import delete_teacher, get_teacher, update_teacher, teachers_list
 from app.schemas.teacher import TeacherResponse, TeacherUpdate
 from app.tests.utils.teachers import create_random_teacher, create_random_teachers
 from app.tests.utils.utils import random_lower_string

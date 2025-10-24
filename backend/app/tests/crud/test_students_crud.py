@@ -1,6 +1,6 @@
 from typing import Any
 from app.schemas.students import StudentCreate, StudentResponse, StudentsResponse
-from app.crud import students
+from app.crud.admin import students
 from app.tests.utils.students import (
     create_random_student, 
     random_user_data, 

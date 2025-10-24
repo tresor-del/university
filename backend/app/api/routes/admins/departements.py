@@ -7,7 +7,7 @@ from app.api.deps import get_current_active_admin, SessionDeps
 from app.schemas.university import DepartementsResponse, DepartmentResponse, DepartmentCreate, DepartmentUpdate
 from app.schemas.message import Message
 from app.models.university import Department
-from app.crud.departements import (
+from app.crud.admin.departements import (
     read_departement,
     create_departement,
     update_departement,

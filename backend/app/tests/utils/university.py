@@ -3,8 +3,8 @@ import uuid
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from app.crud.courses import  create_course
-from app.crud.departements import create_departement
+from app.crud.admin.courses import  create_course
+from app.crud.admin.departements import create_departement
 from app.models.university import Program, Faculty
 from app.schemas.university import CourseCreate, CourseResponse, ProgramCreate, FacultyCreate, FacultyResponse, DepartmentCreate, ProgramResponse
 from app.tests.utils.utils import random_lower_string
@@ -82,5 +82,5 @@ def create_random_programs(db: Session, n: int = 3, id_departement: UUID = None)
     return programs
 
 def get_random_program(db: Session, program_id: UUID) -> ProgramResponse | None:
-    from app.crud.programs import get_program
+    from app.crud.admin.programs import get_program
     return get_program(db=db, program_id=program_id)

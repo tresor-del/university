@@ -2,7 +2,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.departements import (
+from app.crud.admin.departements import (
     update_departement,
     delete_department,
     get_departement,

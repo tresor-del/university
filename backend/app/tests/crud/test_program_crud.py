@@ -2,7 +2,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 from uuid import uuid4
 
-from app.crud.programs import (
+from app.crud.admin.programs import (
     create_program,
     read_programs,
     update_program,

@@ -1,6 +1,9 @@
+from app.api.routes.admins import courses, departements, faculties, programs, students, teachers
+from app.api.routes.auth import login
+from app.api.routes.public import media
 from fastapi import APIRouter
 
-from app.api.routes import users, students, login, teachers, courses, departements, programs, media, faculties
+from app.api.routes import users
 
 api_router = APIRouter()
 api_router.include_router(users.router)

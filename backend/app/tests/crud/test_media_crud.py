@@ -5,7 +5,7 @@ from fastapi import BackgroundTasks
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.media import add_media, delete_media, get_media, read_media, update_principal_photo
+from app.crud.public.media import add_media, delete_media, get_media, read_media, update_principal_photo
 from app.tests.utils.teachers import create_random_teacher
 from app.tests.utils.students import create_random_student
 from app.models.media import Media

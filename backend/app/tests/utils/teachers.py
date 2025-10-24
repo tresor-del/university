@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.schemas.teacher import TeacherCreate, TeacherResponse
-from app.crud.teacher import create_teacher
+from app.crud.admin.teacher import create_teacher
 from app.tests.utils.utils import random_lower_string, random_phone, random_email
 
 def create_random_teacher(db: Session) -> TeacherResponse:

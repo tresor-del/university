@@ -7,7 +7,7 @@ from app.api.deps import get_current_active_admin, SessionDeps
 from app.models.university import Course
 from app.schemas.message import Message
 from app.schemas.university import CourseCreate, CourseUpdate, CourseResponse, CoursesResponse
-from app.crud.courses import (
+from app.crud.admin.courses import (
     read_courses,
     create_course,
     update_course,

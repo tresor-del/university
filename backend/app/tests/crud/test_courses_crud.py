@@ -4,7 +4,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.crud.courses import (
+from app.crud.admin.courses import (
     read_courses,
     update_course,
     delete_course,

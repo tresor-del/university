@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.settings import settings
-from app.crud import programs as crud_programs
-from app.crud import courses as crud_courses
-from app.crud import departements as crud_departments
+from app.crud.admin import programs as crud_programs
+from app.crud.admin import courses as crud_courses
+from app.crud.admin import departements as crud_departments
 
 
 logger = logging.getLogger(__name__)

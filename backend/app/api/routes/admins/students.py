@@ -9,7 +9,7 @@ from fastapi.exceptions import HTTPException
 from app.api.deps import SessionDeps, get_current_active_admin
 from app.models.students import Student
 from app.schemas.message import Message
-from app.crud.students import (
+from app.crud.admin.students import (
     students_list as crud_students_list,
     enroll_student as crud_enroll_student,
     update_student as crud_update_student,
