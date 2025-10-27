@@ -1,8 +1,9 @@
+import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import UUID
-from sqlalchemy import Column, Integer, String, DateTime, Date
+from sqlalchemy import UUID, Enum as sqlenum
+from sqlalchemy import Column, Integer, String, DateTime, Date, Text, Sqlen
 from sqlalchemy.sql import func
 
 from sqlalchemy import event
@@ -13,6 +14,15 @@ from app.core.config import Base
 from app.models.enrollments import Enrollment
 from app.models.media import Media
 
+class StudentStatus(str, enum.Enum):
+    
+    BROUILLON = "brouillon"
+    EN_ATTENTE = "attente"
+    VALIDE = "validé"
+    REJETTE = "rejeté"
+    ACTIF = "actif"
+    SUSPENDU = "suspendu"
+    DESACTIVE = "désactivé"
 
 class Student(Base):
     __tablename__ = "etudiants"
@@ -38,13 +48,18 @@ class Student(Base):
     telephone_parent_tuteur = Column(String(20), nullable=False)
     adresse_parent_tuteur = Column(String(255), nullable=False)
     
-    # photo = Column(String(255), nullable=True)
+    # status et date
+    statut = Column(sqlenum(StudentStatus), nullable=False(50), default=StudentStatus.BROUILLON)
     date_inscription = Column(Date, server_default=func.current_date())
-    statut = Column(String(50), default="actif")
+    date_soumission = Column(DateTime(timezone=True), nullable=True)
+    date_validation = Column(DateTime(timezone=True), nullable=True)
     date_creation = Column(DateTime(timezone=True), server_default=func.now())
-    # qr_path = Column(String(200))
+    date_modification = Column(DateTime(timezone=True), onupdate=func.now())
 
-    # id_user = Column(Integer, ForeignKey("users.id"), nullable=True)
+    # validation 
+    motif_rejet = Column(Text, nullable=True)
+    valide_par_admin_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+
     id_departement = Column(Integer, ForeignKey("departements.id"), nullable=True)
     id_parcours = Column(Integer, ForeignKey("parcours.id"), nullable=True)
 
@@ -53,6 +68,7 @@ class Student(Base):
     parcours = relationship("Program", back_populates="students")
     enrollments = relationship("Enrollment", back_populates="student")
     medias = relationship("Media", back_populates="student")
+    
 
 @event.listens_for(Student, "before_insert")
 def generer_id_etudiant(mapper, connection, target):

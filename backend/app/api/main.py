@@ -1,6 +1,6 @@
 from app.api.routes.admins import courses, departements, faculties, programs, students, teachers
 from app.api.routes.auth import login
-from app.api.routes.public import media
+from app.api.routes.public import media, students as self_enrollment_students
 from fastapi import APIRouter
 
 from app.api.routes import users
