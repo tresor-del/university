@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.models.students import Student
+from app.models.students import Student, StudentStatus
 from app.schemas.students import StudentResponse, StudentsResponse, StudentCreate, StudentUpdate
 
 
@@ -14,6 +14,23 @@ def students_list(*, db: Session, skip:int, limit: int) -> StudentsResponse | An
     statement = select(Student).offset(skip).limit(limit)
     students = db.execute(statement).scalars().all()
     return StudentsResponse.model_validate({"data": students, "count": count})
+
+def get_pending_students(*, db: Session, skip: int = 0, limit: int) -> StudentsResponse | Any:
+    count_statement = select(func.count()).select_from(Student).filter(Student.status == StudentStatus.EN_ATTENTE)
+    count = db.execute(count_statement).scalar()
+    
+    statement = select(Student).where(Student.statut == StudentStatus.EN_ATTENTE).offset(skip).limit(limit)
+    students = db.execute(statement).scalars().all()
+    
+    return StudentsResponse.model_validate({"data": students, "count": count})
+
+def valider_student(*, db: Session, student_id: UUID) -> StudentsResponse | Any:
+    student = db.get(Student, student_id)
+    student.statut = StudentStatus.VALIDE
+    student.date_validation = func.now()
+    student.date_inscription = func.current_date()
+    return student
+    
     
 def enroll_student(*, db: Session, data: StudentCreate) -> StudentResponse | Any:
     valid_data = data.model_dump()

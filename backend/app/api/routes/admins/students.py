@@ -7,10 +7,12 @@ from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
 
 from app.api.deps import SessionDeps, get_current_active_admin
-from app.models.students import Student
+from app.models.students import Student, StudentStatus
 from app.schemas.message import Message
 from app.crud.admin.students import (
     students_list as crud_students_list,
+    get_pending_students,
+    valider_student,
     enroll_student as crud_enroll_student,
     update_student as crud_update_student,
     delete_student as crud_delete_student,
@@ -22,11 +24,42 @@ router = APIRouter(prefix="/students", tags=["Students"])
 
 
 @router.get("/",dependencies=[Depends(get_current_active_admin)])
-def get_students_list_route(db: SessionDeps, skip: int = 1, limit: int = 100) -> StudentsResponse | Any:
+def get_students_list_route(db: SessionDeps, status: StudentStatus | None = None, skip: int = 1, limit: int = 100) -> StudentsResponse | Any:
     """
     Retourne une liste de tous les étudiants
     """
     return crud_students_list(db=db, skip=skip, limit=limit)
+
+@router.get("/pending", dependancies=[Depends(get_current_active_admin)])
+def get_pending_students_route(db: SessionDeps, skip: int = 0, limit: int = 100) -> StudentsResponse | Any:
+    """
+    Retourne la liste des dossiers en attente de validation
+    """
+    return get_pending_students(db=db, skip=skip, limit=limit)
+
+@router.post("/{student_id}/valider", dependencies=[Depends(get_current_active_admin)])
+def valider_student_route(db: SessionDeps, student_id: UUID) -> StudentResponse | Any:
+    """
+    Valide un dossier d'étudiant en attente
+    Génère l'ID étudiant et change le statut à VALIDÉ
+    """
+    student = db.get(Student, student_id)
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Étudiant non trouvé"
+        )
+    
+    if student.statut != StudentStatus.EN_ATTENTE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Ce dossier ne peut pas être validé (statut actuel: {student.statut})"
+        )
+    
+    # Processus d'envoie d'Email, à faire plus tard
+    
+    student = valider_student(db=db, student_id=student_id)
+    return student
         
 @router.post("/", dependencies=[Depends(get_current_active_admin)])
 def enroll_student_route(data: StudentCreate, db: SessionDeps) -> StudentResponse | Any:
