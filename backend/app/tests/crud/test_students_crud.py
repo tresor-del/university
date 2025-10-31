@@ -1,6 +1,6 @@
 from typing import Any
 from app.schemas.students import StudentCreate, StudentResponse, StudentsResponse
-from app.crud.admin import students
+from app.crud.admin.services_inscription import new_students
 from app.tests.utils.students import (
     create_random_student, 
     random_user_data, 
@@ -15,21 +15,21 @@ def test_create_student(db) -> Any:
         
 def test_delete_student(db) -> Any:
     student = create_random_student(db)
-    response = students.delete_student(db=db, id=student.id)
+    response = new_students.delete_student(db=db, id=student.id)
     assert response is True
 
 def test_update_student(db) -> Any:
     student = create_random_student(db)
     data = random_user_data()
-    response = students.update_student(db=db,id=student.id, data=data)
+    response = new_students.update_student(db=db,id=student.id, data=data)
     assert isinstance(response, StudentResponse)
 
 def test_get_student(db) -> Any:
     student = create_random_student(db)
-    response = students.get_student(db=db, id=student.id)
+    response = new_students.get_student(db=db, id=student.id)
     assert isinstance(response, StudentResponse)
 
 def test_list_student(db) -> Any:
     create_random_students(db)
-    response = students.students_list(db=db, skip=1, limit=100)
+    response = new_students.students_list(db=db, skip=1, limit=100)
     assert isinstance(response, StudentsResponse)

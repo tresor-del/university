@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import UUID, Enum as sqlenum
-from sqlalchemy import Column, Integer, String, DateTime, Date, Text, Sqlen
+from sqlalchemy import Column, Integer, String, DateTime, Date, Text, Boolean, JSON
 from sqlalchemy.sql import func
 
 from sqlalchemy import event
@@ -23,6 +23,8 @@ class StudentStatus(str, enum.Enum):
     ACTIF = "actif"
     SUSPENDU = "suspendu"
     DESACTIVE = "désactivé"
+    ANCIEN = "ancien" 
+    REINSCRIPTION_EN_ATTENTE = "réinscription_en_attente" 
 
 class Student(Base):
     __tablename__ = "etudiants"
@@ -60,6 +62,20 @@ class Student(Base):
     motif_rejet = Column(Text, nullable=True)
     valide_par_admin_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
 
+    # pour les anciens étudiants
+    est_ancien = Column(Boolean, default=False)  
+    annee_sortie = Column(Integer, nullable=True) 
+    motif_sortie = Column(String(255), nullable=True) 
+    dernier_niveau = Column(String(100), nullable=True)
+    
+    # Pour les réinscriptions
+    nombre_reinscriptions = Column(Integer, default=0)  # Compteur de réinscriptions
+    date_derniere_reinscription = Column(Date, nullable=True)
+    
+    # Historique académique
+    historique_statuts = Column(JSON, nullable=True)
+    
+    
     id_departement = Column(Integer, ForeignKey("departements.id"), nullable=True)
     id_parcours = Column(Integer, ForeignKey("parcours.id"), nullable=True)
 
@@ -72,7 +88,7 @@ class Student(Base):
 
 @event.listens_for(Student, "before_insert")
 def generer_id_etudiant(mapper, connection, target):
-    if not target.id_etudiant:
+    if not target.id_etudiant and target.statut in [StudentStatus.VALIDE, StudentStatus.ACTIF]:
         target.id_etudiant = f"STD{datetime.now().year}-{uuid.uuid4().hex[:5]}"
     pass
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import Session
 from app.schemas.students import StudentCreate
 from app.models.students import Student
-from app.crud.admin.students import enroll_student
+from app.crud.admin.services_inscription.new_students import enroll_student
 from app.tests.utils.utils import random_lower_string, random_sexe, random_email, random_date, random_phone
 
 def create_random_student(db: Session) -> Student:

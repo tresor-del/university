@@ -1,7 +1,11 @@
+import uuid
+from datetime import datetime
 from typing import Any
 from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
+
+from fastapi import Body
 
 from app.models.students import Student, StudentStatus
 from app.schemas.students import StudentResponse, StudentsResponse, StudentCreate, StudentUpdate
@@ -29,12 +33,25 @@ def valider_student(*, db: Session, student_id: UUID) -> StudentsResponse | Any:
     student.statut = StudentStatus.VALIDE
     student.date_validation = func.now()
     student.date_inscription = func.current_date()
-    return student
-    
+    db.commit()
+    db.refresh(student)
+    return StudentResponse.model_validate(student)
+
+def rejeter_student(*, db: Session, student_id: UUID, motif: str ) -> StudentResponse | Any:
+    student  = db.get(Student, student_id)
+    student.statut = StudentStatus.REJETTE
+    student.motif_rejet = motif
+    db.commit()
+    return True
     
 def enroll_student(*, db: Session, data: StudentCreate) -> StudentResponse | Any:
-    valid_data = data.model_dump()
-    student = Student(**valid_data)
+    student_data = data.model_dump()
+    
+    student_data['statut'] = StudentStatus.VALIDE
+    student_data['date_inscription'] = func.current_date()
+    student_data['date_validation'] = func.now()
+    
+    student = Student(**student_data)
     db.add(student)
     db.commit()
     db.refresh(student)

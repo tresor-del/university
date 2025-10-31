@@ -1,3 +1,5 @@
+import uuid
+from datetime import datetime
 from typing import Any, List
 from uuid import UUID
 
@@ -9,10 +11,11 @@ from fastapi.exceptions import HTTPException
 from app.api.deps import SessionDeps, get_current_active_admin
 from app.models.students import Student, StudentStatus
 from app.schemas.message import Message
-from app.crud.admin.students import (
+from app.crud.admin.services_inscription.new_students import (
     students_list as crud_students_list,
     get_pending_students,
     valider_student,
+    rejeter_student,
     enroll_student as crud_enroll_student,
     update_student as crud_update_student,
     delete_student as crud_delete_student,
@@ -60,7 +63,31 @@ def valider_student_route(db: SessionDeps, student_id: UUID) -> StudentResponse 
     
     student = valider_student(db=db, student_id=student_id)
     return student
-        
+
+@router.post("/{student_id}/rejeter", dependencies=[Depends(get_current_active_admin)])
+def rejeter_student_route(db: SessionDeps, student_id: UUID, motif: str) -> StudentResponse | Any:
+    """
+    Rejette un étudiant avec un motif
+    """
+    student = db.get(Student, student_id)
+    if not student:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Étudiant non trouvé"
+        )
+    
+    if student.statut != StudentStatus.EN_ATTENTE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Ce dossier ne peut pas être rejeté (statut actuel: {student.statut})"
+        )
+    
+    response = rejeter_student(db=db, student_id=student_id, motif=motif)
+    
+    if response: 
+        return Message(message="Étudiant rejeté avec succès")
+    
+      
 @router.post("/", dependencies=[Depends(get_current_active_admin)])
 def enroll_student_route(data: StudentCreate, db: SessionDeps) -> StudentResponse | Any:
     """
@@ -125,7 +152,7 @@ def deactivate_student(student_id: UUID, db: SessionDeps) -> Message:
             status_code=404,
             detail="Etudiant non trouvé sur le système"
         )
-    student_db.statut = "désactivé"
+    student_db.statut = StudentStatus.DESACTIVE
     db.commit()
     db.refresh(student_db)
     return Message(message="Etudiant désactivé avec succès")
@@ -141,7 +168,8 @@ def activate_student(student_id: UUID, db: SessionDeps) -> Message:
             status_code=404,
             detail="Etudiant non trouvé sur le système"
         )
-    student_db.statut = "actif"
+    student_db.statut = StudentStatus.ACTIF
     db.commit()
     db.refresh(student_db)
     return Message(message="Etudiant activé avec succès")
+
