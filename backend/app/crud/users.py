@@ -26,7 +26,6 @@ def create_user(*, db: Session, user_data: UserCreate) -> UserPublic:
     
     return UserPublic.model_validate(db_user)
 
-
 def update_user(*, db: Session, id: UUID, data: UserUpdate) -> UserPublic | None:
     user = db.query(User).filter(User.id==id).first()
     update_data = data.model_dump(exclude_unset=True)

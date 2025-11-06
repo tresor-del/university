@@ -44,7 +44,7 @@ def get_current_user(db: SessionDeps, token: TokenDeps) -> UserPublic:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
-        token_data = payload.get("sub")
+        username = payload.get("sub")
     except (JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -53,7 +53,7 @@ def get_current_user(db: SessionDeps, token: TokenDeps) -> UserPublic:
         
     # corrigé: recevoir le user par le username pas l'id
     user = db.execute(
-        select(User).where(User.username == token_data)
+        select(User).where(User.username == username)
     ).scalar_one_or_none()
     
     if not user:

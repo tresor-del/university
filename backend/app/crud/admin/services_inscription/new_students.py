@@ -64,7 +64,7 @@ def delete_student(*, db: Session, id: UUID) -> bool:
         db.commit()
         return True
     return False
-
+    
 def update_student(*, db: Session, id: UUID, data: StudentUpdate) -> StudentResponse | Any:
     student = db.query(Student).filter(Student.id == id).first()
     update_data = data.model_dump(exclude_unset=True)
